@@ -21,4 +21,8 @@
     <string name="app_name_abbr">Sistem Informasi Persediaan dan Penjualan</string>
     <string name="title_action">Action</string>
     <string name="book_cover">Book Cover</string>
+    <string name="title_add_book">Tambah Buku</string>
+    <string name="title_log_out">Keluar</string>
+    <string name="message_log_out">Anda akan keluar dari Akun ini</string>
+    <string name="cancel">Batal</string>
 </resources>

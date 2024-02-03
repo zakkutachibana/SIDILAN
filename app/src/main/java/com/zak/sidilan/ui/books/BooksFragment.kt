@@ -19,14 +19,12 @@ class BooksFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentBooksBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
         setupViewModel()
         setupAction()
 
-        return root
+        return binding.root
 
     }
 

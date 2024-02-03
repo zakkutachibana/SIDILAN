@@ -9,7 +9,7 @@
         android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:openDrawer="start">
+        tools:openDrawer="end">
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/coordinatorLayout"
@@ -22,7 +22,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:defaultNavHost="true"
-                app:navGraph="@navigation/mobile_navigation" />
+                app:navGraph="@navigation/mobile_navigation"
+                android:layout_marginBottom="168dp"
+                app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
             <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"

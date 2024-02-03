@@ -4,37 +4,51 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.zak.sidilan.R
 import com.zak.sidilan.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
 
-private var _binding: FragmentProfileBinding? = null
-  // This property is only valid between onCreateView and
-  // onDestroyView.
-  private val binding get() = _binding!!
+    private var _binding: FragmentProfileBinding? = null
+    private val binding get() = _binding!!
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View {
-    val profileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
 
-    _binding = FragmentProfileBinding.inflate(inflater, container, false)
-    val root: View = binding.root
-
-    val textView: TextView = binding.textProfile
-    profileViewModel.text.observe(viewLifecycleOwner) {
-      textView.text = it
+        setupViewModel()
+        setupAction()
+        return binding.root
     }
-    return root
-  }
+    private fun setupViewModel() {
+        val profileViewModel =
+            ViewModelProvider(this).get(ProfileViewModel::class.java)
+    }
 
-override fun onDestroyView() {
+    private fun setupAction() {
+        binding.btnLogOut.setOnClickListener {
+            MaterialAlertDialogBuilder(requireActivity())
+                .setTitle(resources.getString(R.string.title_log_out))
+                .setMessage(resources.getString(R.string.message_log_out))
+                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                    // Respond to negative button press
+                }
+                .setPositiveButton(resources.getString(R.string.title_log_out)) { dialog, which ->
+                    // Respond to positive button press
+                }
+                .show()
+        }
+        }
+
+
+
+    override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
