@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:openDrawer="start">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinatorLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <fragment
+                android:id="@+id/nav_host_fragment_activity_main"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/mobile_navigation" />
+            <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/searchbar_scrolling_view_behavior">
+                <!-- Screen content goes here. -->
+            </androidx.core.widget.NestedScrollView>
+
+            <!-- AppBarLayout with SearchBar -->
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/search_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.search.SearchBar
+                    android:id="@+id/search_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_bar_books"
+                    app:forceDefaultNavigationOnClickListener="false"
+                    app:navigationIcon="@drawable/ic_logo" />
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <com.google.android.material.search.SearchView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/search_bar_books"
+                app:layout_anchor="@id/search_bar">
+                <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
+            </com.google.android.material.search.SearchView>
+
+            <com.google.android.material.bottomappbar.BottomAppBar
+                android:id="@+id/bottom_app_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom">
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/nav_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/windowBackground"
+                    app:labelVisibilityMode="selected"
+                    app:menu="@menu/bottom_nav_menu" />
+            </com.google.android.material.bottomappbar.BottomAppBar>
+
+            <FrameLayout
+                android:id="@+id/standard_bottom_sheet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+                <!-- Bottom sheet contents. -->
+
+            </FrameLayout>
+
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/header_navigation_drawer"
+            app:menu="@menu/nav_drawer_menu" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

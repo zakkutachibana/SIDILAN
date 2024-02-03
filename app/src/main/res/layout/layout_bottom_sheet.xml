@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/drag_handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Actions"
+        android:textSize="24sp"
+        android:layout_marginHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@+id/drag_handle" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/item_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_bottom_sheet">
+
+        <ImageView
+            android:id="@+id/iv_barcode_scan"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_scan_barcode"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_barcode_scan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Tambah Buku dengan Barcode ISBN"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_barcode_scan"
+            app:layout_constraintStart_toEndOf="@+id/iv_barcode_scan"
+            app:layout_constraintTop_toTopOf="@+id/iv_barcode_scan" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/item_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/item_1">
+
+        <ImageView
+            android:id="@+id/iv_manual_add"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_add_book"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_add_manual"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Tambah Buku Manual"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_manual_add"
+            app:layout_constraintStart_toEndOf="@+id/iv_manual_add"
+            app:layout_constraintTop_toTopOf="@+id/iv_manual_add" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

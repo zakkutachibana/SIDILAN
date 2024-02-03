@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">SIDILAN</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_books">Books</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_profile">Profile</string>
+    <string name="search_bar_books">Cari Buku</string>
+    <string name="search">Search</string>
+    <string name="title_staff">Staf</string>
+    <string name="title_book_in">Buku Masuk</string>
+    <string name="title_book_out">Buku Keluar</string>
+    <string name="stock_opname">Stok Opname</string>
+    <string name="title_manager">Manajer</string>
+    <string name="title_home">Home</string>
+    <string name="title_director">Direktur</string>
+    <string name="title_book_in_trx">Transaksi Buku Masuk</string>
+    <string name="title_book_out_trx">Transaksi Buku Keluar</string>
+    <string name="title_stock_opname_trx">Stock Opname</string>
+    <string name="title_executive_charts">Grafik Eksekutif</string>
+    <string name="title_user_management">Manajemen Pengguna</string>
+    <string name="app_name_abbr">Sistem Informasi Persediaan dan Penjualan</string>
+    <string name="title_action">Action</string>
+    <string name="book_cover">Book Cover</string>
+</resources>

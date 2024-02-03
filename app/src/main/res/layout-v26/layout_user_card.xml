@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="16dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checkable="true"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        style="?attr/materialCardViewElevatedStyle"
+        app:strokeWidth="1dp">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/shapeableImageView"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:background="@color/white"
+                android:elevation="2dp"
+                android:padding="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/surya_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/roundedImageView" />
+
+            <TextView
+                android:id="@+id/tv_user_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Dicatat oleh"
+                android:textStyle="bold"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
+                app:layout_constraintTop_toTopOf="@+id/shapeableImageView" />
+
+            <TextView
+                android:id="@+id/tv_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:text="Surya Widjojo (Admin)"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:autoSizeMinTextSize="16sp"
+                android:autoSizeMaxTextSize="22sp"
+                android:autoSizeStepGranularity="1sp"
+                app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
+                app:layout_constraintTop_toBottomOf="@+id/tv_user_action" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

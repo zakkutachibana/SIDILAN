@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home"
+        android:title="@string/title_home" />
+    <item
+        android:id="@+id/staff_item"
+        android:title="@string/title_staff">
+        <menu>
+            <item
+                android:id="@+id/book_in_item"
+                android:icon="@drawable/ic_book_plus"
+                android:title="@string/title_book_in" />
+            <item
+                android:id="@+id/book_out_item"
+                android:icon="@drawable/ic_book_minus"
+                android:title="@string/title_book_out" />
+            <item
+                android:id="@+id/stock_opname_item"
+                android:icon="@drawable/ic_stock_opname"
+                android:title="@string/stock_opname" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/manager_item"
+        android:title="@string/title_manager">
+        <menu>
+            <item
+                android:id="@+id/book_in_trx_item"
+                android:icon="@drawable/ic_book_in_trx"
+                android:title="@string/title_book_in_trx" />
+            <item
+                android:id="@+id/book_out_trx_item"
+                android:icon="@drawable/ic_book_out_trx"
+                android:title="@string/title_book_out_trx" />
+            <item
+                android:id="@+id/stock_opname_trx_item"
+                android:icon="@drawable/ic_stock_opname_trx"
+                android:title="@string/title_stock_opname_trx" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/director_item"
+        android:title="@string/title_director">
+        <menu>
+            <item
+                android:id="@+id/executive_charts"
+                android:icon="@drawable/ic_chart"
+                android:title="@string/title_executive_charts" />
+            <item
+                android:id="@+id/user_management"
+                android:icon="@drawable/ic_user_management"
+                android:title="@string/title_user_management" />
+        </menu>
+    </item>
+
+</menu>
