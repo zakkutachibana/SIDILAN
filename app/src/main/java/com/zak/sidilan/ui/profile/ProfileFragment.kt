@@ -1,5 +1,6 @@
 package com.zak.sidilan.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.FragmentProfileBinding
+import com.zak.sidilan.ui.addbook.AddBookActivity
+import com.zak.sidilan.ui.auth.AuthActivity
 
 class ProfileFragment : Fragment() {
 
@@ -37,10 +40,12 @@ class ProfileFragment : Fragment() {
                 .setTitle(resources.getString(R.string.title_log_out))
                 .setMessage(resources.getString(R.string.message_log_out))
                 .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
-                    // Respond to negative button press
+                    dialog.dismiss()
                 }
                 .setPositiveButton(resources.getString(R.string.title_log_out)) { dialog, which ->
-                    // Respond to positive button press
+                    val intent = Intent(context, AuthActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
                 }
                 .show()
         }

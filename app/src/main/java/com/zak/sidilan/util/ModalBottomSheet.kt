@@ -6,10 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.camera.core.ExperimentalGetImage
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.LayoutBottomSheetBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
+import com.zak.sidilan.ui.addbook.AddBookByScanActivity
 
 class ModalBottomSheet(private val type: Number) : BottomSheetDialogFragment() {
 
@@ -24,6 +26,7 @@ class ModalBottomSheet(private val type: Number) : BottomSheetDialogFragment() {
         return binding.root
     }
 
+    @ExperimentalGetImage
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -33,7 +36,7 @@ class ModalBottomSheet(private val type: Number) : BottomSheetDialogFragment() {
                 binding.titleBottomSheet.text = getString(R.string.title_action)
 
                 binding.item1.setOnClickListener {
-                    val intent = Intent(context, AddBookActivity::class.java)
+                    val intent = Intent(context, AddBookByScanActivity::class.java)
                     startActivity(intent)
                     dismiss()
                 }
