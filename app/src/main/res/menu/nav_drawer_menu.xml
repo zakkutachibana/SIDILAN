@@ -3,7 +3,8 @@
     <item
         android:id="@+id/home"
         android:icon="@drawable/ic_home"
-        android:title="@string/title_home" />
+        android:title="@string/title_home"
+        android:checkable="true"/>
     <item
         android:id="@+id/staff_item"
         android:title="@string/title_staff">
@@ -19,7 +20,7 @@
             <item
                 android:id="@+id/stock_opname_item"
                 android:icon="@drawable/ic_stock_opname"
-                android:title="@string/stock_opname" />
+                android:title="@string/title_stock_opname" />
         </menu>
     </item>
     <item

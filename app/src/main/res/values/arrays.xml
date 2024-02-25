@@ -55,4 +55,11 @@
         <item>Young Adult Fiction</item>
         <item>Young Adult Nonfiction</item>
     </string-array>
+
+    <string-array name="sell_platform">
+        <item>Shopee</item>
+        <item>Tokopedia</item>
+        <item>Yayasan</item>
+        <item>Lainnya</item>
+    </string-array>
 </resources>

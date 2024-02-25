@@ -12,7 +12,12 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-<!--        <item name="android:fontFamily">@font/poppins_regular</item>-->
+        <item name="m3PrimaryColor">@color/purple_secondary</item>
+        <item name="m3UnselectedColor">@color/light_grey</item>
+        <item name="m3RippleColor">@color/smoke_black</item>
+        <item name="m3SurfaceColor">@color/black_surface</item>
+
+        <!--        <item name="android:fontFamily">@font/poppins_regular</item>-->
 <!--        <item name="fontFamily">@font/poppins_regular</item>-->
     </style>
     <style name="splashScreenTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">

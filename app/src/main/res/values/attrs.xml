@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="m3PrimaryColor" format="color" />
+    <attr name="m3UnselectedColor" format="color" />
+    <attr name="m3RippleColor" format="color" />
+    <attr name="m3SurfaceColor" format="color" />
+    <!-- Add more custom attributes as needed -->
+
+</resources>
