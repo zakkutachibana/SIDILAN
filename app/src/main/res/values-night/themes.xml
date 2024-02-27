@@ -5,6 +5,8 @@
         <item name="colorPrimary">@color/purple_200</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/black</item>
+        <item name="reverseOnPrimary">@color/white</item>
+
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
@@ -17,7 +19,7 @@
         <item name="m3RippleColor">@color/smoke_black</item>
         <item name="m3SurfaceColor">@color/black_surface</item>
 
-        <!--        <item name="android:fontFamily">@font/poppins_regular</item>-->
+<!--        <item name="android:fontFamily">@font/poppins_regular</item>-->
 <!--        <item name="fontFamily">@font/poppins_regular</item>-->
     </style>
     <style name="splashScreenTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">

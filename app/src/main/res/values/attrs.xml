@@ -4,6 +4,7 @@
     <attr name="m3UnselectedColor" format="color" />
     <attr name="m3RippleColor" format="color" />
     <attr name="m3SurfaceColor" format="color" />
+    <attr name="reverseOnPrimary" format="color"/>
     <!-- Add more custom attributes as needed -->
 
 </resources>
