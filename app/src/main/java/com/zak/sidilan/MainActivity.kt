@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.zak.sidilan.databinding.ActivityMainBinding
+import com.zak.sidilan.ui.executivemenus.ExecutiveMenusActivity
 import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
 import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
 
@@ -36,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setupWithNavController(navController)
 
         setView()
-
     }
 
     private fun setView() {
@@ -61,7 +61,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.book_in_trx_item -> Toast.makeText(this, "book_in_trx_item", Toast.LENGTH_SHORT).show()
                 R.id.book_out_trx_item -> Toast.makeText(this, "book_out_trx_item", Toast.LENGTH_SHORT).show()
                 R.id.stock_opname_trx_item -> Toast.makeText(this, "stock_opname_trx_item", Toast.LENGTH_SHORT).show()
-                R.id.executive_charts -> Toast.makeText(this, "executive_charts", Toast.LENGTH_SHORT).show()
+                R.id.executive_charts -> {
+                    val intent = Intent(this, ExecutiveMenusActivity::class.java)
+                    startActivity(intent)
+                }
                 R.id.user_management -> Toast.makeText(this, "user_management", Toast.LENGTH_SHORT).show()
             }
             Handler(Looper.getMainLooper()).postDelayed({
@@ -70,5 +73,4 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
-
 }
