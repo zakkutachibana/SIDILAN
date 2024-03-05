@@ -2,11 +2,12 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="8dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
     android:layout_marginHorizontal="16dp">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_book"
         style="@style/Widget.Material3.CardView.Elevated"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,8 +21,8 @@
 
             <ImageView
                 android:id="@+id/iv_book_cover"
-                android:layout_width="108dp"
-                android:layout_height="161dp"
+                android:layout_width="88dp"
+                android:layout_height="141dp"
                 android:contentDescription="@string/book_cover"
                 android:scaleType="centerCrop"
                 android:src="@drawable/lucian"
@@ -57,6 +58,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_book_title" />
 
             <TextView
+                android:id="@+id/tv_isbn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
@@ -76,6 +78,7 @@
                 android:layout_marginBottom="-8dp"
                 android:text="Stok"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textSize="11sp"
                 app:layout_constraintBottom_toTopOf="@+id/chip_stock_qty"
                 app:layout_constraintEnd_toEndOf="@+id/chip_stock_qty"
                 app:layout_constraintStart_toStartOf="@+id/chip_stock_qty" />
@@ -85,11 +88,11 @@
                 style="@style/Widget.Material3.Chip.Assist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="6"
-                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="31"
                 app:ensureMinTouchTargetSize="true"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iv_book_cover" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/tv_sell_price"
@@ -97,6 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="-8dp"
                 android:text="Harga Jual"
+                android:textSize="11sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 app:layout_constraintBottom_toTopOf="@+id/chip_sell_price"
                 app:layout_constraintEnd_toEndOf="@+id/chip_sell_price"
@@ -107,13 +111,14 @@
                 style="@style/Widget.Material3.Chip.Assist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="20.000"
                 app:chipIcon="@drawable/ic_rupiah"
+                app:chipIconSize="14dp"
                 app:chipIconTint="?attr/reverseOnPrimary"
                 app:ensureMinTouchTargetSize="true"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/chip_print_price"
-                app:layout_constraintStart_toEndOf="@+id/chip_stock_qty" />
+                app:layout_constraintStart_toEndOf="@+id/iv_book_cover" />
 
             <TextView
                 android:id="@+id/tv_print_price"
@@ -121,6 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="-8dp"
                 android:text="Harga Cetak"
+                android:textSize="11sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 app:layout_constraintBottom_toTopOf="@+id/chip_print_price"
                 app:layout_constraintEnd_toEndOf="@+id/chip_print_price"
@@ -131,14 +137,14 @@
                 style="@style/Widget.Material3.Chip.Assist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:text="50.000"
                 app:chipIcon="@drawable/ic_rupiah"
+                app:chipIconSize="14dp"
                 app:chipIconTint="?attr/reverseOnPrimary"
                 app:ensureMinTouchTargetSize="true"
-                android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                 />
+                app:layout_constraintStart_toEndOf="@+id/chip_sell_price" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

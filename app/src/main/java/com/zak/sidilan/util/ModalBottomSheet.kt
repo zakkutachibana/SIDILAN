@@ -31,7 +31,6 @@ class ModalBottomSheet(private val type: Number) : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         when (type) {
-            //Type 1: Add Books
             1 -> {
                 binding.titleBottomSheet.text = getString(R.string.title_action)
 

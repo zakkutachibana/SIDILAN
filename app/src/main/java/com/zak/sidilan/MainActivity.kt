@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -15,6 +16,7 @@ import com.zak.sidilan.databinding.ActivityMainBinding
 import com.zak.sidilan.ui.executivemenus.ExecutiveMenusActivity
 import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
 import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
+import com.zak.sidilan.util.ModalBottomSheet
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,11 +37,33 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.navigation_books -> binding.fab.show()
+                R.id.navigation_dashboard -> Handler(Looper.getMainLooper()).postDelayed({
+                    binding.fab.hide()
+                }, 400)
+                R.id.navigation_profile -> Handler(Looper.getMainLooper()).postDelayed({
+                    binding.fab.hide()
+                }, 200)
+                else -> {}
+            }
 
+        }
         setView()
+        setAction()
     }
 
+    private fun setAction() {
+        binding.fab.setOnClickListener {
+            val modalBottomSheet = ModalBottomSheet(1)
+            modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+        }
+    }
+
+
     private fun setView() {
+
         binding.searchBar.setNavigationOnClickListener {
             binding.drawerLayout.open()
         }

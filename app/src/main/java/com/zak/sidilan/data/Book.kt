@@ -10,7 +10,7 @@ data class Book(
     val id: String,
     val isbn: Long,
     val title: String,
-    val authors: List<Author>,
+    val authors: List<String>,
     val genre: String,
     @JvmField @PropertyName("published_date")
     val publishedDate: String,
@@ -24,10 +24,9 @@ data class Book(
     val startContractDate: String? = "",
     @JvmField @PropertyName("end_contract_date")
     val endContractDate: String? = "",
-    @JvmField @PropertyName("created_by")
-    val createdBy: String
+
 ) : Parcelable {
-    constructor() : this("", 0, "", listOf(), "", "", 0.0, 0.0, false, "", "", "")
+    constructor() : this("", 0, "", listOf(), "", "", 0.0, 0.0, false, "", "")
 }
 
 @Parcelize

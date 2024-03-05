@@ -2,6 +2,8 @@ package com.zak.sidilan.ui.dashboard
 
 import android.animation.LayoutTransition
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,11 +25,17 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-
-        setView()
-        setViewModel()
-        setAction()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            setView()
+            setViewModel()
+            setAction()
+        }, 300)
     }
 
     private fun setView() {

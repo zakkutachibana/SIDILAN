@@ -13,9 +13,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.zak.sidilan.R
-import com.zak.sidilan.data.Author
 import com.zak.sidilan.data.Book
+import com.zak.sidilan.data.Logs
 import com.zak.sidilan.databinding.ActivityAddBookBinding
 import com.zak.sidilan.util.Formatter
 import java.util.Calendar
@@ -44,8 +45,8 @@ class AddBookActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = getString(R.string.title_add_book)
-        Formatter.addThousandSeparator(binding.edPrintPrice)
-        Formatter.addThousandSeparator(binding.edSellPrice)
+        Formatter.addThousandSeparatorEditText(binding.edPrintPrice)
+        Formatter.addThousandSeparatorEditText(binding.edSellPrice)
     }
 
     private fun setAction() {
@@ -79,27 +80,6 @@ class AddBookActivity : AppCompatActivity() {
                 saveBookToFirebase()
             }
         }
-    }
-    private fun isValid(): Boolean {
-        when (binding.cbForever.isChecked){
-            true -> return isNotEmpty(binding.edIsbn.text.toString(), binding.edlIsbn, binding.edIsbn)
-                    && isNotEmpty(binding.edBookTitle.text.toString(), binding.edlBookTitle, binding.edBookTitle)
-                    && isNotEmpty(binding.edAuthors.text.toString(), binding.edlAuthors, binding.edAuthors)
-                    && isNotEmpty(binding.edGenre.text.toString(), binding.edlGenre, binding.edGenre)
-                    && isNotEmpty(binding.edPublishedDate.text.toString(), binding.edlPublishedDate, binding.edPublishedDate)
-                    && isNotEmpty(binding.edPrintPrice.text.toString(), binding.edlPrintPrice, binding.edPrintPrice)
-                    && isNotEmpty(binding.edSellPrice.text.toString(), binding.edlSellPrice, binding.edSellPrice)
-            else -> return isNotEmpty(binding.edIsbn.text.toString(), binding.edlIsbn, binding.edIsbn)
-                    && isNotEmpty(binding.edBookTitle.text.toString(), binding.edlBookTitle, binding.edBookTitle)
-                    && isNotEmpty(binding.edAuthors.text.toString(), binding.edlAuthors, binding.edAuthors)
-                    && isNotEmpty(binding.edGenre.text.toString(), binding.edlGenre, binding.edGenre)
-                    && isNotEmpty(binding.edPublishedDate.text.toString(), binding.edlPublishedDate, binding.edPublishedDate)
-                    && isNotEmpty(binding.edPrintPrice.text.toString(), binding.edlPrintPrice, binding.edPrintPrice)
-                    && isNotEmpty(binding.edSellPrice.text.toString(), binding.edlSellPrice, binding.edSellPrice)
-                    && isNotEmpty(binding.edStartContractDate.text.toString(), binding.edlStartContractDate, binding.edStartContractDate)
-                    && isNotEmpty(binding.edEndContractDate.text.toString(), binding.edlEndContractDate, binding.edEndContractDate)
-        }
-
     }
 
 
@@ -169,7 +149,7 @@ class AddBookActivity : AppCompatActivity() {
         val title = binding.edBookTitle.text.toString()
         val authors = binding.edAuthors.text.toString().split("\n").map { it.trim() }
             .filter { it.isNotEmpty() }
-            .map { Author(it) }
+            .map { it }
         val genre = binding.edGenre.text.toString()
         val publishedDate = binding.edPublishedDate.text.toString()
         val printPrice = Formatter.getRawValue(binding.edPrintPrice).toDouble()
@@ -177,13 +157,20 @@ class AddBookActivity : AppCompatActivity() {
         val isPerpetual = binding.cbForever.isChecked
         val startContractDate = binding.edStartContractDate.text.toString().ifEmpty { null }
         val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
+
         val createdBy = binding.userCard.tvUserName.text.toString()
+        val createdAt = ServerValue.TIMESTAMP
 
         val book = Book (
-            id, isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy
+            id, isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate
         )
+        val logs = Logs(createdBy, createdAt)
 
-        reference.child(id).setValue(book).addOnCompleteListener { task ->
+        val bookMap = mutableMapOf<String, Any>()
+        bookMap["book"] = book
+        bookMap["logs"] = logs
+
+        reference.child(id).setValue(bookMap).addOnCompleteListener { task ->
 
             if (task.isSuccessful) {
                 Toast.makeText(this, "Added books", Toast.LENGTH_SHORT).show()
@@ -198,6 +185,28 @@ class AddBookActivity : AppCompatActivity() {
             binding.btnAddBook.isEnabled = true
         }
     }
+    private fun isValid(): Boolean {
+        when (binding.cbForever.isChecked){
+            true -> return isNotEmpty(binding.edIsbn.text.toString(), binding.edlIsbn, binding.edIsbn)
+                    && isNotEmpty(binding.edBookTitle.text.toString(), binding.edlBookTitle, binding.edBookTitle)
+                    && isNotEmpty(binding.edAuthors.text.toString(), binding.edlAuthors, binding.edAuthors)
+                    && isNotEmpty(binding.edGenre.text.toString(), binding.edlGenre, binding.edGenre)
+                    && isNotEmpty(binding.edPublishedDate.text.toString(), binding.edlPublishedDate, binding.edPublishedDate)
+                    && isNotEmpty(binding.edPrintPrice.text.toString(), binding.edlPrintPrice, binding.edPrintPrice)
+                    && isNotEmpty(binding.edSellPrice.text.toString(), binding.edlSellPrice, binding.edSellPrice)
+            else -> return isNotEmpty(binding.edIsbn.text.toString(), binding.edlIsbn, binding.edIsbn)
+                    && isNotEmpty(binding.edBookTitle.text.toString(), binding.edlBookTitle, binding.edBookTitle)
+                    && isNotEmpty(binding.edAuthors.text.toString(), binding.edlAuthors, binding.edAuthors)
+                    && isNotEmpty(binding.edGenre.text.toString(), binding.edlGenre, binding.edGenre)
+                    && isNotEmpty(binding.edPublishedDate.text.toString(), binding.edlPublishedDate, binding.edPublishedDate)
+                    && isNotEmpty(binding.edPrintPrice.text.toString(), binding.edlPrintPrice, binding.edPrintPrice)
+                    && isNotEmpty(binding.edSellPrice.text.toString(), binding.edlSellPrice, binding.edSellPrice)
+                    && isNotEmpty(binding.edStartContractDate.text.toString(), binding.edlStartContractDate, binding.edStartContractDate)
+                    && isNotEmpty(binding.edEndContractDate.text.toString(), binding.edlEndContractDate, binding.edEndContractDate)
+        }
+
+    }
+
     private fun isNotEmpty(value: String, textInputLayout: TextInputLayout, editText: EditText): Boolean {
         when {
             value.trim().isEmpty() -> {
