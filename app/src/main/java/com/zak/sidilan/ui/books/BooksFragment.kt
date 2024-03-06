@@ -36,12 +36,11 @@ class BooksFragment : Fragment() {
 
     private fun setupViewModel() {
         viewModel.bookList.observe(viewLifecycleOwner) {
-            adapter = BooksAdapter(requireActivity(), ArrayList()) // Initialize adapter with ArrayList
+            adapter = BooksAdapter(requireActivity(), ArrayList())
             binding.rvBooks.layoutManager = LinearLayoutManager(requireActivity())
             binding.rvBooks.adapter = adapter
-            adapter.updateData(it) // Update adapter data when bookList changes
+            adapter.updateData(it)
         }
-
     }
 
     override fun onDestroyView() {

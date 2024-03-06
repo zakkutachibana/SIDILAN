@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -48,6 +49,13 @@ object Formatter {
     fun addThousandSeparatorTextView(number: Double): String {
         val formatter = NumberFormat.getNumberInstance(Locale.getDefault())
         return formatter.format(number).replace(",", ".")
+    }
+
+    fun convertDateFormat(inputDate: String?): String? {
+        val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+        val date = inputDate?.let { inputFormat.parse(it) }
+        return date?.let { outputFormat.format(it) }
     }
 
     fun getRawValue(editText: EditText): String {

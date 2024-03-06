@@ -11,7 +11,7 @@ import com.zak.sidilan.databinding.LayoutBookCardBinding
 import com.zak.sidilan.ui.bookdetail.BookDetailActivity
 import com.zak.sidilan.util.Formatter
 
-class BooksAdapter(var context: Context, var bookList: ArrayList<Book>)
+class BooksAdapter(var context: Context, private var bookList: ArrayList<Book>)
     : RecyclerView.Adapter<BooksAdapter.BooksViewHolder>() {
 
     inner class BooksViewHolder(val adapterBinding: LayoutBookCardBinding)

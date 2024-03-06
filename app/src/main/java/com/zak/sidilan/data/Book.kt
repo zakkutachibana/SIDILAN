@@ -28,8 +28,3 @@ data class Book(
 ) : Parcelable {
     constructor() : this("", 0, "", listOf(), "", "", 0.0, 0.0, false, "", "")
 }
-
-@Parcelize
-data class Author(
-    val name: String = "",
-) : Parcelable
