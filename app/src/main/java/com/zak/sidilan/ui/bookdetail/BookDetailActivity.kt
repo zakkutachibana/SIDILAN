@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityBookDetailBinding
 import com.zak.sidilan.util.Formatter
+import com.zak.sidilan.util.ModalBottomSheet
 
 class BookDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBookDetailBinding
@@ -26,7 +27,21 @@ class BookDetailActivity : AppCompatActivity() {
         }
         setView()
         setViewModel()
+        setAction()
 
+    }
+
+    private fun setAction() {
+        binding.btnEditDelete.setOnClickListener { it ->
+            if (it != null) {
+                viewModel.bookDetail.observe(this) {
+                    val title = it?.title
+                    val modalBottomSheet = ModalBottomSheet(2, title)
+                    modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+                }
+            }
+
+        }
     }
 
     private fun setView() {

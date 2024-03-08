@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setAction() {
         binding.fab.setOnClickListener {
-            val modalBottomSheet = ModalBottomSheet(1)
+            val modalBottomSheet = ModalBottomSheet(1, null)
             modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
         }
     }

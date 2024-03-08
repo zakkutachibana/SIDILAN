@@ -9,14 +9,10 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ServerValue
 import com.zak.sidilan.R
-import com.zak.sidilan.data.Book
-import com.zak.sidilan.data.Logs
 import com.zak.sidilan.databinding.ActivityAddBookBinding
 import com.zak.sidilan.util.Formatter
 import java.util.Calendar
@@ -24,9 +20,8 @@ import java.util.Calendar
 
 class AddBookActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddBookBinding
+    private val viewModel: AddBookViewModel by viewModels()
 
-    private var database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private var reference: DatabaseReference = database.reference.child("books")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +30,16 @@ class AddBookActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setView()
+        setViewModel()
         setAction()
         setupListeners()
 
+    }
+
+    private fun setViewModel() {
+        viewModel.toastMessage.observe(this) { message ->
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
 
@@ -55,8 +57,12 @@ class AddBookActivity : AppCompatActivity() {
             Toast.makeText(this, "Reserved for Adding Picture", Toast.LENGTH_SHORT).show()
         }
         binding.edlIsbn.setEndIconOnClickListener {
-            //TODO : Buat Search Book from GoogleBooksAPI
-            Toast.makeText(this, "Reserved for Search Book by ISBN", Toast.LENGTH_SHORT).show()
+            when {
+                binding.edIsbn.text?.isEmpty() == true -> isNotEmpty(binding.edIsbn.text.toString(), binding.edlIsbn, binding.edIsbn)
+                binding.edIsbn.text?.length!! < 13 -> binding.edlIsbn.error = "Masukkan 13 Digit ISBN"
+                else -> viewModel.searchBookByISBN(binding.edIsbn.text.toString())
+//                    Toast.makeText(this, "Reserved for Search Book by ISBN", Toast.LENGTH_SHORT).show()
+            }
         }
         binding.edPublishedDate.setOnClickListener {
             showDatePicker(binding.edPublishedDate, "Tanggal Terbit Buku")
@@ -77,7 +83,7 @@ class AddBookActivity : AppCompatActivity() {
         binding.btnAddBook.setOnClickListener {
             if (isValid()) {
                 binding.btnAddBook.isEnabled = false
-                saveBookToFirebase()
+                saveBook()
             }
         }
     }
@@ -143,8 +149,7 @@ class AddBookActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveBookToFirebase() {
-        val id = reference.push().key.toString()
+    private fun saveBook() {
         val isbn = binding.edIsbn.text.toString().toLong()
         val title = binding.edBookTitle.text.toString()
         val authors = binding.edAuthors.text.toString().split("\n").map { it.trim() }
@@ -157,34 +162,23 @@ class AddBookActivity : AppCompatActivity() {
         val isPerpetual = binding.cbForever.isChecked
         val startContractDate = binding.edStartContractDate.text.toString().ifEmpty { null }
         val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
-
         val createdBy = binding.userCard.tvUserName.text.toString()
-        val createdAt = ServerValue.TIMESTAMP
 
-        val book = Book (
-            id, isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate
-        )
-        val logs = Logs(createdBy, createdAt)
-
-        val bookMap = mutableMapOf<String, Any>()
-        bookMap["book"] = book
-        bookMap["logs"] = logs
-
-        reference.child(id).setValue(bookMap).addOnCompleteListener { task ->
-
-            if (task.isSuccessful) {
-                Toast.makeText(this, "Added books", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(
-                    this,
-                    "Failed to add books: ${task.exception?.message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
+        viewModel.saveBookToFirebase(
+            isbn, title, authors, genre, publishedDate,
+            printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy
+        ) { success ->
             binding.btnAddBook.isEnabled = true
+
+            if (success) {
+                Toast.makeText(this, "Book added successfully", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Failed to add book", Toast.LENGTH_SHORT).show()
+            }
         }
+
     }
+
     private fun isValid(): Boolean {
         when (binding.cbForever.isChecked){
             true -> return isNotEmpty(binding.edIsbn.text.toString(), binding.edlIsbn, binding.edIsbn)

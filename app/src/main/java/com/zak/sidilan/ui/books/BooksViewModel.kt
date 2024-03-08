@@ -7,7 +7,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.zak.sidilan.data.Book
+import com.zak.sidilan.data.entities.Book
 
 class BooksViewModel : ViewModel() {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()

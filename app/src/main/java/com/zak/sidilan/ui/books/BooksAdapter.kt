@@ -4,9 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.zak.sidilan.data.Book
+import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.databinding.LayoutBookCardBinding
 import com.zak.sidilan.ui.bookdetail.BookDetailActivity
 import com.zak.sidilan.util.Formatter

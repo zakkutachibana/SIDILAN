@@ -36,7 +36,7 @@
         app:layout_constraintTop_toBottomOf="@+id/title_bottom_sheet">
 
         <ImageView
-            android:id="@+id/iv_barcode_scan"
+            android:id="@+id/iv_item_1"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="16dp"
@@ -45,15 +45,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_barcode_scan"
+            android:id="@+id/tv_item_1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Tambah Buku dengan Barcode ISBN"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_barcode_scan"
-            app:layout_constraintStart_toEndOf="@+id/iv_barcode_scan"
-            app:layout_constraintTop_toTopOf="@+id/iv_barcode_scan" />
+            app:layout_constraintBottom_toBottomOf="@+id/iv_item_1"
+            app:layout_constraintStart_toEndOf="@+id/iv_item_1"
+            app:layout_constraintTop_toTopOf="@+id/iv_item_1" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,7 +69,7 @@
         app:layout_constraintTop_toBottomOf="@+id/item_1">
 
         <ImageView
-            android:id="@+id/iv_manual_add"
+            android:id="@+id/iv_item_2"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="16dp"
@@ -78,15 +78,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_add_manual"
+            android:id="@+id/tv_item_2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Tambah Buku Manual"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="@+id/iv_manual_add"
-            app:layout_constraintStart_toEndOf="@+id/iv_manual_add"
-            app:layout_constraintTop_toTopOf="@+id/iv_manual_add" />
+            app:layout_constraintBottom_toBottomOf="@+id/iv_item_2"
+            app:layout_constraintStart_toEndOf="@+id/iv_item_2"
+            app:layout_constraintTop_toTopOf="@+id/iv_item_2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

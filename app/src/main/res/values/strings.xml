@@ -47,6 +47,7 @@
     <string name="contract_date_placeholder">%1$s - %2$s</string>
     <string name="rp_price">Rp. %1$s</string>
     <string name="published_at">Terbit pada %1$s</string>
+    <string name="will_be_deleted">Buku \"%1$s\" akan dihapus. Apakah anda yakin menghapusnya?</string>
     <string name="forever_contract">Perjanjian Berlaku Selamanya</string>
 
 </resources>

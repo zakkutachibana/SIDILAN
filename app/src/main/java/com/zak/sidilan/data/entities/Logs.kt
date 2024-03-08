@@ -1,4 +1,4 @@
-package com.zak.sidilan.data
+package com.zak.sidilan.data.entities
 
 import android.os.Parcelable
 import com.google.firebase.database.PropertyName
