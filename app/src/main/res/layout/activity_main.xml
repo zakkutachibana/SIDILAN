@@ -24,6 +24,18 @@
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/mobile_navigation"
                 app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"/>
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
+                android:layout_marginEnd="16dp"
+                app:icon="@drawable/ic_add"
+                android:text="Tambah"
+                android:layout_gravity="bottom|end"
+                app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+
+                />
             <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
@@ -54,19 +66,6 @@
                 app:layout_anchor="@id/search_bar">
                 <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
             </com.google.android.material.search.SearchView>
-
-            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="100dp"
-                android:layout_marginEnd="16dp"
-                app:icon="@drawable/ic_add"
-                android:text="Tambah"
-                android:layout_gravity="bottom|end"
-                app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-
-                />
 
             <com.google.android.material.bottomappbar.BottomAppBar
                 android:id="@+id/bottom_app_bar"

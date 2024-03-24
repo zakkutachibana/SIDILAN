@@ -34,6 +34,7 @@ class BooksAdapter(var context: Context, private var bookList: ArrayList<Book>)
         holder.adapterBinding.tvIsbn.text = bookList[position].isbn.toString()
         holder.adapterBinding.chipPrintPrice.text = Formatter.addThousandSeparatorTextView(bookList[position].printPrice)
         holder.adapterBinding.chipSellPrice.text = Formatter.addThousandSeparatorTextView(bookList[position].sellPrice)
+        holder.adapterBinding.chipStockQty.text = Formatter.addThousandSeparatorTextView(bookList[position].stockQty!!)
 
         holder.adapterBinding.cardBook.setOnClickListener{
             val intent = Intent(context, BookDetailActivity::class.java)

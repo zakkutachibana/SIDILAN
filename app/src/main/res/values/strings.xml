@@ -21,6 +21,7 @@
     <string name="title_activity_auth">AuthActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_add_book">Tambah Buku</string>
+    <string name="title_update_book">Ubah Detail Buku</string>
     <string name="title_books">Books</string>
     <string name="title_book_in">Buku Masuk</string>
     <string name="title_book_in_print">Cetak Buku</string>
@@ -40,6 +41,7 @@
     <string name="title_stock_opname">Stok Opname</string>
     <string name="title_stock_opname_trx">Stock Opname</string>
     <string name="title_user_management">Manajemen Pengguna</string>
+    <string name="title_delete_book">Hapus Buku?</string>
     <string name="welcome">"Welcome !"</string>
     <string name="record_book_in">Catat Buku Masuk</string>
     <string name="record_book_out">Catat Buku Keluar</string>
@@ -47,7 +49,7 @@
     <string name="contract_date_placeholder">%1$s - %2$s</string>
     <string name="rp_price">Rp. %1$s</string>
     <string name="published_at">Terbit pada %1$s</string>
-    <string name="will_be_deleted">Buku \"%1$s\" akan dihapus. Apakah anda yakin menghapusnya?</string>
+    <string name="will_be_deleted">Buku \"%1$s\" akan dihapus. Apakah anda yakin ingin menghapusnya? Ketik \"%1$s\" untuk menghapus buku.</string>
     <string name="forever_contract">Perjanjian Berlaku Selamanya</string>
 
 </resources>

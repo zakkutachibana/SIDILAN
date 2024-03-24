@@ -15,7 +15,6 @@
             android:id="@+id/card_book_cover"
             android:layout_width="128dp"
             android:layout_height="182dp"
-
             app:cardCornerRadius="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -34,7 +33,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:text="Judul Buku"
@@ -46,13 +44,14 @@
 
         <TextView
             android:id="@+id/tv_authors_detail"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:text="Nama Penulis"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            app:layout_constraintEnd_toEndOf="@+id/tv_book_title_detail"
             app:layout_constraintStart_toStartOf="@+id/tv_book_title_detail"
             app:layout_constraintTop_toBottomOf="@+id/tv_book_title_detail" />
 
@@ -71,13 +70,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Harga Jual"
+            android:text="Harga Cetak"
             app:layout_constraintEnd_toStartOf="@+id/divider"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_book_cover" />
 
         <TextView
-            android:id="@+id/tv_sell_price_value"
+            android:id="@+id/tv_print_price_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Rp. 100.000"
@@ -91,7 +90,7 @@
             android:id="@+id/divider"
             android:layout_width="1dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_sell_price_value"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_print_price_value"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textView4" />
@@ -101,13 +100,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Harga Cetak"
+            android:text="Harga Jual"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/divider"
             app:layout_constraintTop_toBottomOf="@+id/card_book_cover" />
 
         <TextView
-            android:id="@+id/tv_print_price_value"
+            android:id="@+id/tv_sell_price_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Rp. 200.000"
@@ -139,7 +138,7 @@
             app:layout_constraintTop_toBottomOf="@+id/divider2" />
 
         <TextView
-            android:id="@+id/tv_stock_qty_detail"
+            android:id="@+id/tv_stock_qty_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="41"
@@ -156,7 +155,7 @@
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty_detail" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty_value" />
 
         <TextView
             android:id="@+id/tv_isbn_title"

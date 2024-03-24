@@ -1,18 +1,22 @@
 package com.zak.sidilan.ui.bookdetail
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
-import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityBookDetailBinding
 import com.zak.sidilan.util.Formatter
-import com.zak.sidilan.util.ModalBottomSheet
+import com.zak.sidilan.util.ModalBottomSheetAction
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.dsl.module
 
+
+val bookDetailActivityModule = module {
+    factory { BookDetailActivity() }
+}
 class BookDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBookDetailBinding
-    private val viewModel: BookDetailViewModel by viewModels()
+    private val viewModel: BookDetailViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +39,8 @@ class BookDetailActivity : AppCompatActivity() {
         binding.btnEditDelete.setOnClickListener { it ->
             if (it != null) {
                 viewModel.bookDetail.observe(this) {
-                    val title = it?.title
-                    val modalBottomSheet = ModalBottomSheet(2, title)
-                    modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+                    val modalBottomSheetAction = ModalBottomSheetAction(2, it, this)
+                    modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
                 }
             }
 
@@ -55,20 +58,24 @@ class BookDetailActivity : AppCompatActivity() {
             if (it != null) {
                 binding.tvBookTitleDetail.text = it.title
                 binding.tvBookTitleValue.text = it.title
+                binding.tvIsbnValue.text = it.isbn.toString()
                 binding.tvAuthorsDetail.text = it.authors.joinToString(", ")
                 binding.tvAuthorsValue.text = it.authors.joinToString(", ")
-                binding.tvPublishedDateDetail.text = getString(R.string.published_at, Formatter.convertDateFormat(it.publishedDate))
+                binding.tvPublishedDateDetail.text = getString(R.string.published_at, Formatter.convertDateFirebaseToDisplay(it.publishedDate))
                 binding.tvGenreValue.text = it.genre
                 binding.tvPrintPriceValue.text = getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(it.printPrice))
                 binding.tvSellPriceValue.text = getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(it.sellPrice))
+                binding.tvStockQtyValue.text = it.stockQty.toString()
                 if (it.isPerpetual) {
                     binding.tvContractValue.text = getString(R.string.forever_contract)
                 } else {
-                    binding.tvContractValue.text = getString(R.string.contract_date_placeholder, Formatter.convertDateFormat(it.startContractDate), Formatter.convertDateFormat(it.endContractDate))
+                    binding.tvContractValue.text = getString(R.string.contract_date_placeholder, Formatter.convertDateFirebaseToDisplay(it.startContractDate), Formatter.convertDateFirebaseToDisplay(it.endContractDate))
                 }
             }
         }
     }
+
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

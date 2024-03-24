@@ -15,16 +15,18 @@ data class Book(
     @JvmField @PropertyName("published_date")
     val publishedDate: String,
     @JvmField @PropertyName("print_price")
-    val printPrice: Double,
+    val printPrice: Long,
     @JvmField @PropertyName("sell_price")
-    val sellPrice: Double,
+    val sellPrice: Long,
     @JvmField @PropertyName("is_perpetual")
     val isPerpetual: Boolean,
     @JvmField @PropertyName("start_contract_date")
     val startContractDate: String? = "",
     @JvmField @PropertyName("end_contract_date")
     val endContractDate: String? = "",
+    @JvmField @PropertyName("stock_qty")
+    val stockQty: Long? = 0,
 
 ) : Parcelable {
-    constructor() : this("", 0, "", listOf(), "", "", 0.0, 0.0, false, "", "")
+    constructor() : this("", 0, "", listOf(), "", "", 0, 0, false, "", "", 0)
 }

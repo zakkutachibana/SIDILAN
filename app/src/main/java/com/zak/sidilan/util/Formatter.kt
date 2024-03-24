@@ -46,14 +46,26 @@ object Formatter {
         })
     }
 
-    fun addThousandSeparatorTextView(number: Double): String {
+    fun addThousandSeparatorTextView(number: Long): String {
         val formatter = NumberFormat.getNumberInstance(Locale.getDefault())
         return formatter.format(number).replace(",", ".")
     }
 
-    fun convertDateFormat(inputDate: String?): String? {
+    fun convertDateFirebaseToDisplay(inputDate: String?): String? {
         val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+        val date = inputDate?.let { inputFormat.parse(it) }
+        return date?.let { outputFormat.format(it) }
+    }
+    fun convertDateAPIToDisplay(inputDate: String?): String? {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+        val date = inputDate?.let { inputFormat.parse(it) }
+        return date?.let { outputFormat.format(it) }
+    }
+    fun convertDateAPIToFirebase(inputDate: String?): String? {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val date = inputDate?.let { inputFormat.parse(it) }
         return date?.let { outputFormat.format(it) }
     }

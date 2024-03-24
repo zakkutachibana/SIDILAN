@@ -72,6 +72,9 @@ data class VolumeInfo(
 	@field:SerializedName("title")
 	val title: String? = null,
 
+    @field:SerializedName("subtitle")
+	val subtitle: String? = null,
+
 	@field:SerializedName("imageLinks")
 	val imageLinks: ImageLinks? = null,
 

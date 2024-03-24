@@ -6,6 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
+
     private const val BASE_URL = "https://www.googleapis.com/books/v1/"
     private const val API_KEY = "YOUR_API_KEY_HERE"
 

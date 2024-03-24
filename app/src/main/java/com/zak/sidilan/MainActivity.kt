@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -16,7 +15,7 @@ import com.zak.sidilan.databinding.ActivityMainBinding
 import com.zak.sidilan.ui.executivemenus.ExecutiveMenusActivity
 import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
 import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
-import com.zak.sidilan.util.ModalBottomSheet
+import com.zak.sidilan.util.ModalBottomSheetAction
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,8 +55,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setAction() {
         binding.fab.setOnClickListener {
-            val modalBottomSheet = ModalBottomSheet(1, null)
-            modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+            val modalBottomSheetAction = ModalBottomSheetAction(1, null, this)
+            modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
         }
     }
 

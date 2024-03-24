@@ -97,6 +97,14 @@ dependencies {
 
     //OkHttp
     implementation("com.squareup.okhttp3:logging-interceptor:4.2.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+
+    //Coil
+    implementation("io.coil-kt:coil:2.6.0")
+
+    //Koin
+    implementation("io.insert-koin:koin-android:3.5.0")
+
 
 
 }

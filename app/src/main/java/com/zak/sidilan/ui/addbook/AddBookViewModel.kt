@@ -3,85 +3,70 @@ package com.zak.sidilan.ui.addbook
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ServerValue
-import com.zak.sidilan.BuildConfig
 import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.GoogleBooksResponse
-import com.zak.sidilan.data.entities.Logs
-import com.zak.sidilan.data.retrofit.ApiConfig
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.zak.sidilan.data.repositories.BookRepository
+import com.zak.sidilan.util.SingleLiveEvent
+import org.koin.dsl.module
 
-class AddBookViewModel : ViewModel() {
-    private var database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private var reference: DatabaseReference = database.reference.child("books")
+val addBookViewModelModule = module {
+    factory { AddBookViewModel(get()) }
+}
+class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
+
     private val _addStatus = MutableLiveData<String>()
     val toastMessage: LiveData<String>
         get() = _addStatus
+
+    private val _bookByIsbn = SingleLiveEvent<GoogleBooksResponse>()
+    val bookByIsbn: LiveData<GoogleBooksResponse>
+        get() = _bookByIsbn
+
+    private val _bookDetail = MutableLiveData<Book?>()
+    val bookDetail: MutableLiveData<Book?> get() = _bookDetail
     fun saveBookToFirebase(
         isbn: Long,
         title: String,
         authors: List<String>,
         genre: String,
         publishedDate: String,
-        printPrice: Double,
-        sellPrice: Double,
+        printPrice: Long,
+        sellPrice: Long,
         isPerpetual: Boolean,
         startContractDate: String?,
         endContractDate: String?,
         createdBy: String,
-        callback: (Boolean) -> Unit
+        callback: (Boolean, String?) -> Unit
     ) {
-        val id = reference.push().key ?: return
-        val createdAt = ServerValue.TIMESTAMP
-
-        val book = Book(
-            id, isbn, title, authors, genre, publishedDate,
-            printPrice, sellPrice, isPerpetual, startContractDate, endContractDate
-        )
-        val logs = Logs(createdBy, createdAt)
-
-        val bookMap = mutableMapOf<String, Any>()
-        bookMap["book"] = book
-        bookMap["logs"] = logs
-
-        reference.child(id).setValue(bookMap).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                _addStatus.value = "Added book successfully"
-                callback(true)
+        repository.saveBookToFirebase(
+            isbn, title, authors, genre, publishedDate, printPrice, sellPrice,
+            isPerpetual, startContractDate, endContractDate, createdBy
+        ) { isSuccess, message ->
+            if (isSuccess) {
+                _addStatus.postValue("Added book successfully")
             } else {
-                _addStatus.value = "Failed to add book: ${task.exception?.message}"
-                callback(false)
+                _addStatus.postValue("Failed to add book: $message")
             }
+            callback(isSuccess, message)
         }
     }
 
     fun searchBookByISBN(isbn: String) {
-        val call = ApiConfig.instance.getBookByIsbn(isbn, BuildConfig.GOOGLE_BOOKS_API_KEY)
-        call.enqueue(object : Callback<GoogleBooksResponse> {
-            override fun onResponse(
-                call: Call<GoogleBooksResponse>,
-                response: Response<GoogleBooksResponse>
-            ) {
-                if (response.isSuccessful) {
-                    when (response.body()?.totalItems) {
-                        0 -> _addStatus.value = "Buku tidak ditemukan di Google Books!"
-                        else -> {
-                            val book = response.body()
-                        }
-
-                    }
-                } else {
-                    // Handle error
-                }
+        repository.searchBookByISBN(isbn) { response ->
+            if (response.totalItems == 0) {
+                _addStatus.postValue("Book not found on Google Books!")
+            } else {
+                _bookByIsbn.postValue(response)
             }
+        }
+    }
 
-            override fun onFailure(call: Call<GoogleBooksResponse>, t: Throwable) {
-                // Handle failure
-            }
-        })
+
+
+    fun getBookDetailById(bookId: String) {
+        _bookDetail.value = null // Optional: Clear previous value before loading new data
+        repository.getBookDetailById(bookId).observeForever { book ->
+            _bookDetail.value = book
+        }
     }
 }

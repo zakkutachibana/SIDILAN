@@ -1,4 +1,4 @@
-package com.zak.sidilan.ui.addbook
+package com.zak.sidilan.ui.scan
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -22,19 +22,32 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.zak.sidilan.R
-import com.zak.sidilan.databinding.ActivityAddBookByScanBinding
+import com.zak.sidilan.data.entities.VolumeInfo
+import com.zak.sidilan.databinding.ActivityScanBinding
+import com.zak.sidilan.util.ModalBottomSheetView
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.dsl.module
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+
 @ExperimentalGetImage
-class AddBookByScanActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityAddBookByScanBinding
+val scanActivityModule = module {
+    factory { ScanActivity() }
+}
+
+@ExperimentalGetImage
+class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListener {
+    private lateinit var binding: ActivityScanBinding
     private lateinit var cameraExecutor: ExecutorService
+    private var type: Int = 0
+    private val viewModel: ScanViewModel by viewModel()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddBookByScanBinding.inflate(layoutInflater)
+        binding = ActivityScanBinding.inflate(layoutInflater)
         setupView()
-        setupAction()
+        setupViewModel()
         setContentView(binding.root)
 
         if (allPermissionsGranted()) {
@@ -42,7 +55,7 @@ class AddBookByScanActivity : AppCompatActivity() {
         } else {
             requestPermissions()
         }
-
+        type = intent.getIntExtra("type",0)
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
@@ -50,22 +63,24 @@ class AddBookByScanActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = getString(R.string.title_scan_isbn)
-
-
     }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                finish()
-                return true
+
+    private fun setupViewModel() {
+        viewModel.toastMessage.observe(this) {
+            if (it == "Book not found on Google Books!") {
+                startCamera()
             }
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
         }
-        return super.onOptionsItemSelected(item)
     }
-    private fun setupAction() {
-
+    override fun onButtonClicked(volumeInfo: VolumeInfo?) {
+        Toast.makeText(this, "clicked action", Toast.LENGTH_SHORT).show()
     }
 
+    override fun onDismissed() {
+        Toast.makeText(this, "Dismissed", Toast.LENGTH_SHORT).show()
+        startCamera()
+    }
     private val activityResultLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions())
@@ -122,7 +137,9 @@ class AddBookByScanActivity : AppCompatActivity() {
 
 
     }
+
     private fun processImageProxy(barcodeScanner: BarcodeScanner, imageProxy: ImageProxy) {
+
         imageProxy.image?.let { image ->
             val inputImage =
                 InputImage.fromMediaImage(
@@ -132,12 +149,17 @@ class AddBookByScanActivity : AppCompatActivity() {
 
             barcodeScanner.process(inputImage)
                 .addOnSuccessListener { barcodeList ->
-                    val barcode = barcodeList.getOrNull(0)
-                    // `rawValue` is the decoded value of the barcode
-                    barcode?.rawValue?.let { value ->
-                        // update our textView to show the decoded value
-                        Toast.makeText(this, value, Toast.LENGTH_SHORT).show()
+                    if (barcodeList.isNotEmpty()) {
+                        val barcode = barcodeList[0]
+                        val value = barcode.rawValue ?: ""
+                        stopCamera()
+                        when (type) {
+                            //type 1: AddBook from ISBN
+                            1 -> {
+                                getBookByIsbn(value)
+                            }
 
+                        }
                     }
                 }
                 .addOnFailureListener {
@@ -154,7 +176,14 @@ class AddBookByScanActivity : AppCompatActivity() {
                 }
         }
     }
-
+    private fun stopCamera() {
+        // You can unbind all use cases to stop the camera
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+            cameraProvider.unbindAll()
+        }, ContextCompat.getMainExecutor(this))
+    }
     private fun requestPermissions() {
         activityResultLauncher.launch(REQUIRED_PERMISSIONS)
     }
@@ -163,6 +192,25 @@ class AddBookByScanActivity : AppCompatActivity() {
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun getBookByIsbn(isbn: String) {
+        viewModel.searchBookByISBN(isbn)
+        viewModel.bookByIsbn.observe(this) { book ->
+            val modalBottomSheetView = ModalBottomSheetView(1, book)
+            modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
+            modalBottomSheetView.setBottomSheetListener(this)
+        }
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
     override fun onDestroy() {
         super.onDestroy()
         cameraExecutor.shutdown()
@@ -180,4 +228,5 @@ class AddBookByScanActivity : AppCompatActivity() {
                 }
             }.toTypedArray()
     }
+
 }
