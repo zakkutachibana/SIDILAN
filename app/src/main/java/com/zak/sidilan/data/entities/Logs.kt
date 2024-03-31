@@ -3,11 +3,14 @@ package com.zak.sidilan.data.entities
 import android.os.Parcelable
 import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class Logs(
     @JvmField @PropertyName("created_by")
     val createdBy: String,
     @JvmField @PropertyName("created_at")
-    val createdAt: MutableMap<String, String>,
-) : Parcelable
+    val createdAt: @RawValue Any?,
+) : Parcelable {
+    constructor() : this("", 0)
+}

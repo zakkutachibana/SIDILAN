@@ -14,14 +14,23 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
-import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.databinding.LayoutBottomSheetActionBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
+import com.zak.sidilan.ui.bookdetail.BookDetailActivity
+import com.zak.sidilan.ui.bookdetail.BookDetailViewModel
 import com.zak.sidilan.ui.scan.ScanActivity
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.dsl.module
 
-class ModalBottomSheetAction(private val type: Number, private val book: Book?, private val attachedActivity: Activity) : BottomSheetDialogFragment() {
+
+val modalBottomSheetActionModule = module {
+    factory { ModalBottomSheetAction(get(), get(), get()) }
+}
+class ModalBottomSheetAction(private val type: Number, private val bookDetail: BookDetail?, private val attachedActivity: Activity) : BottomSheetDialogFragment() {
 
     private lateinit var binding: LayoutBottomSheetActionBinding
+    private val viewModel: BookDetailViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,11 +71,9 @@ class ModalBottomSheetAction(private val type: Number, private val book: Book?, 
                 binding.ivItem2.setImageResource(R.drawable.ic_delete)
 
                 binding.item1.setOnClickListener {
-                    Toast.makeText(context, "Reserved for Edit", Toast.LENGTH_SHORT).show()
-                    // Code to start AddBookActivity in update mode
                     val intent = Intent(context, AddBookActivity::class.java)
                     intent.putExtra("is_update_mode", true) // Set the update mode flag to true
-                    intent.putExtra("book_id", book?.id) // Pass the ID of the book to be updated
+                    intent.putExtra("book_id", bookDetail?.book?.id) // Pass the ID of the book to be updated
                     startActivity(intent)
                     dismiss()
                 }
@@ -78,7 +85,7 @@ class ModalBottomSheetAction(private val type: Number, private val book: Book?, 
                         .setTitle(resources.getString(R.string.title_delete_book))
                         .setView(layout)
                         .setIcon(R.drawable.ic_delete)
-                        .setMessage(resources.getString(R.string.will_be_deleted, "${book?.title}"))
+                        .setMessage(resources.getString(R.string.will_be_deleted, "${bookDetail?.book?.title}"))
                         .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                             dialog.dismiss()
                         }
@@ -86,14 +93,21 @@ class ModalBottomSheetAction(private val type: Number, private val book: Book?, 
                         .show()
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                         val userInput = editText.text.toString()
-                        if (userInput == book?.title) {
-                            dialog.dismiss()
-                            attachedActivity.finish()
+                        if (userInput == bookDetail?.book?.title) {
+                            viewModel.deleteBookById(bookDetail.book.id) { isSuccess, message ->
+                                if (isSuccess) {
+                                    Toast.makeText(requireContext(), "Book deleted successfully", Toast.LENGTH_SHORT).show()
+                                    dialog.dismiss()
+                                    dismiss()
+                                    attachedActivity.finish()
+                                } else {
+                                    Toast.makeText(requireContext(), "Failed to delete book: $message", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         } else {
                             editTextLayout.error = "Judul buku tidak sesuai!"
                         }
                     }
-                    dismiss()
                 }
             }
         }

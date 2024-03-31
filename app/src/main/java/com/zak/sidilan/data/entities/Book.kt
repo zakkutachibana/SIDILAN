@@ -30,3 +30,6 @@ data class Book(
 ) : Parcelable {
     constructor() : this("", 0, "", listOf(), "", "", 0, 0, false, "", "", 0)
 }
+
+data class BookDetail(val book: Book?, val logs: Logs?)
+

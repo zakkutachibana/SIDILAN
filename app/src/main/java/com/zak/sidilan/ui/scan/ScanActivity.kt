@@ -1,6 +1,7 @@
 package com.zak.sidilan.ui.scan
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +25,8 @@ import com.google.mlkit.vision.common.InputImage
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityScanBinding
+import com.zak.sidilan.ui.addbook.AddBookActivity
+import com.zak.sidilan.ui.bookdetail.BookDetailActivity
 import com.zak.sidilan.util.ModalBottomSheetView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
@@ -74,7 +77,10 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         }
     }
     override fun onButtonClicked(volumeInfo: VolumeInfo?) {
-        Toast.makeText(this, "clicked action", Toast.LENGTH_SHORT).show()
+        val intent = Intent(baseContext, AddBookActivity::class.java)
+        intent.putExtra("volume_info", volumeInfo)
+        startActivity(intent)
+        finish()
     }
 
     override fun onDismissed() {

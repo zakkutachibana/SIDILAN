@@ -1,6 +1,7 @@
 package com.zak.sidilan.util
 
 import android.app.Application
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.zak.sidilan.data.repositories.bookRepositoryModule
 import com.zak.sidilan.ui.addbook.addBookActivityModule
 import com.zak.sidilan.ui.addbook.addBookViewModelModule
@@ -15,6 +16,7 @@ import org.koin.core.context.startKoin
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        AndroidThreeTen.init(this)
         startKoin {
             androidLogger()
             androidContext(this@MyApplication)
@@ -26,6 +28,7 @@ class MyApplication : Application() {
                 scanViewModelModule,
                 bookDetailActivityModule,
                 bookDetailViewModelModule,
+                modalBottomSheetActionModule,
                 )
         }
     }

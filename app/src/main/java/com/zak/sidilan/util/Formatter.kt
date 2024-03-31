@@ -1,18 +1,17 @@
 package com.zak.sidilan.util
 
-import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import androidx.annotation.RequiresApi
+import kotlinx.parcelize.RawValue
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Locale
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.format.DateTimeFormatter
 
 object Formatter {
 
@@ -46,41 +45,54 @@ object Formatter {
         })
     }
 
-    fun addThousandSeparatorTextView(number: Long): String {
-        val formatter = NumberFormat.getNumberInstance(Locale.getDefault())
-        return formatter.format(number).replace(",", ".")
+    fun addThousandSeparatorTextView(number: Long?): String {
+        return if (number != null) {
+            val formatter = NumberFormat.getNumberInstance(Locale.getDefault())
+            formatter.format(number).replace(",", ".")
+        } else ""
     }
 
     fun convertDateFirebaseToDisplay(inputDate: String?): String? {
-        val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-        val date = inputDate?.let { inputFormat.parse(it) }
-        return date?.let { outputFormat.format(it) }
+        return if (inputDate != null) {
+            val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+            val date = inputDate.let { inputFormat.parse(it) }
+            date?.let { outputFormat.format(it) }
+        } else ""
+
     }
     fun convertDateAPIToDisplay(inputDate: String?): String? {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-        val date = inputDate?.let { inputFormat.parse(it) }
-        return date?.let { outputFormat.format(it) }
+        return if (inputDate != null) {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+            val date = inputDate.let { inputFormat.parse(it) }
+            date?.let { outputFormat.format(it) }
+        } else ""
+
     }
     fun convertDateAPIToFirebase(inputDate: String?): String? {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val date = inputDate?.let { inputFormat.parse(it) }
-        return date?.let { outputFormat.format(it) }
+        return if (inputDate != null) {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val date = inputDate.let { inputFormat.parse(it) }
+            date?.let { outputFormat.format(it) }
+        } else ""
+
     }
 
     fun getRawValue(editText: EditText): String {
         return editText.text.toString().replace("[.,]".toRegex(), "")
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun convertUTCToLocal(timestamp: Long): String {
-        val instant = Instant.ofEpochMilli(timestamp)
-        val zoneId = ZoneId.of("Asia/Jakarta") // Example: "America/New_York"
-        val zonedDateTime = instant.atZone(zoneId)
-        val formatter = DateTimeFormatter.ofPattern("HH:mm:ss dd-MM-yyyy")
-        return zonedDateTime.format(formatter)
+    fun convertUTCToLocal(timestamp: @RawValue Any?): String {
+        return if (timestamp != null) {
+            val instant = Instant.ofEpochMilli(timestamp.toString().toLong())
+            val zoneId = ZoneId.of("Asia/Jakarta") // Example: "America/New_York"
+            val zonedDateTime = instant.atZone(zoneId)
+            val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+            zonedDateTime.format(formatter)
+        } else ""
+
     }
 
 }

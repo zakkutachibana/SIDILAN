@@ -246,6 +246,24 @@
             app:layout_constraintTop_toBottomOf="@id/tv_contract_title"
             tools:layout_editor_absoluteX="16dp" />
 
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_contract_value" />
+
+        <include
+            android:id="@+id/user_card"
+            layout="@layout/layout_user_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/divider4"
+            android:layout_marginTop="16dp"
+            tools:layout_editor_absoluteX="16dp" />
+
         <Button
             android:id="@+id/btn_edit_delete"
             style="@style/Widget.Material3.Button.TonalButton"
@@ -255,7 +273,9 @@
             android:layout_marginTop="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_contract_value" />
+            app:layout_constraintTop_toBottomOf="@+id/user_card" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

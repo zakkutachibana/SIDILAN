@@ -105,6 +105,8 @@ dependencies {
     //Koin
     implementation("io.insert-koin:koin-android:3.5.0")
 
+    //Android ThreeTen
+    implementation("com.jakewharton.threetenabp:threetenabp:1.3.0")
 
 
 }

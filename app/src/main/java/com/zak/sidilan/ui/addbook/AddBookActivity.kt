@@ -1,6 +1,7 @@
 package com.zak.sidilan.ui.addbook
 
 import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,6 +31,8 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
     private lateinit var binding: ActivityAddBookBinding
     private val viewModel: AddBookViewModel by viewModel()
     private var isUpdateMode = false // Flag to indicate whether it's update mode
+    private var bookId: String = "" // Flag to indicate whether it's update mode
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,18 +42,27 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         setContentView(binding.root)
 
         isUpdateMode = intent.getBooleanExtra("is_update_mode", false)
+        bookId = intent.getStringExtra("book_id").toString()
+
         setView()
         setViewModel()
         setAction()
         setupListeners()
 
         if (isUpdateMode) {
-            val bookId = intent.getStringExtra("book_id")
-            if (bookId != null) {
-                loadBookData(bookId)
-            } else {
-                // Handle error
-            }
+            loadBookData(bookId)
+        }
+
+        val volumeInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("volume_info", VolumeInfo::class.java)
+        } else {
+            intent.getParcelableExtra<VolumeInfo>("volume_info")
+        }
+
+        if (volumeInfo != null) {
+            setBookData(volumeInfo)
+        } else {
+            // Handle error
         }
     }
 
@@ -62,21 +74,34 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
 
     private fun loadBookData(bookId: String) {
         viewModel.getBookDetailById(bookId)
-        viewModel.bookDetail.observe(this) { book ->
-            binding.edIsbn.setText(book?.isbn.toString())
-            binding.edBookTitle.setText(book?.title.toString())
-            binding.edPublishedDate.setText(book?.publishedDate.toString())
-            binding.edAuthors.setText(book?.authors?.joinToString("\n"))
-            binding.edGenre.setText(book?.genre.toString())
-            binding.edPrintPrice.setText((book?.printPrice ?: 0).toString())
-            binding.edSellPrice.setText((book?.sellPrice ?: 0).toString())
-            if (book?.isPerpetual == false) {
-                binding.edStartContractDate.setText(book.startContractDate.toString())
-                binding.edEndContractDate.setText(book.endContractDate.toString())
+        viewModel.bookDetail.observe(this) { bookDetail ->
+            binding.edIsbn.setText(bookDetail?.book?.isbn.toString())
+            binding.edBookTitle.setText(bookDetail?.book?.title.toString())
+            binding.edPublishedDate.setText(bookDetail?.book?.publishedDate.toString())
+            binding.edAuthors.setText(bookDetail?.book?.authors?.joinToString("\n"))
+            binding.edGenre.setText(bookDetail?.book?.genre.toString())
+            binding.edPrintPrice.setText((bookDetail?.book?.printPrice ?: 0).toString())
+            binding.edSellPrice.setText((bookDetail?.book?.sellPrice ?: 0).toString())
+            if (bookDetail?.book?.isPerpetual == false) {
+                binding.edStartContractDate.setText(bookDetail.book.startContractDate.toString())
+                binding.edEndContractDate.setText(bookDetail.book.endContractDate.toString())
             } else {
                 binding.cbForever.isChecked = true
             }
         }
+    }
+
+    private fun setBookData(volumeInfo: VolumeInfo?) {
+        for (identifier in volumeInfo?.industryIdentifiers!!) {
+            if (identifier?.type == "ISBN_13") {
+                val isbn13 = identifier.identifier
+                binding.edIsbn.setText(isbn13)
+            }
+        }
+        binding.edBookTitle.setText(volumeInfo.title.toString())
+        binding.edPublishedDate.setText(Formatter.convertDateAPIToFirebase(volumeInfo.publishedDate.toString()))
+        binding.edAuthors.setText(volumeInfo.authors?.joinToString("\n"))
+        binding.edGenre.setText(volumeInfo.categories?.getOrNull(0).toString())
     }
 
 
@@ -140,7 +165,26 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         binding.btnAddBook.setOnClickListener {
             if (isValid()) {
                 binding.btnAddBook.isEnabled = false
-                saveBook()
+
+                val isbn = binding.edIsbn.text.toString().toLong()
+                val title = binding.edBookTitle.text.toString()
+                val authors = binding.edAuthors.text.toString().split("\n").map { it.trim() }
+                    .filter { it.isNotEmpty() }
+                    .map { it }
+                val genre = binding.edGenre.text.toString()
+                val publishedDate = binding.edPublishedDate.text.toString()
+                val printPrice = Formatter.getRawValue(binding.edPrintPrice).toLong()
+                val sellPrice = Formatter.getRawValue(binding.edSellPrice).toLong()
+                val isPerpetual = binding.cbForever.isChecked
+                val startContractDate = binding.edStartContractDate.text.toString().ifEmpty { null }
+                val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
+                val createdBy = binding.userCard.tvUserName.text.toString()
+
+                if (isUpdateMode) {
+                    updateBook(bookId, isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
+                } else {
+                    saveBook(isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy)
+                }
             }
         }
     }
@@ -166,36 +210,33 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         Toast.makeText(this, "Dismissed", Toast.LENGTH_SHORT).show()
     }
 
-    private fun saveBook() {
-        val isbn = binding.edIsbn.text.toString().toLong()
-        val title = binding.edBookTitle.text.toString()
-        val authors = binding.edAuthors.text.toString().split("\n").map { it.trim() }
-            .filter { it.isNotEmpty() }
-            .map { it }
-        val genre = binding.edGenre.text.toString()
-        val publishedDate = binding.edPublishedDate.text.toString()
-        val printPrice = Formatter.getRawValue(binding.edPrintPrice).toLong()
-        val sellPrice = Formatter.getRawValue(binding.edSellPrice).toLong()
-        val isPerpetual = binding.cbForever.isChecked
-        val startContractDate = binding.edStartContractDate.text.toString().ifEmpty { null }
-        val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
-        val createdBy = binding.userCard.tvUserName.text.toString()
-
+    private fun saveBook(isbn: Long, title: String, authors: List<String>, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?, createdBy: String) {
         viewModel.saveBookToFirebase(
             isbn, title, authors, genre, publishedDate,
             printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy
         ) { success, message ->
             binding.btnAddBook.isEnabled = true
-
             if (success) {
                 Toast.makeText(this, "Book added successfully", Toast.LENGTH_SHORT).show()
-                // Optionally, you can finish the activity here or navigate to another screen
                 finish()
             } else {
                 Toast.makeText(this, "Failed to add book: $message", Toast.LENGTH_SHORT).show()
             }
         }
-
+    }
+    private fun updateBook(bookId: String, isbn: Long, title: String, authors: List<String>, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?) {
+        viewModel.updateBookFirebase(
+            bookId, isbn, title, authors, genre, publishedDate,
+            printPrice, sellPrice, isPerpetual, startContractDate, endContractDate
+        ) { success, message ->
+            binding.btnAddBook.isEnabled = true
+            if (success) {
+                Toast.makeText(this, "Book updated successfully", Toast.LENGTH_SHORT).show()
+                finish()
+            } else {
+                Toast.makeText(this, "Failed to update book: $message", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun isValid(): Boolean {

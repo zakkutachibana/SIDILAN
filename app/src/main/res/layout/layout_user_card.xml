@@ -39,10 +39,11 @@
                 app:shapeAppearanceOverlay="@style/roundedImageView" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
                 app:layout_constraintTop_toTopOf="@+id/shapeableImageView">
 
@@ -52,15 +53,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Dicatat oleh"
-                    android:textSize="18sp"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
                     app:layout_constraintTop_toTopOf="@+id/shapeableImageView" />
 
                 <TextView
                     android:id="@+id/tv_user_name"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="4dp"

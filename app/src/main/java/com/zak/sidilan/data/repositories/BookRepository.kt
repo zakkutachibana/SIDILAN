@@ -9,6 +9,7 @@ import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.zak.sidilan.BuildConfig
 import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.GoogleBooksResponse
 import com.zak.sidilan.data.entities.Logs
 import com.zak.sidilan.data.retrofit.ApiConfig
@@ -59,6 +60,35 @@ class BookRepository {
             }
         }
     }
+    fun updateBookFirebase(
+        bookId: String,
+        isbn: Long,
+        title: String,
+        authors: List<String>,
+        genre: String,
+        publishedDate: String,
+        printPrice: Long,
+        sellPrice: Long,
+        isPerpetual: Boolean,
+        startContractDate: String?,
+        endContractDate: String?,
+        callback: (Boolean, String?) -> Unit
+    ) {
+        val book = Book(
+            bookId, isbn, title, authors, genre, publishedDate, printPrice,
+            sellPrice, isPerpetual, startContractDate, endContractDate
+        )
+        val bookMap = mutableMapOf<String, Any>()
+        bookMap["book"] = book
+
+        reference.child(bookId).updateChildren(bookMap).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                callback(true, null)
+            } else {
+                callback(false, task.exception?.message)
+            }
+        }
+    }
 
     fun searchBookByISBN(isbn: String, callback: (GoogleBooksResponse) -> Unit) {
         val call = ApiConfig.instance.getBookByIsbn("isbn:$isbn", BuildConfig.GOOGLE_BOOKS_API_KEY)
@@ -82,14 +112,17 @@ class BookRepository {
         })
     }
 
-    fun getBookDetailById(bookId: String): LiveData<Book?> {
-        val bookDetailLiveData = MutableLiveData<Book?>()
+    fun getBookDetailById(bookId: String): LiveData<BookDetail?> {
+        val bookDetailLiveData = MutableLiveData<BookDetail?>()
 
         val bookReference = reference.child(bookId)
         bookReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val book = snapshot.child("book").getValue(Book::class.java)
-                bookDetailLiveData.value = book
+                val logs = snapshot.child("logs").getValue(Logs::class.java)
+
+                val bookDetail = BookDetail(book, logs)
+                bookDetailLiveData.value = bookDetail
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -98,5 +131,15 @@ class BookRepository {
         })
 
         return bookDetailLiveData
+    }
+
+    fun deleteBookById(bookId: String, callback: (Boolean, String?) -> Unit) {
+        reference.child(bookId).removeValue().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                callback(true, null)
+            } else {
+                callback(false, task.exception?.message)
+            }
+        }
     }
 }
