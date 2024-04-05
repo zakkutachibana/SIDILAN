@@ -1,4 +1,4 @@
-package com.zak.sidilan.util
+package com.zak.sidilan.ui.bottomsheets
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -17,7 +17,6 @@ import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.databinding.LayoutBottomSheetActionBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
-import com.zak.sidilan.ui.bookdetail.BookDetailActivity
 import com.zak.sidilan.ui.bookdetail.BookDetailViewModel
 import com.zak.sidilan.ui.scan.ScanActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel

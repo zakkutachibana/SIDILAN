@@ -7,7 +7,6 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityBookInTrxBinding
-import com.zak.sidilan.util.BookInTrxPagerAdapter
 
 class BookInTrxActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBookInTrxBinding

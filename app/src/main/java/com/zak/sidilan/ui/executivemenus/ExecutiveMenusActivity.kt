@@ -6,10 +6,7 @@ import android.view.MenuItem
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.zak.sidilan.R
-import com.zak.sidilan.databinding.ActivityBookInTrxBinding
 import com.zak.sidilan.databinding.ActivityExecutiveMenusBinding
-import com.zak.sidilan.util.BookInTrxPagerAdapter
-import com.zak.sidilan.util.ExecutiveMenusPagerAdapter
 
 class ExecutiveMenusActivity : AppCompatActivity() {
     private lateinit var binding: ActivityExecutiveMenusBinding

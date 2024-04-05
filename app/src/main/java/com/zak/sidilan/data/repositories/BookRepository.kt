@@ -26,6 +26,25 @@ class BookRepository {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val reference = database.reference.child("books")
 
+    fun getAllBooks(): MutableLiveData<ArrayList<Book>> {
+        val bookList = MutableLiveData<ArrayList<Book>>()
+
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val books = ArrayList<Book>()
+                for (eachBook in snapshot.children) {
+                    val book = eachBook.child("book").getValue(Book::class.java)
+                    book?.let { books.add(it) }
+                }
+                bookList.value = books
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+        return bookList
+    }
     fun saveBookToFirebase(
         isbn: Long,
         title: String,
@@ -141,5 +160,41 @@ class BookRepository {
                 callback(false, task.exception?.message)
             }
         }
+    }
+
+    fun getBookCount(): MutableLiveData<Long?> {
+        val bookCount = MutableLiveData<Long?>()
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                bookCount.value = dataSnapshot.childrenCount
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+        return bookCount
+    }
+
+    fun getTotalStockQuantity(): MutableLiveData<Long?> {
+        val totalStockQty = MutableLiveData<Long?>()
+
+        reference.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var sumStockQty: Long = 0
+
+                for (childSnapshot in dataSnapshot.children) {
+                    val stockQty = childSnapshot.child("book").child("stock_qty").getValue(Long::class.java)
+                    stockQty?.let { sumStockQty += it }
+                }
+                totalStockQty.postValue(sumStockQty)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+        return totalStockQty
     }
 }

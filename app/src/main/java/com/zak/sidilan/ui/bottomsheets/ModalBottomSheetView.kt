@@ -1,17 +1,16 @@
-package com.zak.sidilan.util
+package com.zak.sidilan.ui.bottomsheets
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.GoogleBooksResponse
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.LayoutBottomSheetViewBinding
+import com.zak.sidilan.util.Formatter
 
 class ModalBottomSheetView(private val type: Number, private val book: GoogleBooksResponse?) : BottomSheetDialogFragment() {
 
@@ -39,7 +38,9 @@ class ModalBottomSheetView(private val type: Number, private val book: GoogleBoo
                 val fullTitle = if (subtitle != "null" && subtitle.isNotEmpty()) "$title: $subtitle" else title
                 binding.tvTitleBookView.text = fullTitle
                 binding.tvAuthorBookView.text = volumeInfo?.authors?.joinToString(", ")
-                binding.tvPublishedDateView.text = getString(R.string.published_at, Formatter.convertDateAPIToDisplay(volumeInfo?.publishedDate))
+                binding.tvPublishedDateView.text = getString(R.string.published_at,
+                    Formatter.convertDateAPIToDisplay(volumeInfo?.publishedDate)
+                )
                 val imageUrlFromApi = volumeInfo?.imageLinks?.thumbnail
                 val trimmedImageUrl = imageUrlFromApi?.substringBefore("&img=1") + "&img=1"
                 binding.ivBookCoverView.load(trimmedImageUrl)
@@ -51,7 +52,9 @@ class ModalBottomSheetView(private val type: Number, private val book: GoogleBoo
                     listener?.onDismissed()
                 }
             }
+            //Type 2: Search ISBN not found
             2 -> {
+
             }
         }
 

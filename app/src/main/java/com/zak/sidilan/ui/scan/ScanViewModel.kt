@@ -26,6 +26,7 @@ class ScanViewModel(private val repository: BookRepository) : ViewModel() {
         repository.searchBookByISBN(isbn) { response ->
             if (response.totalItems == 0) {
                 _addStatus.postValue("Book not found on Google Books!")
+
             } else {
                 _bookByIsbn.postValue(response)
             }

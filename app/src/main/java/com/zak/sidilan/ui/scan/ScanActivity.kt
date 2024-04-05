@@ -26,8 +26,7 @@ import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityScanBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
-import com.zak.sidilan.ui.bookdetail.BookDetailActivity
-import com.zak.sidilan.util.ModalBottomSheetView
+import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 import java.util.concurrent.ExecutorService
@@ -205,6 +204,7 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
             modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
             modalBottomSheetView.setBottomSheetListener(this)
         }
+        viewModel
 
     }
 

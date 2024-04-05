@@ -69,7 +69,11 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.4")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.4")
     implementation("androidx.annotation:annotation:1.6.0")
+
+    //Firebase
     implementation("com.google.firebase:firebase-database:20.3.0")
+    implementation("com.google.firebase:firebase-auth:22.3.1")
+    implementation("com.google.android.gms:play-services-auth:20.6.0")
 
     //CameraX
     val camerax_version = "1.2.2"

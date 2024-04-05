@@ -3,10 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginHorizontal="16dp">
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="8dp">
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:checkable="true"
@@ -25,7 +27,7 @@
             android:padding="16dp">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/shapeableImageView"
+                android:id="@+id/iv_profile_picture"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:background="@color/white"
@@ -42,10 +44,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_profile_picture"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
-                app:layout_constraintTop_toTopOf="@+id/shapeableImageView">
+                app:layout_constraintStart_toEndOf="@+id/iv_profile_picture"
+                app:layout_constraintTop_toTopOf="@+id/iv_profile_picture">
 
                 <TextView
                     android:id="@+id/tv_user_action"
@@ -56,8 +58,8 @@
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
-                    app:layout_constraintTop_toTopOf="@+id/shapeableImageView" />
+                    app:layout_constraintStart_toEndOf="@+id/iv_profile_picture"
+                    app:layout_constraintTop_toTopOf="@+id/iv_profile_picture" />
 
                 <TextView
                     android:id="@+id/tv_user_name"
@@ -67,7 +69,7 @@
                     android:layout_marginTop="4dp"
                     android:text="Surya Widjojo (Admin)"
                     android:textAppearance="?attr/textAppearanceBodyLarge"
-                    app:layout_constraintStart_toEndOf="@+id/shapeableImageView"
+                    app:layout_constraintStart_toEndOf="@+id/iv_profile_picture"
                     app:layout_constraintTop_toBottomOf="@+id/tv_user_action" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 

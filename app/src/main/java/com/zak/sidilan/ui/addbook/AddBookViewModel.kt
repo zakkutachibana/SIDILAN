@@ -3,7 +3,6 @@ package com.zak.sidilan.ui.addbook
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.GoogleBooksResponse
 import com.zak.sidilan.data.repositories.BookRepository
@@ -15,9 +14,9 @@ val addBookViewModelModule = module {
 }
 class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
 
-    private val _addStatus = MutableLiveData<String>()
+    private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String>
-        get() = _addStatus
+        get() = _toastMessage
 
     private val _bookByIsbn = SingleLiveEvent<GoogleBooksResponse>()
     val bookByIsbn: LiveData<GoogleBooksResponse>
@@ -71,7 +70,7 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
     fun searchBookByISBN(isbn: String) {
         repository.searchBookByISBN(isbn) { response ->
             if (response.totalItems == 0) {
-                _addStatus.postValue("Book not found on Google Books!")
+                _toastMessage.postValue("Book not found on Google Books!")
             } else {
                 _bookByIsbn.postValue(response)
             }

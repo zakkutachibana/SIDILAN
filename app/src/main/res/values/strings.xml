@@ -9,7 +9,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="message_log_out">Anda akan keluar dari Akun ini</string>
+    <string name="message_log_out">Anda akan keluar dari Akun ini. Lanjutkan?</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="search">Search</string>
@@ -35,6 +35,7 @@
     <string name="title_log_out">Keluar</string>
     <string name="title_manager">Manajer</string>
     <string name="title_other">Lainnya</string>
+    <string name="yes">Ya</string>
     <string name="title_profile">Profile</string>
     <string name="title_scan_isbn">Scan Barcode ISBN</string>
     <string name="title_staff">Staf</string>
@@ -50,8 +51,11 @@
     <string name="rp_price">Rp. %1$s</string>
     <string name="published_at">Terbit pada %1$s</string>
     <string name="by_at">%1$s \nPada %2$s</string>
+    <string name="book_count">%1$s judul</string>
+    <string name="total_stock_qty">%1$s buku</string>
     <string name="created_by">Ditambahkan oleh</string>
     <string name="will_be_deleted">Buku \"%1$s\" akan dihapus. Apakah anda yakin ingin menghapusnya? Ketik \"%1$s\" untuk menghapus buku.</string>
     <string name="forever_contract">Perjanjian Berlaku Selamanya</string>
+    <string name="default_web_client_id" />
 
 </resources>

@@ -2,12 +2,12 @@ package com.zak.sidilan.ui.bookdetail
 
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import coil.load
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityBookDetailBinding
 import com.zak.sidilan.util.Formatter
-import com.zak.sidilan.util.ModalBottomSheetAction
+import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
@@ -29,15 +29,13 @@ class BookDetailActivity : AppCompatActivity() {
         val bookId = intent.getStringExtra("bookId")
         if (bookId != null) {
             viewModel.getBookDetailById(bookId)
-            println("id: $bookId")
         }
-        setView()
-        setViewModel()
-        setAction()
-
+        setupView()
+        setupViewModel()
+        setupAction()
     }
 
-    private fun setAction() {
+    private fun setupAction() {
         binding.btnEditDelete.setOnClickListener { it ->
             if (it != null) {
                 viewModel.bookDetail.observe(this) {
@@ -48,13 +46,14 @@ class BookDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun setView() {
+    private fun setupView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = "Detail Buku"
+        binding.userCard.tvUserAction.text = getString(R.string.created_by)
     }
 
-    private fun setViewModel() {
+    private fun setupViewModel() {
         viewModel.bookDetail.observe(this) { bookDetail ->
             if (bookDetail != null) {
                 binding.tvBookTitleDetail.text = bookDetail.book?.title
@@ -78,27 +77,14 @@ class BookDetailActivity : AppCompatActivity() {
                 } else {
                     binding.tvContractValue.text = getString(R.string.contract_date_placeholder, Formatter.convertDateFirebaseToDisplay(bookDetail.book?.startContractDate), Formatter.convertDateFirebaseToDisplay(bookDetail.book?.endContractDate))
                 }
-                binding.userCard.tvUserAction.text = getString(R.string.created_by)
-                binding.userCard.tvUserName.text = getString(R.string.by_at, bookDetail.logs?.createdBy, Formatter.convertUTCToLocal(bookDetail.logs?.createdAt))
-            } else {
-                // Handle null case, for example:
-                // Clear UI fields or show a message indicating that the book was deleted
-                binding.tvBookTitleDetail.text = ""
-                // Clear other UI fields or show appropriate messages
+                viewModel.getUserById(bookDetail.logs?.createdBy.toString())
+                viewModel.user.observe(this) { user ->
+                    binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, Formatter.convertUTCToLocal(bookDetail.logs?.createdAt))
+                    binding.userCard.ivProfilePicture.load(user?.photoUrl)
+                }
             }
         }
-    }
 
-    fun deleteBook(bookId: String) {
-        viewModel.deleteBookById(bookId) { success, message ->
-            if (success) {
-                Toast.makeText(this, "Book deleted successfully", Toast.LENGTH_SHORT).show()
-                finish()
-            } else {
-                Toast.makeText(this, "Failed to add book: $message", Toast.LENGTH_SHORT).show()
-            }
-
-        }
     }
 
 

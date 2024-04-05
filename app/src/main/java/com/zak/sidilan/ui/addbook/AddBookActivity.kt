@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
 import com.google.android.material.textfield.TextInputLayout
@@ -18,7 +17,8 @@ import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityAddBookBinding
 import com.zak.sidilan.util.Formatter
-import com.zak.sidilan.util.ModalBottomSheetView
+import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetView
+import com.zak.sidilan.util.AuthManager
 import org.koin.dsl.module
 import java.util.Calendar
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -116,6 +116,10 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         }
         Formatter.addThousandSeparatorEditText(binding.edPrintPrice)
         Formatter.addThousandSeparatorEditText(binding.edSellPrice)
+
+        val currentUser = AuthManager.getCurrentUser()
+        binding.userCard.tvUserName.text = currentUser.displayName
+        binding.userCard.ivProfilePicture.load(currentUser.photoUrl)
     }
 
     private fun setAction() {
@@ -178,7 +182,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 val isPerpetual = binding.cbForever.isChecked
                 val startContractDate = binding.edStartContractDate.text.toString().ifEmpty { null }
                 val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
-                val createdBy = binding.userCard.tvUserName.text.toString()
+                val createdBy = AuthManager.getCurrentUser().id
 
                 if (isUpdateMode) {
                     updateBook(bookId, isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
