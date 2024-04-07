@@ -27,7 +27,7 @@
             android:name=".ui.users.UserDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.users.UserListActivity"
+            android:name=".ui.users.UserManagementActivity"
             android:exported="false" />
         <activity
             android:name=".ui.bookdetail.BookDetailActivity"

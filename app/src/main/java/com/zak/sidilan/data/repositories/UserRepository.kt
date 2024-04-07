@@ -4,10 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
-import com.zak.sidilan.data.entities.Book
-import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.User
+import com.zak.sidilan.data.entities.Whitelist
 import org.koin.dsl.module
 
 val userRepositoryModule = module {
@@ -15,12 +15,13 @@ val userRepositoryModule = module {
 }
 class UserRepository {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val reference = database.reference.child("users")
+    private val usersReference = database.reference.child("users")
+    private val whitelistReference = database.reference.child("whitelist")
 
     fun getAllUsers(): MutableLiveData<ArrayList<User>> {
         val userList = MutableLiveData<ArrayList<User>>()
 
-        reference.addValueEventListener(object : ValueEventListener {
+        usersReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val users = ArrayList<User>()
                 for (eachUser in snapshot.children) {
@@ -36,15 +37,36 @@ class UserRepository {
         })
         return userList
     }
+
+    fun getAllWhitelist(): MutableLiveData<ArrayList<Whitelist>> {
+        val whitelist = MutableLiveData<ArrayList<Whitelist>>()
+
+        whitelistReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val users = ArrayList<Whitelist>()
+                for (eachUser in snapshot.children) {
+                    val user = eachUser.getValue(Whitelist::class.java)
+                    user?.let { users.add(it) }
+                }
+                whitelist.value = users
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+        return whitelist
+    }
     fun saveUserToFirebase(
         userId: String,
         displayName: String?,
         email: String?,
         photoUrl: String?
     ): MutableLiveData<String?> {
-        val userReference = reference.child(userId)
+        val userReference = usersReference.child(userId)
         val status = MutableLiveData<String?>()
-        val userData = User(userId, displayName, email, photoUrl)
+        val joinedAt = ServerValue.TIMESTAMP
+        val userData = User(userId, displayName, "", email, photoUrl, "", joinedAt)
 
         userReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -81,7 +103,7 @@ class UserRepository {
     fun getUserById(userId: String): MutableLiveData<User?> {
         val userDetailLiveData = MutableLiveData<User?>()
 
-        val userReference = reference.child(userId)
+        val userReference = usersReference.child(userId)
         userReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val book = snapshot.getValue(User::class.java)
@@ -94,5 +116,23 @@ class UserRepository {
             }
         })
         return userDetailLiveData
+    }
+
+    fun addWhitelist(email: String, role: String, phone: String) : MutableLiveData<String?> {
+        val id = whitelistReference.push().key ?: ""
+        val whitelistData = Whitelist(email, role, phone)
+
+        val status = MutableLiveData<String?>()
+
+        whitelistReference.child(id).setValue(whitelistData)
+            .addOnSuccessListener {
+                // Data successfully inserted
+                status.value = "User added to whitelist: $email"
+            }
+            .addOnFailureListener { e ->
+                // Failed to insert data
+                status.value = "Error adding user to whitelist: $e"
+            }
+        return status
     }
 }

@@ -108,5 +108,12 @@ object Formatter {
         return originalUrl
     }
 
+    fun convertToInternationalFormat(phoneNumber: String): String {
+        // Assuming the local format has a leading '0' which needs to be removed
+        val cleanedPhoneNumber = phoneNumber.removePrefix("0")
+        // Adding the country code prefix
+        return "62$cleanedPhoneNumber"
+    }
+
 }
 

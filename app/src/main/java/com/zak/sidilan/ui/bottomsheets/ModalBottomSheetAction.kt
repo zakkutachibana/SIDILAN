@@ -19,6 +19,7 @@ import com.zak.sidilan.databinding.LayoutBottomSheetActionBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
 import com.zak.sidilan.ui.bookdetail.BookDetailViewModel
 import com.zak.sidilan.ui.scan.ScanActivity
+import com.zak.sidilan.ui.users.UserManagementViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
@@ -29,7 +30,8 @@ val modalBottomSheetActionModule = module {
 class ModalBottomSheetAction(private val type: Number, private val bookDetail: BookDetail?, private val attachedActivity: Activity) : BottomSheetDialogFragment() {
 
     private lateinit var binding: LayoutBottomSheetActionBinding
-    private val viewModel: BookDetailViewModel by viewModel()
+    private val bookDetailViewModel: BookDetailViewModel by viewModel()
+    private val userListViewModel: UserManagementViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -93,7 +95,7 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                         val userInput = editText.text.toString()
                         if (userInput == bookDetail?.book?.title) {
-                            viewModel.deleteBookById(bookDetail.book.id) { isSuccess, message ->
+                            bookDetailViewModel.deleteBookById(bookDetail.book.id) { isSuccess, message ->
                                 if (isSuccess) {
                                     Toast.makeText(requireContext(), "Book deleted successfully", Toast.LENGTH_SHORT).show()
                                     dialog.dismiss()
@@ -109,6 +111,7 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                     }
                 }
             }
+
         }
 
     }

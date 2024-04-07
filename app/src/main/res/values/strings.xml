@@ -57,5 +57,7 @@
     <string name="will_be_deleted">Buku \"%1$s\" akan dihapus. Apakah anda yakin ingin menghapusnya? Ketik \"%1$s\" untuk menghapus buku.</string>
     <string name="forever_contract">Perjanjian Berlaku Selamanya</string>
     <string name="default_web_client_id" />
+    <string name="add_whitelist_action">Masukkan informasi pengguna yang akan ditambahkan</string>
+    <string name="add_whitelist">Tambah Whitelist</string>
 
 </resources>

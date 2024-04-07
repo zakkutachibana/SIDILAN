@@ -62,4 +62,11 @@
         <item>Yayasan</item>
         <item>Lainnya</item>
     </string-array>
+
+    <string-array name="roles">
+        <item>Staf</item>
+        <item>Manajer</item>
+        <item>Direktur</item>
+        <item>Admin</item>
+    </string-array>
 </resources>

@@ -1,5 +1,6 @@
 package com.zak.sidilan.ui.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +14,7 @@ import coil.load
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.FragmentDashboardBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
+import com.zak.sidilan.ui.users.UserDetailActivity
 import com.zak.sidilan.util.AuthManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
@@ -79,6 +81,7 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setAction() {
+        val currentUser = AuthManager.getCurrentUser()
         binding.btnExpand.setOnClickListener {
             val expVis = if (binding.clExpand.visibility == View.GONE) {
                 binding.btnExpand.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_up, null)
@@ -88,6 +91,11 @@ class DashboardFragment : Fragment() {
                 View.GONE
             }
             binding.clExpand.visibility = expVis
+        }
+        binding.userCard.cardUser.setOnClickListener{
+            val intent = Intent(requireActivity(), UserDetailActivity::class.java)
+            intent.putExtra("userId", currentUser.id)
+            startActivity(intent)
         }
     }
     override fun onDestroyView() {

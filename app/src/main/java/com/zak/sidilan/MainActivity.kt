@@ -20,7 +20,8 @@ import com.zak.sidilan.ui.executivemenus.ExecutiveMenusActivity
 import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
 import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
 import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
-import com.zak.sidilan.ui.users.UserListActivity
+import com.zak.sidilan.ui.users.UserManagementActivity
+import com.zak.sidilan.ui.users.UserManagementViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -126,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.user_management -> {
-                    val intent = Intent(this, UserListActivity::class.java)
+                    val intent = Intent(this, UserManagementActivity::class.java)
                     startActivity(intent)
                 }
             }

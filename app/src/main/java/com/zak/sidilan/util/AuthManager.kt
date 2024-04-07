@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.zak.sidilan.data.entities.User
+import com.zak.sidilan.data.entities.Whitelist
 
 object AuthManager {
     private var currentUser: FirebaseUser? = null
@@ -20,8 +21,10 @@ object AuthManager {
         return User(
             currentUser?.uid.toString(),
             currentUser?.displayName,
+            "",
             currentUser?.email,
-            currentUser?.photoUrl.toString().replace("s96-c", "s300-c")
+            currentUser?.photoUrl.toString().replace("s96-c", "s300-c"),
+            "", 0
         )
     }
 }

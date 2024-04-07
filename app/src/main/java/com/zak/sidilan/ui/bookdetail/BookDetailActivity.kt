@@ -1,5 +1,6 @@
 package com.zak.sidilan.ui.bookdetail
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityBookDetailBinding
 import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
+import com.zak.sidilan.ui.users.UserDetailActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
@@ -44,8 +46,14 @@ class BookDetailActivity : AppCompatActivity() {
                 }
             }
         }
+        binding.userCard.cardUser.setOnClickListener {
+            viewModel.user.observe(this) { user ->
+                val intent = Intent(this, UserDetailActivity::class.java)
+                intent.putExtra("userId", user?.id)
+                startActivity(intent)
+            }
+        }
     }
-
     private fun setupView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
