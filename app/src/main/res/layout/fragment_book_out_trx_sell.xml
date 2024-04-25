@@ -81,7 +81,7 @@
             app:layout_constraintTop_toBottomOf="@+id/edl_sell_date" />
 
         <include
-            android:id="@+id/choose_book_card"
+            android:id="@+id/rv_book_in_print"
             layout="@layout/layout_choose_book_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
             android:hint="Harga Satuan"
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/choose_book_card"
+            app:layout_constraintTop_toBottomOf="@+id/rv_book_in_print"
             app:startIconDrawable="@drawable/ic_rupiah">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -129,7 +129,7 @@
             android:hint="Jumlah Buku"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/choose_book_card"
+            app:layout_constraintTop_toBottomOf="@+id/rv_book_in_print"
             app:startIconDrawable="@drawable/ic_number">
 
             <com.google.android.material.textfield.TextInputEditText

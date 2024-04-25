@@ -64,6 +64,7 @@ class BookDetailActivity : AppCompatActivity() {
     private fun setupViewModel() {
         viewModel.bookDetail.observe(this) { bookDetail ->
             if (bookDetail != null) {
+                binding.ivBookCover.load(bookDetail.book?.coverUrl)
                 binding.tvBookTitleDetail.text = bookDetail.book?.title
                 binding.tvBookTitleValue.text = bookDetail.book?.title
                 binding.tvIsbnValue.text = bookDetail.book?.isbn.toString()
@@ -87,7 +88,7 @@ class BookDetailActivity : AppCompatActivity() {
                 }
                 viewModel.getUserById(bookDetail.logs?.createdBy.toString())
                 viewModel.user.observe(this) { user ->
-                    binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, Formatter.convertUTCToLocal(bookDetail.logs?.createdAt))
+                    binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, user?.role, Formatter.convertUTCToLocal(bookDetail.logs?.createdAt))
                     binding.userCard.ivProfilePicture.load(user?.photoUrl)
                 }
             }

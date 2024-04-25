@@ -23,6 +23,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityScanBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
@@ -49,7 +50,6 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         super.onCreate(savedInstanceState)
         binding = ActivityScanBinding.inflate(layoutInflater)
         setupView()
-        setupViewModel()
         setContentView(binding.root)
 
         if (allPermissionsGranted()) {
@@ -67,23 +67,15 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         supportActionBar?.title = getString(R.string.title_scan_isbn)
     }
 
-    private fun setupViewModel() {
-        viewModel.toastMessage.observe(this) {
-            if (it == "Book not found on Google Books!") {
-                startCamera()
-            }
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-        }
-    }
-    override fun onButtonClicked(volumeInfo: VolumeInfo?) {
+    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Int?) {
         val intent = Intent(baseContext, AddBookActivity::class.java)
         intent.putExtra("volume_info", volumeInfo)
+        intent.putExtra("isbn_book", book)
         startActivity(intent)
         finish()
     }
 
     override fun onDismissed() {
-        Toast.makeText(this, "Dismissed", Toast.LENGTH_SHORT).show()
         startCamera()
     }
     private val activityResultLauncher =
@@ -200,12 +192,18 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
     private fun getBookByIsbn(isbn: String) {
         viewModel.searchBookByISBN(isbn)
         viewModel.bookByIsbn.observe(this) { book ->
-            val modalBottomSheetView = ModalBottomSheetView(1, book)
+            val modalBottomSheetView = ModalBottomSheetView(1, book, null)
             modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
             modalBottomSheetView.setBottomSheetListener(this)
         }
-        viewModel
-
+        viewModel.toastMessage.observe(this) {
+            if (it == "Book not found on Google Books!") {
+                val isbnBook = Book("", isbn.toLong(), "", listOf(), "", "", "", 0, 0, false, "", "", 0)
+                val modalBottomSheetView = ModalBottomSheetView(2, null, isbnBook)
+                modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
+                modalBottomSheetView.setBottomSheetListener(this)
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -227,7 +225,6 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         private val REQUIRED_PERMISSIONS =
             mutableListOf (
                 Manifest.permission.CAMERA,
-                Manifest.permission.RECORD_AUDIO
             ).apply {
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                     add(Manifest.permission.WRITE_EXTERNAL_STORAGE)

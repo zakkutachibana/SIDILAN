@@ -19,6 +19,8 @@ class BookInTrxActivity : AppCompatActivity() {
 
         adapter = BookInTrxPagerAdapter(supportFragmentManager, lifecycle)
         binding.viewPager.adapter = adapter
+        binding.viewPager.isUserInputEnabled = false
+
         binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {

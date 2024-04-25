@@ -50,7 +50,9 @@
     <string name="contract_date_placeholder">%1$s - %2$s</string>
     <string name="rp_price">Rp. %1$s</string>
     <string name="published_at">Terbit pada %1$s</string>
-    <string name="by_at">%1$s \nPada %2$s</string>
+    <string name="current_stock_is">Stok: %1$s buku</string>
+    <string name="by_at">%1$s (%2$s) \nPada %3$s</string>
+    <string name="two_lines">%1$s \n%2$s</string>
     <string name="book_count">%1$s judul</string>
     <string name="total_stock_qty">%1$s buku</string>
     <string name="created_by">Ditambahkan oleh</string>

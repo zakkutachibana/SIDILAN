@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.google.errorprone.annotations.Keep
 import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
+import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class Book(
@@ -11,6 +12,8 @@ data class Book(
     val isbn: Long,
     val title: String,
     val authors: List<String>,
+    @JvmField @PropertyName("cover_url")
+    val coverUrl: @RawValue Any?,
     val genre: String,
     @JvmField @PropertyName("published_date")
     val publishedDate: String,
@@ -28,8 +31,14 @@ data class Book(
     val stockQty: Long? = 0,
 
 ) : Parcelable {
-    constructor() : this("", 0, "", listOf(), "", "", 0, 0, false, "", "", 0)
+    constructor() : this("", 0, "", listOf(), "", "", "", 0, 0, false, "", "", 0)
 }
 
 data class BookDetail(val book: Book?, val logs: Logs?)
+@Parcelize
+data class BookPrice(
+    val book: Book?,
+    val bookQty: Int?,
+    val bookPrice: Long?
+) : Parcelable
 

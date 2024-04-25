@@ -14,7 +14,7 @@ val scanViewModelModule = module {
 }
 class ScanViewModel(private val repository: BookRepository) : ViewModel() {
 
-    private val _addStatus = MutableLiveData<String>()
+    private val _addStatus = SingleLiveEvent<String>()
     val toastMessage: LiveData<String>
         get() = _addStatus
 

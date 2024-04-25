@@ -40,7 +40,7 @@
                 android:layout_height="match_parent"
                 android:contentDescription="@string/book_cover"
                 android:scaleType="centerCrop"
-                android:src="@drawable/lucian" />
+                android:src="@drawable/book_placeholder" />
 
         </androidx.cardview.widget.CardView>
 

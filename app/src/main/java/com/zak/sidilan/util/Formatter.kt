@@ -95,19 +95,6 @@ object Formatter {
 
     }
 
-    fun modifyPhotoUrl(originalUrl: String?): String? {
-        if (originalUrl != null) {
-            // Check if the URL contains "=s96" pattern
-            val pattern = "=s96"
-            val index = originalUrl.indexOf(pattern)
-            if (index != -1) {
-                // Replace "=s96" with "=s300"
-                return originalUrl.replace(pattern, "=s300")
-            }
-        }
-        return originalUrl
-    }
-
     fun convertToInternationalFormat(phoneNumber: String): String {
         // Assuming the local format has a leading '0' which needs to be removed
         val cleanedPhoneNumber = phoneNumber.removePrefix("0")

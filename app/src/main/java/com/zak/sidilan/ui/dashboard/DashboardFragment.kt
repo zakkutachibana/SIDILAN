@@ -9,13 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import coil.load
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentDashboardBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
 import com.zak.sidilan.ui.users.UserDetailActivity
-import com.zak.sidilan.util.AuthManager
+import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
@@ -26,6 +26,8 @@ class DashboardFragment : Fragment() {
     private val viewModel: DashboardViewModel by viewModel()
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
+    private lateinit var hawkManager: HawkManager
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +35,7 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        hawkManager = HawkManager(requireActivity())
         return binding.root
     }
 
@@ -48,10 +51,11 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setView() {
-        val currentUser = AuthManager.getCurrentUser()
-        binding.userCard.tvUserAction.text = currentUser.displayName
-        binding.userCard.tvUserName.text = currentUser.email
-        binding.userCard.ivProfilePicture.load(currentUser.photoUrl)
+        val currentUser = hawkManager.retrieveData<User>("user")
+
+        binding.userCard.tvUserAction.text = currentUser?.displayName
+        binding.userCard.tvUserName.text = getString(R.string.two_lines, currentUser?.email, currentUser?.role)
+        binding.userCard.ivProfilePicture.load(currentUser?.photoUrl)
 
         binding.itemStock1.tvItemTitle.text = "Item Buku"
         binding.itemStock2.tvItemTitle.text = "Total Stok"
@@ -81,7 +85,8 @@ class DashboardFragment : Fragment() {
     }
 
     private fun setAction() {
-        val currentUser = AuthManager.getCurrentUser()
+        val currentUser = hawkManager.retrieveData<User>("user")
+
         binding.btnExpand.setOnClickListener {
             val expVis = if (binding.clExpand.visibility == View.GONE) {
                 binding.btnExpand.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_up, null)
@@ -94,7 +99,7 @@ class DashboardFragment : Fragment() {
         }
         binding.userCard.cardUser.setOnClickListener{
             val intent = Intent(requireActivity(), UserDetailActivity::class.java)
-            intent.putExtra("userId", currentUser.id)
+            intent.putExtra("userId", currentUser?.id)
             startActivity(intent)
         }
     }

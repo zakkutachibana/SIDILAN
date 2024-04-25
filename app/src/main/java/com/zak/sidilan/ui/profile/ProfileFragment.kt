@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -16,10 +15,10 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentProfileBinding
-import com.zak.sidilan.ui.addbook.AddBookActivity
 import com.zak.sidilan.ui.auth.AuthActivity
-import com.zak.sidilan.util.AuthManager
+import com.zak.sidilan.util.HawkManager
 
 class ProfileFragment : Fragment() {
 
@@ -27,8 +26,7 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-
-
+    private lateinit var hawkManager: HawkManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +35,7 @@ class ProfileFragment : Fragment() {
     ): View {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         auth = Firebase.auth
+        hawkManager = HawkManager(requireActivity())
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -50,10 +49,11 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupView() {
-        val currentUser = AuthManager.getCurrentUser()
-        binding.tvProfileName.text = currentUser.displayName
-        binding.tvEmail.text = currentUser.email
-        binding.ivProfilePicture.load(currentUser.photoUrl)
+        val currentUser = hawkManager.retrieveData<User>("user")
+        binding.tvProfileName.text = currentUser?.displayName
+        binding.tvEmail.text = currentUser?.email
+        binding.tvRole.text = currentUser?.role
+        binding.ivProfilePicture.load(currentUser?.photoUrl)
     }
 
 
@@ -66,7 +66,6 @@ class ProfileFragment : Fragment() {
                     dialog.dismiss()
                 }
                 .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
-                    AuthManager.setCurrentUser(null)
                     signOut()
                 }
                 .show()
@@ -75,7 +74,7 @@ class ProfileFragment : Fragment() {
     private fun signOut() {
         auth.signOut()
         googleSignInClient.signOut()
-        AuthManager.setCurrentUser(null)
+        hawkManager.deleteData("user")
         val intent = Intent(context, AuthActivity::class.java)
         startActivity(intent)
         requireActivity().finish()

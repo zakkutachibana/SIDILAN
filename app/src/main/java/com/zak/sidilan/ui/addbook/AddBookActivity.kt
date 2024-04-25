@@ -1,27 +1,40 @@
 package com.zak.sidilan.ui.addbook
 
 import android.app.DatePickerDialog
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import coil.load
 import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityAddBookBinding
 import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetView
-import com.zak.sidilan.util.AuthManager
+import com.zak.sidilan.util.HawkManager
 import org.koin.dsl.module
 import java.util.Calendar
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 val addBookActivityModule = module {
     factory { AddBookActivity() }
@@ -30,9 +43,10 @@ val addBookActivityModule = module {
 class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListener {
     private lateinit var binding: ActivityAddBookBinding
     private val viewModel: AddBookViewModel by viewModel()
-    private var isUpdateMode = false // Flag to indicate whether it's update mode
-    private var bookId: String = "" // Flag to indicate whether it's update mode
-
+    private var isUpdateMode = false
+    private var bookId: String = ""
+    private lateinit var hawkManager : HawkManager
+    private var currentImageUri: Uri? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +57,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
 
         isUpdateMode = intent.getBooleanExtra("is_update_mode", false)
         bookId = intent.getStringExtra("book_id").toString()
+        hawkManager = HawkManager(this)
 
         setView()
         setViewModel()
@@ -59,11 +74,12 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
             intent.getParcelableExtra<VolumeInfo>("volume_info")
         }
 
-        if (volumeInfo != null) {
-            setBookData(volumeInfo)
+        val isbnBook = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("isbn_book", Book::class.java)
         } else {
-            // Handle error
+            intent.getParcelableExtra<Book>("isbn_book")
         }
+        setBookData(volumeInfo, isbnBook)
     }
 
     private fun setViewModel() {
@@ -91,17 +107,27 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         }
     }
 
-    private fun setBookData(volumeInfo: VolumeInfo?) {
-        for (identifier in volumeInfo?.industryIdentifiers!!) {
-            if (identifier?.type == "ISBN_13") {
-                val isbn13 = identifier.identifier
-                binding.edIsbn.setText(isbn13)
+    private fun setBookData(volumeInfo: VolumeInfo?, isbnBook: Book?) {
+        if (volumeInfo != null) {
+            for (identifier in volumeInfo.industryIdentifiers!!) {
+                if (identifier?.type == "ISBN_13") {
+                    val isbn13 = identifier.identifier
+                    binding.edIsbn.setText(isbn13)
+                }
+            }
+            val imageUrlFromApi = volumeInfo.imageLinks?.thumbnail.toString()
+            val trimmedImageUrl = imageUrlFromApi.substringBefore("&img=1") + "&img=1"
+            binding.ivBookCoverAdd.load(trimmedImageUrl)
+            binding.edBookTitle.setText(volumeInfo.title.toString())
+            binding.edPublishedDate.setText(Formatter.convertDateAPIToFirebase(volumeInfo.publishedDate.toString()))
+            binding.edAuthors.setText(volumeInfo.authors?.joinToString("\n"))
+            binding.edGenre.setText(volumeInfo.categories?.getOrNull(0).toString())
+        } else {
+            if (isbnBook != null) {
+                binding.edIsbn.setText(isbnBook.isbn.toString())
             }
         }
-        binding.edBookTitle.setText(volumeInfo.title.toString())
-        binding.edPublishedDate.setText(Formatter.convertDateAPIToFirebase(volumeInfo.publishedDate.toString()))
-        binding.edAuthors.setText(volumeInfo.authors?.joinToString("\n"))
-        binding.edGenre.setText(volumeInfo.categories?.getOrNull(0).toString())
+
     }
 
 
@@ -117,15 +143,25 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         Formatter.addThousandSeparatorEditText(binding.edPrintPrice)
         Formatter.addThousandSeparatorEditText(binding.edSellPrice)
 
-        val currentUser = AuthManager.getCurrentUser()
-        binding.userCard.tvUserName.text = currentUser.displayName
-        binding.userCard.ivProfilePicture.load(currentUser.photoUrl)
+        val currentUser = hawkManager.retrieveData<User>("user")
+
+        binding.userCard.tvUserName.text = currentUser?.displayName
+        binding.userCard.ivProfilePicture.load(currentUser?.photoUrl)
     }
 
     private fun setAction() {
+        val launcherGallery = registerForActivityResult(
+            ActivityResultContracts.PickVisualMedia()
+        ) { uri: Uri? ->
+            if (uri != null) {
+                currentImageUri = uri
+                setImage()
+            } else {
+                Log.d("Photo Picker", "No media selected")
+            }
+        }
         binding.btnChangeBookPic.setOnClickListener {
-            //TODO : Buat Add Picture
-            Toast.makeText(this, "Reserved for Adding Picture", Toast.LENGTH_SHORT).show()
+            launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
         binding.edlIsbn.setEndIconOnClickListener {
             when {
@@ -141,7 +177,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 else -> {
                     viewModel.searchBookByISBN(binding.edIsbn.text.toString())
                     viewModel.bookByIsbn.observe(this) { book ->
-                        val modalBottomSheetView = ModalBottomSheetView(1, book)
+                        val modalBottomSheetView = ModalBottomSheetView(1, book, null)
                         modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
                         modalBottomSheetView.setBottomSheetListener(this) // Set the listener
                     }
@@ -175,6 +211,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 val authors = binding.edAuthors.text.toString().split("\n").map { it.trim() }
                     .filter { it.isNotEmpty() }
                     .map { it }
+                val coverImage = getImageUriFromImageView(binding.ivBookCoverAdd)
                 val genre = binding.edGenre.text.toString()
                 val publishedDate = binding.edPublishedDate.text.toString()
                 val printPrice = Formatter.getRawValue(binding.edPrintPrice).toLong()
@@ -182,18 +219,52 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 val isPerpetual = binding.cbForever.isChecked
                 val startContractDate = binding.edStartContractDate.text.toString().ifEmpty { null }
                 val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
-                val createdBy = AuthManager.getCurrentUser().id
+                val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
 
                 if (isUpdateMode) {
-                    updateBook(bookId, isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
+                    updateBook(bookId, isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
                 } else {
-                    saveBook(isbn, title, authors, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy)
+                    saveBook(isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy)
                 }
             }
         }
     }
+    private fun setImage() {
+        currentImageUri?.let {
+            Log.d("Image URI", "showImage: $it")
+            binding.ivBookCoverAdd.setImageURI(it)
+        }
+    }
 
-    override fun onButtonClicked(volumeInfo: VolumeInfo?) {
+    private fun getImageUriFromImageView(imageView: ImageView): Uri? {
+        return when (val drawable = imageView.drawable) {
+            is BitmapDrawable -> {
+                drawable.bitmap?.let { bitmap ->
+                    val uri = getImageUriFromBitmap(bitmap)
+                    uri
+                }
+            }
+            else -> {
+                val imageUrl = "placeholder" // Replace "placeholder" with the actual URL used by Coil
+                Uri.parse(imageUrl)
+            }
+        }
+    }
+
+    // Function to get image URI from Bitmap
+    private fun getImageUriFromBitmap(bitmap: Bitmap): Uri? {
+        return try {
+            val cachePath = File.createTempFile("image", null, applicationContext.cacheDir)
+            val outputStream = FileOutputStream(cachePath)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            outputStream.close()
+            cachePath.toUri()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            null
+        }
+    }
+    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Int?) {
         val title = volumeInfo?.title.toString()
         val subtitle = volumeInfo?.subtitle.toString()
         val fullTitle =
@@ -210,13 +281,11 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         println("ini linknya: $trimmedImageUrl")
     }
 
-    override fun onDismissed() {
-        Toast.makeText(this, "Dismissed", Toast.LENGTH_SHORT).show()
-    }
+    override fun onDismissed() { }
 
-    private fun saveBook(isbn: Long, title: String, authors: List<String>, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?, createdBy: String) {
+    private fun saveBook(isbn: Long, title: String, authors: List<String>, coverImage: Uri?, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?, createdBy: String) {
         viewModel.saveBookToFirebase(
-            isbn, title, authors, genre, publishedDate,
+            isbn, title, authors, coverImage, genre, publishedDate,
             printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy
         ) { success, message ->
             binding.btnAddBook.isEnabled = true
@@ -228,9 +297,9 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
             }
         }
     }
-    private fun updateBook(bookId: String, isbn: Long, title: String, authors: List<String>, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?) {
+    private fun updateBook(bookId: String, isbn: Long, title: String, authors: List<String>, coverUrl: Uri?, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?) {
         viewModel.updateBookFirebase(
-            bookId, isbn, title, authors, genre, publishedDate,
+            bookId, isbn, title, authors, coverUrl, genre, publishedDate,
             printPrice, sellPrice, isPerpetual, startContractDate, endContractDate
         ) { success, message ->
             binding.btnAddBook.isEnabled = true

@@ -1,5 +1,6 @@
 package com.zak.sidilan.ui.addbook
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,6 +29,7 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
         isbn: Long,
         title: String,
         authors: List<String>,
+        coverImage: Uri?,
         genre: String,
         publishedDate: String,
         printPrice: Long,
@@ -39,7 +41,7 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
         callback: (Boolean, String?) -> Unit
     ) {
         repository.saveBookToFirebase(
-            isbn, title, authors, genre, publishedDate, printPrice, sellPrice,
+            isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice,
             isPerpetual, startContractDate, endContractDate, createdBy
         ) { isSuccess, message ->
             callback(isSuccess, message)
@@ -50,6 +52,7 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
         isbn: Long,
         title: String,
         authors: List<String>,
+        coverImage: Uri?,
         genre: String,
         publishedDate: String,
         printPrice: Long,
@@ -60,7 +63,7 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
         callback: (Boolean, String?) -> Unit
     ) {
         repository.updateBookFirebase(
-            bookId, isbn, title, authors, genre, publishedDate, printPrice, sellPrice,
+            bookId, isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice,
             isPerpetual, startContractDate, endContractDate
         ) { isSuccess, message ->
             callback(isSuccess, message)

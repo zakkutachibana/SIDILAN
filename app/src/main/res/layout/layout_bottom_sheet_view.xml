@@ -20,7 +20,7 @@
         android:layout_marginStart="24dp"
         android:contentDescription="@string/book_cover"
         android:scaleType="centerCrop"
-        android:src="@drawable/lucian"
+        android:src="@drawable/book_placeholder"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/drag_handle" />
 
@@ -43,7 +43,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="24dp"
         android:ellipsize="end"
         android:maxLines="2"
@@ -59,6 +59,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="24dp"
+        android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:text="Tanggal Terbit"
@@ -68,16 +69,38 @@
         app:layout_constraintStart_toEndOf="@+id/iv_book_cover_view"
         app:layout_constraintTop_toBottomOf="@+id/tv_author_book_view" />
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edl_book_qty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Jumlah Buku"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_title_book_view"
+        app:layout_constraintStart_toStartOf="@+id/tv_title_book_view"
+        app:layout_constraintTop_toBottomOf="@+id/tv_published_date_view"
+        app:startIconDrawable="@drawable/ic_number">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_book_qty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="3"
+            android:maxLines="1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <TextView
         android:id="@+id/tv_confirmation"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="24dp"
         android:text="Apakah benar buku ini yang ingin Anda tambahkan?"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tv_title_book_view"
+        app:layout_constraintStart_toStartOf="@+id/iv_book_cover_view"
         app:layout_constraintTop_toBottomOf="@+id/iv_book_cover_view" />
 
     <Button
@@ -90,6 +113,8 @@
         app:layout_constraintEnd_toEndOf="@+id/tv_confirmation"
         app:layout_constraintStart_toStartOf="@+id/tv_confirmation"
         app:layout_constraintTop_toBottomOf="@+id/tv_confirmation" />
+
+
 
 
 

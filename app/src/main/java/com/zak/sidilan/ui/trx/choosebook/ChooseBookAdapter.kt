@@ -1,7 +1,6 @@
-package com.zak.sidilan.ui.books
+package com.zak.sidilan.ui.trx.choosebook
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,17 +8,15 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.zak.sidilan.data.entities.Book
-import com.zak.sidilan.databinding.LayoutBookCardBinding
-import com.zak.sidilan.ui.bookdetail.BookDetailActivity
-import com.zak.sidilan.util.Formatter
+import com.zak.sidilan.databinding.LayoutChooseBookCardBinding
 
-class BooksAdapter(
+class ChooseBookAdapter(
     private val context: Context,
     private val onClickListener: (Book) -> Unit
-) : ListAdapter<Book, BooksAdapter.BooksViewHolder>(BookDiffCallback()) {
+) : ListAdapter<Book, ChooseBookAdapter.BooksViewHolder>(BookDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BooksViewHolder {
-        val binding = LayoutBookCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = LayoutChooseBookCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return BooksViewHolder(binding)
     }
 
@@ -28,7 +25,7 @@ class BooksAdapter(
         holder.bind(book)
     }
 
-    inner class BooksViewHolder(private val adapterBinding: LayoutBookCardBinding) : RecyclerView.ViewHolder(adapterBinding.root) {
+    inner class BooksViewHolder(private val adapterBinding: LayoutChooseBookCardBinding) : RecyclerView.ViewHolder(adapterBinding.root) {
         init {
             adapterBinding.cardBook.setOnClickListener {
                 val position = adapterPosition
@@ -41,11 +38,8 @@ class BooksAdapter(
         fun bind(book: Book) {
             adapterBinding.ivBookCover.load(book.coverUrl)
             adapterBinding.tvBookTitle.text = book.title
-            adapterBinding.tvAuthorName.text = book.authors.joinToString(", ")
-            adapterBinding.tvIsbn.text = book.isbn.toString()
-            adapterBinding.chipPrintPrice.text = Formatter.addThousandSeparatorTextView(book.printPrice)
-            adapterBinding.chipSellPrice.text = Formatter.addThousandSeparatorTextView(book.sellPrice)
-            adapterBinding.chipStockQty.text = Formatter.addThousandSeparatorTextView(book.stockQty!!)
+            adapterBinding.tvBookAuthors.text = book.authors.joinToString(", ")
+            adapterBinding.tvBookStock.text = book.stockQty.toString()
         }
     }
 

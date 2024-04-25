@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.GoogleBooksResponse
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.LayoutBottomSheetViewBinding
 import com.zak.sidilan.util.Formatter
 
-class ModalBottomSheetView(private val type: Number, private val book: GoogleBooksResponse?) : BottomSheetDialogFragment() {
+class ModalBottomSheetView(private val type: Number, private val googleBook: GoogleBooksResponse?, private val createdBook: Book?) : BottomSheetDialogFragment() {
 
     private lateinit var binding: LayoutBottomSheetViewBinding
     private var listener: BottomSheetListener? = null
@@ -32,7 +33,9 @@ class ModalBottomSheetView(private val type: Number, private val book: GoogleBoo
         when (type) {
             //Type 1: Search ISBN (Add)
             1 -> {
-                val volumeInfo = book?.items?.getOrNull(0)?.volumeInfo
+                binding.edlBookQty.visibility = View.GONE
+
+                val volumeInfo = googleBook?.items?.getOrNull(0)?.volumeInfo
                 val title = volumeInfo?.title.toString()
                 val subtitle = volumeInfo?.subtitle.toString()
                 val fullTitle = if (subtitle != "null" && subtitle.isNotEmpty()) "$title: $subtitle" else title
@@ -45,7 +48,7 @@ class ModalBottomSheetView(private val type: Number, private val book: GoogleBoo
                 val trimmedImageUrl = imageUrlFromApi?.substringBefore("&img=1") + "&img=1"
                 binding.ivBookCoverView.load(trimmedImageUrl)
                 binding.btnAddView.setOnClickListener {
-                    listener?.onButtonClicked(volumeInfo)
+                    listener?.onButtonClicked(volumeInfo, null, null)
                     dismiss()
                 }
                 dialog?.setOnDismissListener {
@@ -54,13 +57,46 @@ class ModalBottomSheetView(private val type: Number, private val book: GoogleBoo
             }
             //Type 2: Search ISBN not found
             2 -> {
+                binding.tvPublishedDateView.visibility = View.GONE
+                binding.tvAuthorBookView.visibility = View.GONE
+                binding.edlBookQty.visibility = View.GONE
 
+                binding.tvTitleBookView.text = createdBook?.isbn.toString()
+                binding.tvConfirmation.text = "Buku tidak ditemukan di GoogleBooks. Lanjut tambahkan buku secara manual?"
+                binding.ivBookCoverView.load(R.drawable.book_placeholder)
+
+                binding.btnAddView.setOnClickListener {
+                    listener?.onButtonClicked(null, createdBook, null)
+                    dismiss()
+                }
+                dialog?.setOnDismissListener {
+                    listener?.onDismissed()
+                }
+            }
+            //Type 3: Add Book Transaction
+            3 -> {
+                binding.tvTitleBookView.text = createdBook?.title
+                binding.tvTitleBookView.maxLines = 1
+                binding.tvAuthorBookView.text = createdBook?.authors?.joinToString(", ")
+                binding.tvAuthorBookView.maxLines = 1
+                binding.tvPublishedDateView.text = getString(R.string.current_stock_is, createdBook?.stockQty.toString())
+                binding.ivBookCoverView.load(createdBook?.coverUrl)
+
+                binding.btnAddView.setOnClickListener {
+                    val bookQty = binding.edBookQty.text.toString().toInt()
+
+                    listener?.onButtonClicked(null, createdBook, bookQty)
+                    dismiss()
+                }
+                dialog?.setOnDismissListener {
+                    listener?.onDismissed()
+                }
             }
         }
-
     }
+
     interface BottomSheetListener {
-        fun onButtonClicked(volumeInfo: VolumeInfo?)
+        fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Int?)
         fun onDismissed()
     }
     fun setBottomSheetListener(listener: BottomSheetListener) {

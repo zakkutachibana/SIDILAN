@@ -16,6 +16,8 @@ import com.zak.sidilan.ui.dashboard.dashboardFragmentModule
 import com.zak.sidilan.ui.dashboard.dashboardViewModelModule
 import com.zak.sidilan.ui.scan.scanActivityModule
 import com.zak.sidilan.ui.scan.scanViewModelModule
+import com.zak.sidilan.ui.trx.bookin.bookInTrxPrintFragmentModule
+import com.zak.sidilan.ui.trx.bookin.bookInTrxViewModelModule
 import com.zak.sidilan.ui.users.userDetailActivityModule
 import com.zak.sidilan.ui.users.userDetailViewModelModule
 import com.zak.sidilan.ui.users.userListActivityModule
@@ -27,7 +29,6 @@ import org.koin.core.context.startKoin
 class MyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        AuthManager.init(this)
         AndroidThreeTen.init(this)
         startKoin {
             androidLogger()
@@ -50,7 +51,9 @@ class MyApplication : Application() {
                 userManagementViewModelModule,
                 userListActivityModule,
                 userDetailActivityModule,
-                userDetailViewModelModule
+                userDetailViewModelModule,
+                bookInTrxPrintFragmentModule,
+                bookInTrxViewModelModule
                 )
         }
     }

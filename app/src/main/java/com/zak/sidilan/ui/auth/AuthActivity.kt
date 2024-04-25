@@ -19,9 +19,10 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.zak.sidilan.MainActivity
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityAuthBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import com.zak.sidilan.util.AuthManager
+import com.zak.sidilan.util.HawkManager
 import org.koin.dsl.module
 
 val authActivityModule = module {
@@ -31,19 +32,19 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthBinding
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
+    private lateinit var hawkManager: HawkManager
     private val viewModel: AuthViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthBinding.inflate(layoutInflater)
-
+        hawkManager = HawkManager(this)
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-        // Initialize Firebase Auth
         auth = Firebase.auth
 
         setupView()
@@ -111,14 +112,10 @@ class AuthActivity : AppCompatActivity() {
                     user?.reload()?.addOnCompleteListener { reloadTask ->
                         if (reloadTask.isSuccessful) {
                             val refreshedUser = auth.currentUser
-                            viewModel.saveUserToFirebase(
-                                refreshedUser?.uid.toString(),
-                                refreshedUser?.displayName.toString(),
-                                refreshedUser?.email.toString(),
-                                refreshedUser?.photoUrl.toString().replace("s96-c", "s300-c")
-                            )
-                            AuthManager.setCurrentUser(refreshedUser)
-                            updateUI(refreshedUser)
+                            val userEmail = refreshedUser?.email.toString()
+                            Toast.makeText(this, "Logged Email: $userEmail", Toast.LENGTH_SHORT).show()
+                            // Call the function to check whitelisting
+                            checkWhitelisting(userEmail)
                         } else {
                             // Reload failed, handle the error
                             Log.w(TAG, "reload failed", reloadTask.exception)
@@ -133,6 +130,33 @@ class AuthActivity : AppCompatActivity() {
             }
     }
 
+    private fun checkWhitelisting(email: String) {
+        viewModel.isEmailWhitelisted(email) { isWhitelisted, additionalInfo ->
+            if (isWhitelisted) {
+                Toast.makeText(this, "Whitelisted", Toast.LENGTH_SHORT).show()
+                // Whitelisted, proceed with saving user
+                val currentUser = auth.currentUser
+                val user = User(currentUser?.uid.toString(), currentUser?.displayName, additionalInfo?.role, currentUser?.email,
+                    currentUser?.photoUrl.toString().replace("s96-c", "s300-c"), additionalInfo?.phoneNumber, "joinedAt")
+                viewModel.saveUserToFirebase(
+                    user.id,
+                    user.displayName.toString(),
+                    user.email.toString(),
+                    user.photoUrl.toString().replace("s96-c", "s300-c"),
+                    user.role.toString(),
+                    user.phoneNumber.toString()
+                    )
+                hawkManager.saveData("user", user)
+                updateUI(currentUser)
+            } else {
+                // Not whitelisted
+                Toast.makeText(this, "Not Whitelisted", Toast.LENGTH_SHORT).show()
+                auth.signOut()
+                googleSignInClient.signOut()
+                updateUI(null)
+            }
+        }
+    }
     private fun updateUI(currentUser: FirebaseUser?) {
         if (currentUser != null) {
             startActivity(Intent(this@AuthActivity, MainActivity::class.java))
