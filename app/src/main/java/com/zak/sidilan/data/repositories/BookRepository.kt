@@ -12,6 +12,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.zak.sidilan.BuildConfig
 import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
+import com.zak.sidilan.data.entities.Stock
 import com.zak.sidilan.data.entities.GoogleBooksResponse
 import com.zak.sidilan.data.entities.Logs
 import com.zak.sidilan.data.retrofit.ApiConfig
@@ -30,14 +31,15 @@ class BookRepository {
     private val storage = FirebaseStorage.getInstance()
     private val reference = database.reference.child("books")
 
-    fun getAllBooks(): MutableLiveData<ArrayList<Book>> {
-        val bookList = MutableLiveData<ArrayList<Book>>()
+
+    fun getAllBooks(): MutableLiveData<ArrayList<BookDetail>> {
+        val bookList = MutableLiveData<ArrayList<BookDetail>>()
 
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val books = ArrayList<Book>()
+                val books = ArrayList<BookDetail>()
                 for (eachBook in snapshot.children) {
-                    val book = eachBook.child("book").getValue(Book::class.java)
+                    val book = eachBook.getValue(BookDetail::class.java)
                     book?.let { books.add(it) }
                 }
                 bookList.value = books
@@ -49,6 +51,7 @@ class BookRepository {
         })
         return bookList
     }
+
     fun saveBookToFirebase(
         isbn: Long,
         title: String,
@@ -128,12 +131,14 @@ class BookRepository {
             sellPrice, isPerpetual, startContractDate, endContractDate
         )
 
+        val initialStock = Stock( 0)
         val createdAt = ServerValue.TIMESTAMP
         val logs = Logs(createdBy, createdAt)
 
         val bookMap = mutableMapOf<String, Any>()
         bookMap["book"] = book
         bookMap["logs"] = logs
+        bookMap["stock"] = initialStock
 
         reference.child(id).setValue(bookMap).addOnCompleteListener { dbTask ->
             if (dbTask.isSuccessful) {
@@ -142,6 +147,8 @@ class BookRepository {
                 callback(false, dbTask.exception?.message)
             }
         }
+
+
     }
     fun updateBookFirebase(
         bookId: String,
@@ -172,6 +179,7 @@ class BookRepository {
                 callback(false, task.exception?.message)
             }
         }
+
     }
 
     fun searchBookByISBN(isbn: String, callback: (GoogleBooksResponse) -> Unit) {
@@ -204,8 +212,9 @@ class BookRepository {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val book = snapshot.child("book").getValue(Book::class.java)
                 val logs = snapshot.child("logs").getValue(Logs::class.java)
+                val stock = snapshot.child("stock").getValue(Stock::class.java)
 
-                val bookDetail = BookDetail(book, logs)
+                val bookDetail = BookDetail(book, logs, stock)
                 bookDetailLiveData.value = bookDetail
             }
 

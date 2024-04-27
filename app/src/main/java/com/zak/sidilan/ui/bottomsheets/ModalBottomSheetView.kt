@@ -8,12 +8,14 @@ import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.data.entities.BookDetail
+import com.zak.sidilan.data.entities.Stock
 import com.zak.sidilan.data.entities.GoogleBooksResponse
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.LayoutBottomSheetViewBinding
 import com.zak.sidilan.util.Formatter
 
-class ModalBottomSheetView(private val type: Number, private val googleBook: GoogleBooksResponse?, private val createdBook: Book?) : BottomSheetDialogFragment() {
+class ModalBottomSheetView(private val type: Number, private val googleBook: GoogleBooksResponse?, private val createdBook: BookDetail?) : BottomSheetDialogFragment() {
 
     private lateinit var binding: LayoutBottomSheetViewBinding
     private var listener: BottomSheetListener? = null
@@ -61,12 +63,12 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
                 binding.tvAuthorBookView.visibility = View.GONE
                 binding.edlBookQty.visibility = View.GONE
 
-                binding.tvTitleBookView.text = createdBook?.isbn.toString()
+                binding.tvTitleBookView.text = createdBook?.book?.isbn.toString()
                 binding.tvConfirmation.text = "Buku tidak ditemukan di GoogleBooks. Lanjut tambahkan buku secara manual?"
                 binding.ivBookCoverView.load(R.drawable.book_placeholder)
 
                 binding.btnAddView.setOnClickListener {
-                    listener?.onButtonClicked(null, createdBook, null)
+                    listener?.onButtonClicked(null, createdBook?.book , null)
                     dismiss()
                 }
                 dialog?.setOnDismissListener {
@@ -75,17 +77,17 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
             }
             //Type 3: Add Book Transaction
             3 -> {
-                binding.tvTitleBookView.text = createdBook?.title
+                binding.tvTitleBookView.text = createdBook?.book?.title
                 binding.tvTitleBookView.maxLines = 1
-                binding.tvAuthorBookView.text = createdBook?.authors?.joinToString(", ")
+                binding.tvAuthorBookView.text = createdBook?.book?.authors?.joinToString(", ")
                 binding.tvAuthorBookView.maxLines = 1
-                binding.tvPublishedDateView.text = getString(R.string.current_stock_is, createdBook?.stockQty.toString())
-                binding.ivBookCoverView.load(createdBook?.coverUrl)
+                binding.tvPublishedDateView.text = getString(R.string.current_stock_is, createdBook?.stock?.stockQty.toString())
+                binding.ivBookCoverView.load(createdBook?.book?.coverUrl)
 
                 binding.btnAddView.setOnClickListener {
-                    val bookQty = binding.edBookQty.text.toString().toInt()
+                    val bookQty = binding.edBookQty.text.toString().toLong()
 
-                    listener?.onButtonClicked(null, createdBook, bookQty)
+                    listener?.onButtonClicked(null, createdBook?.book, bookQty)
                     dismiss()
                 }
                 dialog?.setOnDismissListener {
@@ -96,7 +98,7 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
     }
 
     interface BottomSheetListener {
-        fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Int?)
+        fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Long?)
         fun onDismissed()
     }
     fun setBottomSheetListener(listener: BottomSheetListener) {

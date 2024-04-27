@@ -7,13 +7,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.databinding.LayoutChooseBookCardBinding
+import com.zak.sidilan.util.Formatter
 
 class ChooseBookAdapter(
     private val context: Context,
-    private val onClickListener: (Book) -> Unit
-) : ListAdapter<Book, ChooseBookAdapter.BooksViewHolder>(BookDiffCallback()) {
+    private val onClickListener: (BookDetail) -> Unit
+) : ListAdapter<BookDetail, ChooseBookAdapter.BooksViewHolder>(BookDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BooksViewHolder {
         val binding = LayoutChooseBookCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -35,20 +37,20 @@ class ChooseBookAdapter(
             }
         }
 
-        fun bind(book: Book) {
-            adapterBinding.ivBookCover.load(book.coverUrl)
-            adapterBinding.tvBookTitle.text = book.title
-            adapterBinding.tvBookAuthors.text = book.authors.joinToString(", ")
-            adapterBinding.tvBookStock.text = book.stockQty.toString()
+        fun bind(bookDetail: BookDetail) {
+            adapterBinding.ivBookCover.load(bookDetail.book?.coverUrl)
+            adapterBinding.tvBookTitle.text = bookDetail.book?.title
+            adapterBinding.tvBookAuthors.text = bookDetail.book?.authors?.joinToString(", ")
+            adapterBinding.tvBookStock.text = context.getString(R.string.current_stock_is, Formatter.addThousandSeparatorTextView(bookDetail.stock?.stockQty))
         }
     }
 
-    class BookDiffCallback : DiffUtil.ItemCallback<Book>() {
-        override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean {
-            return oldItem.id == newItem.id
+    class BookDiffCallback : DiffUtil.ItemCallback<BookDetail>() {
+        override fun areItemsTheSame(oldItem: BookDetail, newItem: BookDetail): Boolean {
+            return oldItem.book?.id == newItem.book?.id
         }
 
-        override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean {
+        override fun areContentsTheSame(oldItem: BookDetail, newItem: BookDetail): Boolean {
             return oldItem == newItem
         }
     }

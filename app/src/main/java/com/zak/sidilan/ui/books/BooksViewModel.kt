@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.repositories.BookRepository
 import com.zak.sidilan.ui.addbook.AddBookViewModel
 import org.koin.dsl.module
@@ -19,8 +20,8 @@ val booksViewModelModule = module {
 
 class BooksViewModel(private val repository: BookRepository) : ViewModel() {
 
-    private val _bookList = MutableLiveData<ArrayList<Book>>()
-    val bookList: MutableLiveData<ArrayList<Book>> get() = _bookList
+    private val _bookList = MutableLiveData<ArrayList<BookDetail>>()
+    val bookList: MutableLiveData<ArrayList<BookDetail>> get() = _bookList
 
     fun getBooks() {
         repository.getAllBooks().observeForever { bookList ->

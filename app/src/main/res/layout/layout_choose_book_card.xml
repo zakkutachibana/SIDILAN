@@ -34,7 +34,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
             <TextView
                 android:id="@+id/tv_book_title"
                 android:layout_width="0dp"
@@ -42,8 +41,10 @@
                 android:layout_marginHorizontal="8dp"
                 android:ellipsize="end"
                 android:maxLines="2"
+                android:layout_marginTop="4dp"
                 android:text="judul buku yang amat sangat"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                 app:layout_constraintEnd_toEndOf="@+id/iv_book_cover"
                 app:layout_constraintStart_toStartOf="@+id/iv_book_cover"
                 app:layout_constraintTop_toBottomOf="@+id/iv_book_cover" />

@@ -1,7 +1,6 @@
 package com.zak.sidilan.data.entities
 
 import android.os.Parcelable
-import com.google.errorprone.annotations.Keep
 import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
@@ -27,18 +26,27 @@ data class Book(
     val startContractDate: String? = "",
     @JvmField @PropertyName("end_contract_date")
     val endContractDate: String? = "",
-    @JvmField @PropertyName("stock_qty")
-    val stockQty: Long? = 0,
+//    @JvmField @PropertyName("stock_qty")
+//    val stockQty: Long? = 0,
 
 ) : Parcelable {
-    constructor() : this("", 0, "", listOf(), "", "", "", 0, 0, false, "", "", 0)
+    constructor() : this("", 0, "", listOf(), "", "", "", 0, 0, false, "", "")
 }
 
-data class BookDetail(val book: Book?, val logs: Logs?)
+
 @Parcelize
-data class BookPrice(
+data class BookDetail(
     val book: Book?,
-    val bookQty: Int?,
-    val bookPrice: Long?
+    val logs: Logs?,
+    val stock: Stock?
+) : Parcelable {
+    constructor() : this(null, null, null)
+}
+
+@Parcelize
+data class BookQtyPrice(
+    val book: Book,
+    val bookQty: Long,
+    val bookPrice: Long
 ) : Parcelable
 

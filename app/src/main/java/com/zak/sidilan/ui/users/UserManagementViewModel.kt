@@ -34,7 +34,7 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
     }
     fun addWhitelist(email: String, role: String, phoneNumber: String) {
         repository.addWhitelist(email, role, phoneNumber).observeForever { status ->
-
+            _toastMessage.value = status
         }
     }
 }

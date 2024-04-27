@@ -24,6 +24,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityScanBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
@@ -67,7 +68,7 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         supportActionBar?.title = getString(R.string.title_scan_isbn)
     }
 
-    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Int?) {
+    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Long?) {
         val intent = Intent(baseContext, AddBookActivity::class.java)
         intent.putExtra("volume_info", volumeInfo)
         intent.putExtra("isbn_book", book)
@@ -198,8 +199,8 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         }
         viewModel.toastMessage.observe(this) {
             if (it == "Book not found on Google Books!") {
-                val isbnBook = Book("", isbn.toLong(), "", listOf(), "", "", "", 0, 0, false, "", "", 0)
-                val modalBottomSheetView = ModalBottomSheetView(2, null, isbnBook)
+                val isbnBook = Book("", isbn.toLong(), "", listOf(), "", "", "", 0, 0, false, "", "")
+                val modalBottomSheetView = ModalBottomSheetView(2, null, BookDetail(isbnBook, null, null))
                 modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
                 modalBottomSheetView.setBottomSheetListener(this)
             }

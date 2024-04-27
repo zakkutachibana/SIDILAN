@@ -10,7 +10,6 @@ import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
@@ -21,15 +20,11 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
-import com.zak.sidilan.data.entities.Book
-import com.zak.sidilan.data.entities.BookPrice
-import com.zak.sidilan.data.entities.User
-import com.zak.sidilan.data.entities.VolumeInfo
+import com.zak.sidilan.data.entities.BookInPrintingTrx
+import com.zak.sidilan.data.entities.BookQtyPrice
+import com.zak.sidilan.data.entities.BookSubtotal
 import com.zak.sidilan.databinding.FragmentBookInTrxPrintBinding
-import com.zak.sidilan.ui.addbook.AddBookActivity
-import com.zak.sidilan.ui.addbook.AddBookViewModel
 import com.zak.sidilan.ui.bookdetail.BookDetailActivity
-import com.zak.sidilan.ui.books.BooksAdapter
 import com.zak.sidilan.ui.trx.choosebook.ChooseBookActivity
 import com.zak.sidilan.ui.trx.choosebook.SelectedBooksAdapter
 import com.zak.sidilan.util.Formatter
@@ -45,7 +40,6 @@ class BookInTrxPrintFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: BookInTrxViewModel by viewModel()
     private lateinit var adapter: SelectedBooksAdapter
-    private val selectedBooksList = ArrayList<Book>()
 
 
     override fun onCreateView(
@@ -54,7 +48,8 @@ class BookInTrxPrintFragment : Fragment() {
     ): View {
         _binding = FragmentBookInTrxPrintBinding.inflate(inflater, container, false)
 
-        setView()
+        setupView()
+        setupViewModel()
         setupListeners()
         setupRecyclerView()
         setAction()
@@ -85,32 +80,34 @@ class BookInTrxPrintFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK){
                 val data = result.data
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    data?.getParcelableExtra(EXTRA_BOOK, BookPrice::class.java)?.let { book ->
-
+                    data?.getParcelableExtra(EXTRA_BOOK, BookQtyPrice::class.java)?.let { book ->
                         viewModel.addBook(book)
                     }
                 } else {
-                    data?.getParcelableExtra<BookPrice>(EXTRA_BOOK)?.let { book ->
+                    data?.getParcelableExtra<BookQtyPrice>(EXTRA_BOOK)?.let { book ->
                         viewModel.addBook(book)
                     }
                 }
             }
         }
 
-    private fun setView() {
+    private fun setupView() {
         Formatter.addThousandSeparatorEditText(binding.edTotalPrice)
-
     }
+
+    private fun setupViewModel() {
+        viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun setAction() {
         binding.btnAddItem.setOnClickListener {
             val intent = Intent(requireContext(), ChooseBookActivity::class.java)
             intent.putExtra("type", 1)
             getResult.launch(intent)
-            for (book in selectedBooksList) {
-                Log.d("apa","Selected Books List: " + book.title)
-            }
         }
-        binding.edlPrintDate.setOnClickListener {
+        binding.edPrintDate.setOnClickListener {
             showDatePicker(binding.edPrintDate, "Tanggal Cetak Buku")
         }
         binding.cbCustomPrice.setOnCheckedChangeListener { _, isChecked ->
@@ -125,35 +122,41 @@ class BookInTrxPrintFragment : Fragment() {
         }
         binding.btnAddTrx.setOnClickListener {
             if (isValid()) {
-                binding.btnAddItem.isEnabled = false
-//                val isbn = binding.edIsbn.text.toString().toLong()
-//                val title = binding.edBookTitle.text.toString()
-//                val authors = binding.edAuthors.text.toString().split("\n").map { it.trim() }
-//                    .filter { it.isNotEmpty() }
-//                    .map { it }
-//                val coverImage = getImageUriFromImageView(binding.ivBookCoverAdd)
-//                val genre = binding.edGenre.text.toString()
-//                val publishedDate = binding.edPublishedDate.text.toString()
-//                val printPrice = Formatter.getRawValue(binding.edPrintPrice).toLong()
-//                val sellPrice = Formatter.getRawValue(binding.edSellPrice).toLong()
-//                val isPerpetual = binding.cbForever.isChecked
-//                val startContractDate = binding.edStartContractDate.text.toString().ifEmpty { null }
-//                val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
-//                val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
-//
-//                if (isUpdateMode) {
-//                    updateBook(bookId, isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
-//                } else {
-//                    saveBook(isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy)
-//                }
+//                binding.btnAddItem.isEnabled = false
+                val shopName = binding.edPrintShop.text.toString()
+                val printDate = binding.edPrintDate.text.toString()
+                val totalPrice = Formatter.getRawValue(binding.edTotalPrice).toLong()
+                val note = binding.edNote.text.toString()
+                val isCustomPrice = binding.cbCustomPrice.isChecked
+                viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
+                    val bookItems = books.map { eachBook ->
+                        BookSubtotal(
+                            bookId = eachBook.book.id,
+                            qty = eachBook.bookQty,
+                            subtotalPrice = eachBook.bookPrice
+                        )
+                    }
+
+                    // Create a BookInPrintingTransaction instance
+                    val transaction = BookInPrintingTrx(
+                        printingShop = shopName,
+                        bookInDate = printDate,
+                        books = bookItems, // Pass the list of BookItems
+                        totalBooksQty = books.sumOf { it.bookQty }, // Calculate total books quantity
+                        totalAmount = totalPrice, // Use the total price entered by the user
+                        isCustomCost = isCustomPrice,
+                        notes = note
+                    )
+                    viewModel.addTrxPrint(transaction)
+                }
             }
         }
     }
 
-    private fun calculateTotalPrice(bookList : List<BookPrice>) {
+    private fun calculateTotalPrice(bookList : List<BookQtyPrice>) {
         var totalPrice: Long = 0
         for (bookPrice in bookList) {
-            bookPrice.bookPrice?.let { totalPrice += it }
+            bookPrice.bookPrice.let { totalPrice += it }
         }
         binding.edTotalPrice.setText(totalPrice.toString())
     }

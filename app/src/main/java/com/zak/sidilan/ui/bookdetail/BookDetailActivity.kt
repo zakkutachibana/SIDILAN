@@ -80,7 +80,7 @@ class BookDetailActivity : AppCompatActivity() {
                     R.string.rp_price,
                     Formatter.addThousandSeparatorTextView(bookDetail.book?.sellPrice)
                 )
-                binding.tvStockQtyValue.text = bookDetail.book?.stockQty.toString()
+                binding.tvStockQtyValue.text = bookDetail.stock?.stockQty.toString()
                 if (bookDetail.book?.isPerpetual == true) {
                     binding.tvContractValue.text = getString(R.string.forever_contract)
                 } else {

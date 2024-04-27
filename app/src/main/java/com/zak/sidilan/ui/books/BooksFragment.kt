@@ -45,9 +45,9 @@ class BooksFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = BooksAdapter(requireContext()) { book ->
+        adapter = BooksAdapter(requireContext()) { bookDetail ->
             val intent = Intent(requireActivity(), BookDetailActivity::class.java)
-            intent.putExtra("bookId", book.id)
+            intent.putExtra("bookId", bookDetail.book?.id)
             requireActivity().startActivity(intent)
         }
         binding.rvBooks.layoutManager = LinearLayoutManager(requireContext())

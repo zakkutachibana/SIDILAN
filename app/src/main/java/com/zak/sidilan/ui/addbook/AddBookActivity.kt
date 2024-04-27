@@ -264,7 +264,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
             null
         }
     }
-    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Int?) {
+    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Long?) {
         val title = volumeInfo?.title.toString()
         val subtitle = volumeInfo?.subtitle.toString()
         val fullTitle =

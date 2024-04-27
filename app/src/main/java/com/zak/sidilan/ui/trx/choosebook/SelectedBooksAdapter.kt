@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.zak.sidilan.R
-import com.zak.sidilan.data.entities.BookPrice
+import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.databinding.LayoutBookHorizontalBinding
 import com.zak.sidilan.ui.trx.bookin.BookInTrxViewModel
 import com.zak.sidilan.util.Formatter
@@ -14,12 +14,12 @@ import com.zak.sidilan.util.Formatter
 class SelectedBooksAdapter(
     private val context: Context,
     private val viewModel: BookInTrxViewModel, // Pass your ViewModel here
-    private val onClickListener: (BookPrice) -> Unit,
+    private val onClickListener: (BookQtyPrice) -> Unit,
 ) : RecyclerView.Adapter<SelectedBooksAdapter.BooksViewHolder>() {
 
-    private val booksList = mutableListOf<BookPrice>()
+    private val booksList = mutableListOf<BookQtyPrice>()
 
-    fun updateBooks(newBooks: List<BookPrice>) {
+    fun updateBooks(newBooks: List<BookQtyPrice>) {
         booksList.clear()
         booksList.addAll(newBooks)
         notifyDataSetChanged()
@@ -61,12 +61,14 @@ class SelectedBooksAdapter(
 
         }
 
-        fun bind(bookPrice: BookPrice) {
-            val subtotal = bookPrice.bookQty?.times(bookPrice.book?.printPrice!!)
-            adapterBinding.ivBookCover.load(bookPrice.book?.coverUrl)
-            adapterBinding.tvBookTitleItem.text = bookPrice.book?.title
-            adapterBinding.tvBookQty.text = context.getString(R.string.total_stock_qty, bookPrice.bookQty.toString())
+        fun bind(bookQtyPrice: BookQtyPrice) {
+            val subtotal = bookQtyPrice.bookQty?.times(bookQtyPrice.book?.printPrice!!)
+            adapterBinding.ivBookCover.load(bookQtyPrice.book?.coverUrl)
+            adapterBinding.tvBookTitleItem.text = bookQtyPrice.book?.title
+            adapterBinding.tvBookQty.text = context.getString(R.string.total_stock_qty, bookQtyPrice.bookQty.toString())
             adapterBinding.tvBookPrice.text = context.getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(subtotal))
         }
     }
+
 }
+

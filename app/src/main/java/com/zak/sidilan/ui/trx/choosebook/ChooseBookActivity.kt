@@ -8,7 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.zak.sidilan.data.entities.Book
-import com.zak.sidilan.data.entities.BookPrice
+import com.zak.sidilan.data.entities.BookDetail
+import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityChooseBookBinding
 import com.zak.sidilan.ui.books.BooksViewModel
@@ -42,8 +43,8 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
     }
 
     private fun setupRecyclerView() {
-        adapter = ChooseBookAdapter(this) { book ->
-            showBottomSheet(book)
+        adapter = ChooseBookAdapter(this) { bookDetail ->
+            showBottomSheet(bookDetail)
         }
         binding.rvChooseBook.layoutManager = GridLayoutManager(this, 3)
         binding.rvChooseBook.adapter = adapter
@@ -57,7 +58,7 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
         }
     }
 
-    private fun showBottomSheet(book: Book) {
+    private fun showBottomSheet(book: BookDetail) {
         val modalBottomSheetView = ModalBottomSheetView(3, null, book)
         modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
         modalBottomSheetView.setBottomSheetListener(this)
@@ -73,13 +74,13 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Int?) {
+    override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Long?) {
         val intent = when (type) {
             1 -> {
                 val subtotal = book?.printPrice!! * bookQty!!
-                val bookPrice = BookPrice(book, bookQty, subtotal)
+                val bookQtyPrice = BookQtyPrice(book, bookQty, subtotal)
                 Intent().apply {
-                    putExtra(BookInTrxPrintFragment.EXTRA_BOOK, bookPrice)
+                    putExtra(BookInTrxPrintFragment.EXTRA_BOOK, bookQtyPrice)
                 }
             }
 
