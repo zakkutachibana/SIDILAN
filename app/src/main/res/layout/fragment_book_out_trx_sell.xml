@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                app:simpleItems="@array/sell_platform"/>
+                app:simpleItems="@array/sell_platform" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -80,77 +80,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edl_sell_date" />
 
-        <include
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_book_in_print"
-            layout="@layout/layout_choose_book_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/divider" />
-
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_print_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:enabled="false"
-            android:hint="Harga Satuan"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_book_in_print"
-            app:startIconDrawable="@drawable/ic_rupiah">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_print_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="9" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_sell_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:enabled="false"
-            android:hint="Jumlah Buku"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/rv_book_in_print"
-            app:startIconDrawable="@drawable/ic_number">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_sell_price"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="9" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+            app:layout_constraintTop_toBottomOf="@+id/divider"
+            tools:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/layout_book_horizontal" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edl_total_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:enabled="false"
-            android:hint="Total Penjualan"
+            android:hint="Total Harga Jual"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edl_print_price"
+            android:visibility="gone"
+            android:layout_marginTop="16dp"
+            app:helperText="Harga jual sebelum diskon"
+            app:layout_constraintTop_toBottomOf="@+id/rv_book_in_print"
             app:startIconDrawable="@drawable/ic_rupiah">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -158,38 +109,210 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
+                android:text="0" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_item"
+            style="@style/Widget.Material3.Button.TonalButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tambah Buku"
+            app:icon="@drawable/ic_add"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edl_total_price" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.7" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_add_item" />
+
+
+        <RadioGroup
+            android:id="@+id/rg_custom_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/divider2">
+
+            <RadioButton
+                android:id="@+id/rb_regular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Reguler" />
+
+            <RadioButton
+                android:id="@+id/rb_flat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Diskon (Rp)" />
+
+            <RadioButton
+                android:id="@+id/rb_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Diskon (%)" />
+        </RadioGroup>
+
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_discount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:enabled="false"
+            android:hint="Disc"
+            android:visibility="gone"
+            app:endIconDrawable="@drawable/ic_percent"
+            app:endIconMode="custom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline"
+            app:layout_constraintTop_toBottomOf="@+id/rg_custom_price">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_discount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="2"
+                android:text="0" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_discount_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:enabled="false"
+            android:hint="Nominal Disc"
+            app:layout_constraintEnd_toStartOf="@+id/guideline"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rg_custom_price"
+            app:startIconDrawable="@drawable/ic_sale">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_discount_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:text="0" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_total_book_qty"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:hint="Jumlah Buku"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edl_discount_amount"
+            app:startIconDrawable="@drawable/ic_number">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_total_book_qty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
                 android:maxLength="9" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <CheckBox
-            android:id="@+id/cb_custom_price"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_total_book_kind"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:hint="Macam Buku"
+            android:layout_marginStart="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline2"
+            app:layout_constraintTop_toBottomOf="@+id/edl_discount_amount"
+            app:startIconDrawable="@drawable/ic_category">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_total_book_kind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="9" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_final_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Biaya custom"
-            app:layout_constraintTop_toBottomOf="@+id/edl_total_price"
-            tools:layout_editor_absoluteX="16dp" />
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:hint="Total Harga Akhir"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edl_total_book_kind"
+            app:startIconDrawable="@drawable/ic_rupiah">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_final_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edl_note"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Keterangan"
+
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cb_custom_price"
+            app:layout_constraintTop_toBottomOf="@+id/edl_final_price"
             app:startIconDrawable="@drawable/ic_info">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ed_note"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
+                android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/divider2"
+            android:id="@+id/divider3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -205,10 +328,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/divider2" />
+            app:layout_constraintTop_toBottomOf="@id/divider3" />
 
         <Button
-            android:id="@+id/btn_add_book"
+            android:id="@+id/btn_add_trx"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

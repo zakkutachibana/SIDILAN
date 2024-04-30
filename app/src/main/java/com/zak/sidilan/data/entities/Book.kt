@@ -46,7 +46,7 @@ data class BookDetail(
 @Parcelize
 data class BookQtyPrice(
     val book: Book,
-    val bookQty: Long,
-    val bookPrice: Long
+    var bookQty: Long,
+    var bookPrice: Long
 ) : Parcelable
 

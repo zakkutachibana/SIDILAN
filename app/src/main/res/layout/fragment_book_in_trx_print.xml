@@ -69,20 +69,21 @@
             tools:listitem="@layout/layout_book_horizontal" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_total_price"
+            android:id="@+id/edl_total_cost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:enabled="false"
-            android:visibility="gone"
-            android:hint="Total Biaya Cetak"
+            android:hint="Total Harga Cetak"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:visibility="gone"
             android:layout_marginTop="16dp"
+            app:helperText="Harga cetak sebelum diskon"
             app:layout_constraintTop_toBottomOf="@+id/rv_book_in_print"
             app:startIconDrawable="@drawable/ic_rupiah">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_total_price"
+                android:id="@+id/ed_total_cost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
@@ -99,7 +100,7 @@
             app:icon="@drawable/ic_add"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edl_total_price" />
+            app:layout_constraintTop_toBottomOf="@+id/edl_total_cost" />
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -109,6 +110,12 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.7" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider2"
@@ -123,7 +130,7 @@
 
 
         <RadioGroup
-            android:id="@+id/rg_custom_price"
+            android:id="@+id/rg_custom_cost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -165,7 +172,7 @@
             app:endIconMode="custom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/rg_custom_price">
+            app:layout_constraintTop_toBottomOf="@+id/rg_custom_cost">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ed_discount"
@@ -187,7 +194,7 @@
             app:layout_constraintEnd_toStartOf="@+id/guideline"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rg_custom_price"
+            app:layout_constraintTop_toBottomOf="@+id/rg_custom_cost"
             app:startIconDrawable="@drawable/ic_sale">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -200,19 +207,63 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_final_price"
+            android:id="@+id/edl_total_book_qty"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:hint="Jumlah Buku"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edl_discount_amount"
+            app:startIconDrawable="@drawable/ic_number">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_total_book_qty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="9" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_total_book_kind"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:hint="Macam Buku"
+            android:layout_marginStart="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline2"
+            app:layout_constraintTop_toBottomOf="@+id/edl_discount_amount"
+            app:startIconDrawable="@drawable/ic_category">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_total_book_kind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:maxLength="9" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_final_cost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:enabled="false"
-            android:hint="Total Biaya Akhir"
+            android:hint="Total Harga Akhir"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edl_discount_amount"
+            app:layout_constraintTop_toBottomOf="@+id/edl_total_book_kind"
             app:startIconDrawable="@drawable/ic_rupiah">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_final_price"
+                android:id="@+id/ed_final_cost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number" />
@@ -225,10 +276,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="Keterangan"
-
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edl_final_price"
+            app:layout_constraintTop_toBottomOf="@+id/edl_final_cost"
             app:startIconDrawable="@drawable/ic_info">
 
             <com.google.android.material.textfield.TextInputEditText

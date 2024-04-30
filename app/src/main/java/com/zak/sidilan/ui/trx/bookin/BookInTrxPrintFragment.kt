@@ -13,13 +13,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookInPrintingTrx
@@ -27,7 +28,7 @@ import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.entities.BookSubtotal
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentBookInTrxPrintBinding
-import com.zak.sidilan.ui.bookdetail.BookDetailActivity
+import com.zak.sidilan.ui.trx.BookTrxViewModel
 import com.zak.sidilan.ui.trx.choosebook.ChooseBookActivity
 import com.zak.sidilan.ui.trx.choosebook.SelectedBooksAdapter
 import com.zak.sidilan.util.Formatter
@@ -43,7 +44,7 @@ val bookInTrxPrintFragmentModule = module {
 class BookInTrxPrintFragment : Fragment() {
     private var _binding: FragmentBookInTrxPrintBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: BookInTrxViewModel by viewModel()
+    private val viewModel: BookTrxViewModel by viewModel()
     private lateinit var adapter: SelectedBooksAdapter
     private lateinit var hawkManager : HawkManager
 
@@ -65,10 +66,27 @@ class BookInTrxPrintFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = SelectedBooksAdapter(requireContext(), viewModel) { bookPrice ->
-            val intent = Intent(requireActivity(), BookDetailActivity::class.java)
-            intent.putExtra("bookId", bookPrice.book?.id)
-            requireActivity().startActivity(intent)
+        adapter = SelectedBooksAdapter(1, requireContext(), viewModel) { bookCost ->
+            val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
+            val edStock = layout.findViewById<EditText>(R.id.ed_stock)
+            layout.findViewById<TextView>(R.id.tv_title_book_stock).text = bookCost.book.title
+            layout.findViewById<TextView>(R.id.tv_author_book_stock).text = bookCost.book.authors.joinToString(", ")
+            layout.findViewById<ImageView>(R.id.iv_book_cover_stock).load(bookCost.book.coverUrl)
+            edStock.setText(bookCost.bookQty.toString())
+            MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                .setTitle(resources.getString(R.string.title_update_stock))
+                .setView(layout)
+                .setIcon(R.drawable.ic_update)
+                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton("Ya") { dialog, which ->
+                    val newQty = edStock.text.toString().toLong()
+                    val newCost = newQty * bookCost.book.printPrice
+                    val newBookQtyCost = BookQtyPrice(bookCost.book, newQty, newCost)
+                    viewModel.updateQty(newBookQtyCost)
+                }
+                .show()
         }
         binding.rvBookInPrint.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -77,7 +95,7 @@ class BookInTrxPrintFragment : Fragment() {
 
         viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
             adapter.updateBooks(books)
-            calculateTotalPrice(books)
+            calculateTotalCost(books)
         }
     }
 
@@ -101,10 +119,10 @@ class BookInTrxPrintFragment : Fragment() {
         }
 
     private fun setupView() {
-        Formatter.addThousandSeparatorEditText(binding.edTotalPrice)
+        Formatter.addThousandSeparatorEditText(binding.edTotalCost)
         Formatter.addThousandSeparatorEditText(binding.edDiscountAmount)
         Formatter.addThousandSeparatorEditText(binding.edDiscount)
-        Formatter.addThousandSeparatorEditText(binding.edFinalPrice)
+        Formatter.addThousandSeparatorEditText(binding.edFinalCost)
 
         val discountAmountWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -132,7 +150,7 @@ class BookInTrxPrintFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {}
         }
 
-        binding.rgCustomPrice.setOnCheckedChangeListener { group, checkedId ->
+        binding.rgCustomCost.setOnCheckedChangeListener { group, checkedId ->
             when (checkedId) {
                 R.id.rb_regular -> {
                     binding.edDiscountAmount.removeTextChangedListener(discountAmountWatcher)
@@ -141,32 +159,34 @@ class BookInTrxPrintFragment : Fragment() {
                     binding.edlDiscountAmount.isEnabled = false
                     binding.edlDiscount.visibility = View.GONE
                     binding.edlDiscountAmount.visibility = View.GONE
-                    binding.edlTotalPrice.visibility = View.GONE
+                    binding.edlTotalCost.visibility = View.GONE
                     binding.edDiscount.setText("0")
                     binding.edDiscountAmount.setText("0")
-                    binding.edFinalPrice.text = binding.edTotalPrice.text
+                    binding.edFinalCost.text = binding.edTotalCost.text
                 }
                 R.id.rb_percent -> {
                     binding.edDiscountAmount.removeTextChangedListener(discountAmountWatcher)
                     binding.edDiscount.addTextChangedListener(discountWatcher)
                     binding.edlDiscount.visibility = View.VISIBLE
                     binding.edlDiscountAmount.visibility = View.VISIBLE
-                    binding.edlTotalPrice.visibility = View.VISIBLE
+                    binding.edlTotalCost.visibility = View.VISIBLE
                     binding.edlDiscount.isEnabled = true
                     binding.edlDiscountAmount.isEnabled = false
                     binding.edDiscountAmount.setText("0")
-                    binding.edFinalPrice.text = binding.edTotalPrice.text
+                    binding.edDiscount.setText("0")
+                    binding.edFinalCost.text = binding.edTotalCost.text
                 }
                 R.id.rb_flat -> {
                     binding.edDiscount.removeTextChangedListener(discountWatcher)
                     binding.edDiscountAmount.addTextChangedListener(discountAmountWatcher)
                     binding.edlDiscount.visibility = View.VISIBLE
                     binding.edlDiscountAmount.visibility = View.VISIBLE
-                    binding.edlTotalPrice.visibility = View.VISIBLE
+                    binding.edlTotalCost.visibility = View.VISIBLE
                     binding.edlDiscount.isEnabled = false
                     binding.edlDiscountAmount.isEnabled = true
+                    binding.edDiscountAmount.setText("0")
                     binding.edDiscount.setText("0")
-                    binding.edFinalPrice.text = binding.edTotalPrice.text
+                    binding.edFinalCost.text = binding.edTotalCost.text
                 }
             }
         }
@@ -198,9 +218,9 @@ class BookInTrxPrintFragment : Fragment() {
 //                binding.btnAddItem.isEnabled = false
                 val shopName = binding.edPrintShop.text.toString()
                 val printDate = binding.edPrintDate.text.toString()
-                val totalPrice = Formatter.getRawValue(binding.edTotalPrice).toLong()
+                val totalCost = Formatter.getRawValue(binding.edTotalCost).toLong()
                 val note = binding.edNote.text.toString()
-                val isCustomPrice = when {
+                val isCustomCost = when {
                     binding.rbPercent.isChecked -> true
                     binding.rbFlat.isChecked -> true
                     binding.rbRegular.isChecked -> false
@@ -221,8 +241,8 @@ class BookInTrxPrintFragment : Fragment() {
                         bookInDate = printDate,
                         books = bookItems, // Pass the list of BookItems
                         totalBooksQty = books.sumOf { it.bookQty }, // Calculate total books quantity
-                        totalAmount = totalPrice, // Use the total price entered by the user
-                        isCustomCost = isCustomPrice,
+                        totalAmount = totalCost, // Use the total price entered by the user
+                        isCustomCost = isCustomCost,
                         notes = note
                     )
                     viewModel.addTrxPrint(transaction)
@@ -231,36 +251,41 @@ class BookInTrxPrintFragment : Fragment() {
         }
     }
 
-    private fun calculateTotalPrice(bookList: List<BookQtyPrice>) {
-        var totalPrice: Long = 0
-        for (bookPrice in bookList) {
-            bookPrice.bookPrice.let { totalPrice += it }
+    private fun calculateTotalCost(bookList: List<BookQtyPrice>) {
+        var totalCost: Long = 0
+        var qty: Long = 0
+        val kind = bookList.size
+        for (bookCost in bookList) {
+            bookCost.bookPrice.let { totalCost += it }
+            bookCost.bookQty.let { qty += it }
         }
-        binding.edTotalPrice.setText(totalPrice.toString())
-        binding.edFinalPrice.setText(totalPrice.toString())
+        binding.edTotalCost.setText(totalCost.toString())
+        binding.edFinalCost.setText(totalCost.toString())
+        binding.edTotalBookKind.setText(kind.toString())
+        binding.edTotalBookQty.setText(qty.toString())
     }
 
 
     private fun updateDiscount() {
-        val totalPrice = Formatter.getRawValue(binding.edTotalPrice).toDouble()
+        val totalCost = Formatter.getRawValue(binding.edTotalCost).toDouble()
         val discount = binding.edDiscount.text.toString().toDouble()
-        val discountAmount = totalPrice * (discount / 100)
-        val finalPrice = totalPrice - discountAmount
+        val discountAmount = totalCost * (discount / 100)
+        val finalCost = totalCost - discountAmount
         binding.edDiscountAmount.setText(discountAmount.toLong().toString())
-        binding.edFinalPrice.setText(finalPrice.toLong().toString())
+        binding.edFinalCost.setText(finalCost.toLong().toString())
     }
 
     private fun updateDiscountAmount() {
-        val totalPrice = Formatter.getRawValue(binding.edTotalPrice).toDouble()
+        val totalCost = Formatter.getRawValue(binding.edTotalCost).toDouble()
         val discountAmount = Formatter.getRawValue(binding.edDiscountAmount).toDouble()
-        val finalPrice = totalPrice - discountAmount
-        binding.edFinalPrice.setText(finalPrice.toLong().toString())
-        Log.d("YAM", "tp: $totalPrice, da: $discountAmount, fp: $finalPrice")
+        val finalCost = totalCost - discountAmount
+        binding.edFinalCost.setText(finalCost.toLong().toString())
+        Log.d("YAM", "tp: $totalCost, da: $discountAmount, fp: $finalCost")
     }
 
 
     private fun isValid(): Boolean {
-//        when (binding.cbCustomPrice.isChecked) {
+//        when (binding.cbCustomCost.isChecked) {
 //            true ->
                 return isNotEmpty(
                 binding.edPrintShop.text.toString(),
@@ -273,9 +298,9 @@ class BookInTrxPrintFragment : Fragment() {
                 binding.edPrintDate
             )
                     && isNotEmpty(
-                binding.edTotalPrice.text.toString(),
-                binding.edlTotalPrice,
-                binding.edTotalPrice
+                binding.edTotalCost.text.toString(),
+                binding.edlTotalCost,
+                binding.edTotalCost
             )
 
 //            else -> return isNotEmpty(
@@ -289,9 +314,9 @@ class BookInTrxPrintFragment : Fragment() {
 //                binding.edPrintDate
 //            )
 //                    && isNotEmpty(
-//                binding.edTotalPrice.text.toString(),
-//                binding.edlTotalPrice,
-//                binding.edTotalPrice
+//                binding.edTotalCost.text.toString(),
+//                binding.edlTotalCost,
+//                binding.edTotalCost
 //            )
 //                    && isNotEmpty(
 //                binding.edNote.text.toString(),
@@ -369,7 +394,7 @@ class BookInTrxPrintFragment : Fragment() {
         binding.edPrintDate.addTextChangedListener(TextFieldValidation(binding.edPrintDate))
         binding.edDiscount.addTextChangedListener(TextFieldValidation(binding.edDiscount))
         binding.edDiscountAmount.addTextChangedListener(TextFieldValidation(binding.edDiscountAmount))
-        binding.edTotalPrice.addTextChangedListener(TextFieldValidation(binding.edTotalPrice))
+        binding.edTotalCost.addTextChangedListener(TextFieldValidation(binding.edTotalCost))
     }
 
     private fun showDatePicker(dateEditText: TextView, title: String) {

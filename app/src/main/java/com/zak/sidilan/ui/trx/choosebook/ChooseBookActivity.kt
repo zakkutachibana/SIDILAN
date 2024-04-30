@@ -14,7 +14,10 @@ import com.zak.sidilan.data.entities.VolumeInfo
 import com.zak.sidilan.databinding.ActivityChooseBookBinding
 import com.zak.sidilan.ui.books.BooksViewModel
 import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetView
+import com.zak.sidilan.ui.trx.bookin.BookInTrxOtherFragment
 import com.zak.sidilan.ui.trx.bookin.BookInTrxPrintFragment
+import com.zak.sidilan.ui.trx.bookout.BookOutTrxOtherFragment
+import com.zak.sidilan.ui.trx.bookout.BookOutTrxSellFragment
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListener {
@@ -76,6 +79,7 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
 
     override fun onButtonClicked(volumeInfo: VolumeInfo?, book: Book?, bookQty: Long?) {
         val intent = when (type) {
+            //Type 1: Book In Print
             1 -> {
                 val subtotal = book?.printPrice!! * bookQty!!
                 val bookQtyPrice = BookQtyPrice(book, bookQty, subtotal)
@@ -83,17 +87,29 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
                     putExtra(BookInTrxPrintFragment.EXTRA_BOOK, bookQtyPrice)
                 }
             }
-
-            2 -> Intent().apply {
-                putExtra(BookInTrxPrintFragment.EXTRA_BOOK, book)
+            //Type 2: Book In Donation
+            2 -> {
+                val subtotal = book?.printPrice!! * bookQty!!
+                val bookQtyPrice = BookQtyPrice(book, bookQty, subtotal)
+                Intent().apply {
+                    putExtra(BookInTrxOtherFragment.EXTRA_BOOK, bookQtyPrice)
+                }
             }
 
-            3 -> Intent().apply {
-                putExtra(BookInTrxPrintFragment.EXTRA_BOOK, book)
+            3 -> {
+                val subtotal = book?.printPrice!! * bookQty!!
+                val bookQtyPrice = BookQtyPrice(book, bookQty, subtotal)
+                Intent().apply {
+                    putExtra(BookOutTrxSellFragment.EXTRA_BOOK, bookQtyPrice)
+                }
             }
 
-            4 -> Intent().apply {
-                putExtra(BookInTrxPrintFragment.EXTRA_BOOK, book)
+            4 -> {
+                val subtotal = book?.printPrice!! * bookQty!!
+                val bookQtyPrice = BookQtyPrice(book, bookQty, subtotal)
+                Intent().apply {
+                    putExtra(BookOutTrxOtherFragment.EXTRA_BOOK, bookQtyPrice)
+                }
             }
 
             else -> Intent().apply { }

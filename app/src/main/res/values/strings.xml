@@ -22,6 +22,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_add_book">Tambah Buku</string>
     <string name="title_update_book">Ubah Detail Buku</string>
+    <string name="title_update_stock">Ubah Stok</string>
     <string name="title_books">Books</string>
     <string name="title_book_in">Buku Masuk</string>
     <string name="title_book_in_print">Cetak Buku</string>

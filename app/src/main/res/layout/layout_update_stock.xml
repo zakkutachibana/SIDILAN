@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="16dp"
+>
+
+    <ImageView
+        android:id="@+id/iv_book_cover_stock"
+        android:layout_width="88dp"
+        android:layout_height="142dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/book_cover"
+        android:scaleType="centerCrop"
+        android:src="@drawable/book_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_title_book_stock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="Judul Buku"
+        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+        android:ellipsize="end"
+        android:maxLines="2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_book_cover_stock"
+        app:layout_constraintTop_toTopOf="@+id/iv_book_cover_stock" />
+
+    <TextView
+        android:id="@+id/tv_author_book_stock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="24dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Penulis"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_book_cover_stock"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title_book_stock" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edl_stock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Stok Buku"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_author_book_stock"
+        app:layout_constraintStart_toStartOf="@+id/tv_author_book_stock"
+        app:layout_constraintTop_toBottomOf="@+id/tv_author_book_stock"
+        app:startIconDrawable="@drawable/ic_number">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_stock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

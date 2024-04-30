@@ -2,18 +2,20 @@ package com.zak.sidilan.ui.trx.choosebook
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.databinding.LayoutBookHorizontalBinding
-import com.zak.sidilan.ui.trx.bookin.BookInTrxViewModel
+import com.zak.sidilan.ui.trx.BookTrxViewModel
 import com.zak.sidilan.util.Formatter
 
 class SelectedBooksAdapter(
+    private val type: Int,
     private val context: Context,
-    private val viewModel: BookInTrxViewModel, // Pass your ViewModel here
+    private val viewModel: BookTrxViewModel, // Pass your ViewModel here
     private val onClickListener: (BookQtyPrice) -> Unit,
 ) : RecyclerView.Adapter<SelectedBooksAdapter.BooksViewHolder>() {
 
@@ -58,15 +60,25 @@ class SelectedBooksAdapter(
                     notifyItemRemoved(position)
                 }
             }
-
         }
 
         fun bind(bookQtyPrice: BookQtyPrice) {
-            val subtotal = bookQtyPrice.bookQty?.times(bookQtyPrice.book?.printPrice!!)
-            adapterBinding.ivBookCover.load(bookQtyPrice.book?.coverUrl)
-            adapterBinding.tvBookTitleItem.text = bookQtyPrice.book?.title
+            val subtotal = bookQtyPrice.bookQty.times(bookQtyPrice.book.printPrice)
+            adapterBinding.ivBookCover.load(bookQtyPrice.book.coverUrl)
+            adapterBinding.tvBookTitleItem.text = bookQtyPrice.book.title
             adapterBinding.tvBookQty.text = context.getString(R.string.total_stock_qty, bookQtyPrice.bookQty.toString())
-            adapterBinding.tvBookPrice.text = context.getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(subtotal))
+            when (type) {
+                1 -> {
+                    adapterBinding.tvBookPrice.text = context.getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(subtotal))
+                }
+                2 -> {
+                    adapterBinding.tvBookPrice.visibility = View.GONE
+                }
+                3 -> {
+                    adapterBinding.tvBookPrice.text = context.getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(subtotal))
+
+                }
+            }
         }
     }
 
