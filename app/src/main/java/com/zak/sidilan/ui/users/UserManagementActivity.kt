@@ -33,6 +33,11 @@ class UserManagementActivity : AppCompatActivity() {
         binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
+                    if (tab.position == 0) {
+                        binding.fab.hide()
+                    } else {
+                        binding.fab.show()
+                    }
                     binding.viewPager.currentItem = tab.position
                 }
             }
@@ -44,6 +49,11 @@ class UserManagementActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 binding.tabs.selectTab(binding.tabs.getTabAt(position))
+                if (position == 0) {
+                    binding.fab.hide()
+                } else {
+                    binding.fab.show()
+                }
             }
         })
 

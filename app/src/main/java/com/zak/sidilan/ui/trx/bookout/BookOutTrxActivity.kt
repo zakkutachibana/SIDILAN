@@ -7,7 +7,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityBookOutTrxBinding
+import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
+import org.koin.dsl.module
 
+val bookOutTrxActivityModule = module {
+    factory { BookOutTrxActivity() }
+}
 class BookOutTrxActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBookOutTrxBinding
     private lateinit var adapter: BookOutTrxPagerAdapter
@@ -19,6 +24,8 @@ class BookOutTrxActivity : AppCompatActivity() {
 
         adapter = BookOutTrxPagerAdapter(supportFragmentManager, lifecycle)
         binding.viewPager.adapter = adapter
+        binding.viewPager.isUserInputEnabled = false
+
         binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {

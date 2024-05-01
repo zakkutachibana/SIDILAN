@@ -5,6 +5,8 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +20,11 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookQtyPrice
+import com.zak.sidilan.data.entities.BookSubtotal
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentBookInTrxOtherBinding
 import com.zak.sidilan.ui.trx.BookTrxViewModel
@@ -44,6 +49,7 @@ class BookInTrxOtherFragment : Fragment() {
 
         setupView()
         setupViewModel()
+        setupListeners()
         setupRecyclerView()
         setAction()
         return binding.root
@@ -103,15 +109,16 @@ class BookInTrxOtherFragment : Fragment() {
         }
     private fun setupView() {
         val currentUser = hawkManager.retrieveData<User>("user")
-
         binding.userCard.tvUserName.text = currentUser?.displayName
         binding.userCard.ivProfilePicture.load(currentUser?.photoUrl)
-
     }
 
     private fun setupViewModel() {
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+        viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
+            binding.btnAddTrx.isEnabled = !isEmpty
         }
     }
     private fun setAction() {
@@ -121,7 +128,49 @@ class BookInTrxOtherFragment : Fragment() {
             getResult.launch(intent)
         }
         binding.edDonorDate.setOnClickListener {
-            showDatePicker(binding.edDonorDate, "Tanggal Cetak Buku")
+            showDatePicker(binding.edDonorDate, "Tanggal Buku Masuk")
+        }
+        binding.btnAddTrx.setOnClickListener {
+            if (isValid()) {
+                binding.btnAddTrx.isEnabled = false
+                val donorName = binding.edDonorName.text.toString()
+                val donorDate = binding.edDonorDate.text.toString()
+                val note = binding.edNote.text.toString()
+
+                viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
+                    val bookItems = books.map { eachBook ->
+                        BookSubtotal(
+                            bookId = eachBook.book.id,
+                            qty = eachBook.bookQty,
+                            subtotalPrice = eachBook.bookPrice
+                        )
+                    }
+
+                    // Create a BookInPrintingTransaction instance
+                    val transaction = BookInDonationTrx(
+                        donorName = donorName,
+                        bookInDate = donorDate,
+                        books = bookItems, // Pass the list of BookItems
+                        totalBookQty = books.sumOf { it.bookQty }, // Calculate total books quantity
+                        totalBookKind = bookItems.size.toLong(),
+                        notes = note
+                    )
+                    viewModel.addTrxInDonation(transaction) { _, success ->
+                        if (success) {
+                            for (bookItem in bookItems) {
+                                viewModel.updateStock(
+                                    bookItem.bookId,
+                                    transaction.type,
+                                    bookItem.qty
+                                )
+                            }
+                            requireActivity().finish()
+                        } else {
+                            binding.btnAddTrx.isEnabled = true
+                        }
+                    }
+                }
+            }
         }
     }
     private fun calculateTotalQty(bookList: List<BookQtyPrice>) {
@@ -133,6 +182,68 @@ class BookInTrxOtherFragment : Fragment() {
 
         binding.edTotalBookKind.setText(kind.toString())
         binding.edTotalBookQty.setText(qty.toString())
+    }
+
+    private fun isValid(): Boolean {
+        return isNotEmpty(
+            binding.edDonorName.text.toString(),
+            binding.edlDonorName,
+            binding.edDonorName
+        )
+                && isNotEmpty(
+            binding.edDonorDate.text.toString(),
+            binding.edlDonorDate,
+            binding.edDonorDate
+        )
+    }
+    inner class TextFieldValidation(private val view: View) : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {}
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            // checking ids of each text field and applying functions accordingly.
+            when (view.id) {
+                R.id.ed_donor_name -> {
+                    isNotEmpty(
+                        binding.edDonorName.text.toString(),
+                        binding.edlDonorName,
+                        binding.edDonorName
+                    )
+                }
+
+                R.id.ed_donor_date -> {
+                    isNotEmpty(
+                        binding.edDonorDate.text.toString(),
+                        binding.edlDonorDate,
+                        binding.edDonorDate
+                    )
+                }
+            }
+        }
+    }
+
+    private fun isNotEmpty(
+        value: String,
+        textInputLayout: TextInputLayout,
+        editText: EditText
+    ): Boolean {
+        when {
+            value.trim().isEmpty() -> {
+                textInputLayout.error = "Input " + textInputLayout.hint.toString() + " diperlukan"
+                editText.requestFocus()
+                return false
+            }
+
+            else -> {
+                textInputLayout.isErrorEnabled = false
+            }
+        }
+        return true
+    }
+
+    private fun setupListeners() {
+        binding.edDonorName.addTextChangedListener(TextFieldValidation(binding.edDonorName))
+        binding.edDonorDate.addTextChangedListener(TextFieldValidation(binding.edDonorDate))
     }
     private fun showDatePicker(dateEditText: TextView, title: String) {
         val currentDate = Calendar.getInstance()

@@ -26,9 +26,9 @@
     <string name="title_books">Books</string>
     <string name="title_book_in">Buku Masuk</string>
     <string name="title_book_in_print">Cetak Buku</string>
-    <string name="title_book_in_trx">Transaksi Buku Masuk</string>
+    <string name="title_book_in_trx">Riwayat Transaksi Buku Masuk</string>
     <string name="title_book_out">Buku Keluar</string>
-    <string name="title_book_out_trx">Transaksi Buku Keluar</string>
+    <string name="title_book_out_trx">Riwayat Transaksi Buku Keluar</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_director">Direktur</string>
     <string name="title_executive_charts">Grafik Eksekutif</string>
@@ -60,7 +60,9 @@
     <string name="will_be_deleted">Buku \"%1$s\" akan dihapus. Apakah anda yakin ingin menghapusnya? Ketik \"%1$s\" untuk menghapus buku.</string>
     <string name="forever_contract">Perjanjian Berlaku Selamanya</string>
     <string name="default_web_client_id" />
-    <string name="add_whitelist_action">Masukkan informasi pengguna yang akan ditambahkan</string>
+    <string name="add_whitelist_action">Masukkan informasi pengguna yang akan ditambahkan.</string>
+    <string name="update_whitelist_action">Perbarui informasi pengguna yang akan ditambahkan.</string>
     <string name="add_whitelist">Tambah Whitelist</string>
+    <string name="update_whitelist">Ubah Whitelist</string>
 
 </resources>

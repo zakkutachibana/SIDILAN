@@ -85,10 +85,13 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
                 binding.ivBookCoverView.load(createdBook?.book?.coverUrl)
 
                 binding.btnAddView.setOnClickListener {
-                    val bookQty = binding.edBookQty.text.toString().toLong()
-
-                    listener?.onButtonClicked(null, createdBook?.book, bookQty)
-                    dismiss()
+                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString() != "0") {
+                        val bookQty = binding.edBookQty.text.toString().toLong()
+                        listener?.onButtonClicked(null, createdBook?.book, bookQty)
+                        dismiss()
+                    } else {
+                        binding.edlBookQty.error = "${binding.edlBookQty.hint} tidak boleh kosong"
+                    }
                 }
                 dialog?.setOnDismissListener {
                     listener?.onDismissed()

@@ -21,12 +21,12 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
-import com.zak.sidilan.data.entities.BookInPrintingTrx
+import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.entities.BookSubtotal
 import com.zak.sidilan.data.entities.User
-import com.zak.sidilan.databinding.FragmentBookOutTrxOtherBinding
 import com.zak.sidilan.databinding.FragmentBookOutTrxSellBinding
 import com.zak.sidilan.ui.trx.BookTrxViewModel
 import com.zak.sidilan.ui.trx.bookin.BookInTrxPrintFragment
@@ -57,6 +57,7 @@ class BookOutTrxSellFragment : Fragment() {
 
         setupView()
         setupViewModel()
+        setupListeners()
         setupRecyclerView()
         setAction()
 
@@ -199,6 +200,9 @@ class BookOutTrxSellFragment : Fragment() {
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
+        viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
+            binding.btnAddTrx.isEnabled = !isEmpty
+        }
     }
 
     private fun setAction() {
@@ -212,41 +216,64 @@ class BookOutTrxSellFragment : Fragment() {
         }
 
         binding.btnAddTrx.setOnClickListener {
-//            if (isValid()) {
-////                binding.btnAddItem.isEnabled = false
-//                val shopName = binding.edPrintShop.text.toString()
-//                val printDate = binding.edPrintDate.text.toString()
-//                val totalCost = Formatter.getRawValue(binding.edTotalCost).toLong()
-//                val note = binding.edNote.text.toString()
-//                val isCustomCost = when {
-//                    binding.rbPercent.isChecked -> true
-//                    binding.rbFlat.isChecked -> true
-//                    binding.rbRegular.isChecked -> false
-//                    else -> false
-//                }
-//                viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
-//                    val bookItems = books.map { eachBook ->
-//                        BookSubtotal(
-//                            bookId = eachBook.book.id,
-//                            qty = eachBook.bookQty,
-//                            subtotalPrice = eachBook.bookPrice
-//                        )
-//                    }
-//
-//                    // Create a BookInPrintingTransaction instance
-//                    val transaction = BookInPrintingTrx(
-//                        printingShop = shopName,
-//                        bookInDate = printDate,
-//                        books = bookItems, // Pass the list of BookItems
-//                        totalBooksQty = books.sumOf { it.bookQty }, // Calculate total books quantity
-//                        totalAmount = totalCost, // Use the total price entered by the user
-//                        isCustomCost = isCustomCost,
-//                        notes = note
-//                    )
-//                    viewModel.addTrxPrint(transaction)
-//                }
-//            }
+            if (isValid()) {
+                binding.btnAddTrx.isEnabled = false
+                val buyerName = binding.edBuyerName.text.toString()
+                val sellDate = binding.edSellDate.text.toString()
+                val totalPrice = Formatter.getRawValue(binding.edTotalPrice).toLong()
+                val finalPrice = Formatter.getRawValue(binding.edFinalPrice).toLong()
+                val discountAmount = Formatter.getRawValue(binding.edDiscountAmount).toLong()
+                val discountPercent = Formatter.getRawValue(binding.edDiscount).toLong()
+                val note = binding.edNote.text.toString()
+                val discountType = when {
+                    binding.rbPercent.isChecked -> "percent"
+                    binding.rbFlat.isChecked -> "flat"
+                    binding.rbRegular.isChecked -> "none"
+                    else -> "none"
+                }
+
+                viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
+                    val bookItems = books.map { eachBook ->
+                        BookSubtotal(
+                            bookId = eachBook.book.id,
+                            qty = eachBook.bookQty,
+                            subtotalPrice = eachBook.bookPrice
+                        )
+                    }
+
+                    // Create a BookInPrintingTransaction instance
+                    val transaction = BookOutSellingTrx(
+                        buyerName = buyerName,
+                        bookOutDate = sellDate,
+                        books = bookItems, // Pass the list of BookItems
+                        totalBookQty = books.sumOf { it.bookQty }, // Calculate total books quantity
+                        totalBookKind = bookItems.size.toLong(),
+                        totalPrice = totalPrice, // Use the total price entered by the user
+                        finalPrice = finalPrice,
+                        discountType = discountType,
+                        discountAmount = discountAmount,
+                        discountPercent = discountPercent,
+                        notes = note
+                    )
+                    viewModel.addTrxSell(transaction) { _, success ->
+                        if (success) {
+                            for (bookItem in bookItems) {
+                                viewModel.updateStock(
+                                    bookItem.bookId,
+                                    transaction.type,
+                                    bookItem.qty
+                                )
+                            }
+                            requireActivity().finish()
+                        } else {
+                            binding.btnAddTrx.isEnabled = true
+                        }
+
+                    }
+                }
+            }
         }
+
     }
 
     private fun calculateTotalCost(bookList: List<BookQtyPrice>) {
@@ -281,6 +308,83 @@ class BookOutTrxSellFragment : Fragment() {
         Log.d("YAM", "tp: $totalCost, da: $discountAmount, fp: $finalCost")
     }
 
+    private fun isValid(): Boolean {
+        return isNotEmpty(
+            binding.edBuyerName.text.toString(),
+            binding.edlBuyerName,
+            binding.edBuyerName
+        )
+                && isNotEmpty(
+            binding.edSellDate.text.toString(),
+            binding.edlSellDate,
+            binding.edSellDate
+        )
+                && isNotEmpty(
+            binding.edTotalPrice.text.toString(),
+            binding.edlTotalPrice,
+            binding.edTotalPrice
+        )
+    }
+
+    inner class TextFieldValidation(private val view: View) : TextWatcher {
+        override fun afterTextChanged(s: Editable?) {}
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            // checking ids of each text field and applying functions accordingly.
+            when (view.id) {
+                R.id.ed_buyer_name -> {
+                    isNotEmpty(
+                        binding.edBuyerName.text.toString(),
+                        binding.edlBuyerName,
+                        binding.edBuyerName
+                    )
+                }
+
+                R.id.ed_sell_date -> {
+                    isNotEmpty(
+                        binding.edSellDate.text.toString(),
+                        binding.edlSellDate,
+                        binding.edSellDate
+                    )
+                }
+
+                R.id.ed_total_price -> {
+                    isNotEmpty(
+                        binding.edTotalPrice.text.toString(),
+                        binding.edlTotalPrice,
+                        binding.edTotalPrice
+                    )
+                }
+            }
+        }
+    }
+
+    private fun isNotEmpty(
+        value: String,
+        textInputLayout: TextInputLayout,
+        editText: EditText
+    ): Boolean {
+        when {
+            value.trim().isEmpty() -> {
+                textInputLayout.error = "Input " + textInputLayout.hint.toString() + " diperlukan"
+                editText.requestFocus()
+                return false
+            }
+
+            else -> {
+                textInputLayout.isErrorEnabled = false
+            }
+        }
+        return true
+    }
+
+    private fun setupListeners() {
+        binding.edBuyerName.addTextChangedListener(TextFieldValidation(binding.edBuyerName))
+        binding.edSellDate.addTextChangedListener(TextFieldValidation(binding.edSellDate))
+        binding.edDiscount.addTextChangedListener(TextFieldValidation(binding.edDiscount))
+        binding.edDiscountAmount.addTextChangedListener(TextFieldValidation(binding.edDiscountAmount))
+    }
     private fun showDatePicker(dateEditText: TextView, title: String) {
         val currentDate = Calendar.getInstance()
         val year = currentDate.get(Calendar.YEAR)

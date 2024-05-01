@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.FragmentRegisteredUserBinding
 import com.zak.sidilan.util.FirstItemMarginDecoration
@@ -28,6 +30,7 @@ class RegisteredUserFragment : Fragment() {
         _binding = FragmentRegisteredUserBinding.inflate(inflater, container, false)
         setupViewModel()
         setupRecyclerView()
+        setupAction()
         return binding.root
     }
 
@@ -52,6 +55,17 @@ class RegisteredUserFragment : Fragment() {
         }
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupAction() {
+        binding.chipGroup.setOnCheckedStateChangeListener { group, _ ->
+            val selectedRoles = mutableListOf<String>()
+            for (chipId in group.checkedChipIds) {
+                val chip = group.findViewById<Chip>(chipId)
+                selectedRoles.add(chip.text.toString())
+            }
+            viewModel.filterUsersByRoles(selectedRoles)
         }
     }
 }

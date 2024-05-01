@@ -27,6 +27,18 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
             _userList.value = userList
         }
     }
+
+    fun filterUsersByRoles(selectedRoles: List<String>) {
+        repository.getAllUsers().observeForever { allUsers ->
+            val filteredUsers = if (selectedRoles.isNotEmpty()) {
+                allUsers.filter { user -> selectedRoles.contains(user.role) }
+            } else {
+                allUsers
+            }
+            _userList.postValue(ArrayList(filteredUsers))
+        }
+    }
+
     fun getWhitelist() {
         repository.getAllWhitelist().observeForever { whitelist ->
             _whitelist.value = whitelist

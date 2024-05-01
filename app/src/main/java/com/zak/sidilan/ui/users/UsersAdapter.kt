@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.LayoutUserCardBinding
 
@@ -37,7 +38,7 @@ class UsersAdapter(
 
         fun bind(user: User) {
             adapterBinding.tvUserAction.text = user.displayName
-            adapterBinding.tvUserName.text = user.email
+            adapterBinding.tvUserName.text = context.getString(R.string.two_lines, user.email, user.role)
             adapterBinding.ivProfilePicture.load(user.photoUrl)
         }
     }

@@ -30,8 +30,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="100dp"
                 android:layout_marginEnd="16dp"
-                app:icon="@drawable/ic_add"
-                android:text="Tambah"
+                app:icon="@drawable/ic_new_book"
+                android:text="Tambah Buku"
                 android:layout_gravity="bottom|end"
                 app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
 

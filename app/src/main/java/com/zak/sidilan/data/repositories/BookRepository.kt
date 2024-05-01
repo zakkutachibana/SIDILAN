@@ -256,12 +256,10 @@ class BookRepository {
         val totalStockQty = MutableLiveData<Long?>()
 
         reference.addValueEventListener(object : ValueEventListener {
-
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 var sumStockQty: Long = 0
-
                 for (childSnapshot in dataSnapshot.children) {
-                    val stockQty = childSnapshot.child("book").child("stock_qty").getValue(Long::class.java)
+                    val stockQty = childSnapshot.child("stock").child("stock_qty").getValue(Long::class.java)
                     stockQty?.let { sumStockQty += it }
                 }
                 totalStockQty.postValue(sumStockQty)

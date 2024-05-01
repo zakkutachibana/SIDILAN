@@ -111,7 +111,6 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
                     putExtra(BookOutTrxOtherFragment.EXTRA_BOOK, bookQtyPrice)
                 }
             }
-
             else -> Intent().apply { }
 
         }

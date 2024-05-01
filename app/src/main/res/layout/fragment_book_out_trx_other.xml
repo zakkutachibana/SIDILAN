@@ -180,11 +180,12 @@
             app:layout_constraintTop_toBottomOf="@id/divider3" />
 
         <Button
-            android:id="@+id/btn_add_book"
+            android:id="@+id/btn_add_trx"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:enabled="false"
             android:text="Tambahkan Catatan"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

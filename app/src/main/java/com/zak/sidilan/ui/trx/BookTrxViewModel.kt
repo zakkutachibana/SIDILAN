@@ -7,6 +7,11 @@ import com.zak.sidilan.data.entities.BookInPrintingTrx
 import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.repositories.TrxRepository
 import org.koin.dsl.module
+import androidx.lifecycle.map
+import com.zak.sidilan.data.entities.BookInDonationTrx
+import com.zak.sidilan.data.entities.BookOutDonationTrx
+import com.zak.sidilan.data.entities.BookOutSellingTrx
+
 
 val bookTrxViewModelModule = module {
     factory { BookTrxViewModel(get()) }
@@ -17,6 +22,10 @@ class BookTrxViewModel(private val repository: TrxRepository) : ViewModel() {
 
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
+
+    val isBookListEmpty: LiveData<Boolean> = selectedBooksList.map { books ->
+        books.isEmpty()
+    }
 
     fun addBook(book: BookQtyPrice) {
         val currentBooks = _selectedBooksList.value.orEmpty().toMutableList()
@@ -47,10 +56,31 @@ class BookTrxViewModel(private val repository: TrxRepository) : ViewModel() {
             _selectedBooksList.value = currentBooks
         }
     }
-
-    fun addTrxPrint(trx: BookInPrintingTrx) {
-        repository.addBookInPrintTrx(trx).observeForever { status ->
+    fun updateStock(bookId: String, transactionType: String, quantity: Long) {
+        repository.updateBookStock(bookId, transactionType, quantity)
+    }
+    fun addTrxPrint(trx: BookInPrintingTrx, callback : (String, Boolean) -> Unit) {
+        repository.addBookInPrintTrx(trx) { status, bool ->
             _toastMessage.value = status
+            callback(status, bool)
+        }
+    }
+    fun addTrxInDonation(trx: BookInDonationTrx, callback : (String, Boolean) -> Unit) {
+        repository.addBookInDonationTrx(trx) { status, bool ->
+            _toastMessage.value = status
+            callback(status, bool)
+        }
+    }
+    fun addTrxSell(trx: BookOutSellingTrx, callback : (String, Boolean) -> Unit) {
+        repository.addBookOutSellTrx(trx) { status, bool ->
+            _toastMessage.value = status
+            callback(status, bool)
+        }
+    }
+    fun addTrxOutDonation(trx: BookOutDonationTrx, callback : (String, Boolean) -> Unit) {
+        repository.addBookOutDonationTrx(trx) { status, bool ->
+            _toastMessage.value = status
+            callback(status, bool)
         }
     }
 

@@ -55,20 +55,19 @@ object Formatter {
     fun convertDateFirebaseToDisplay(inputDate: String?): String? {
         return if (inputDate != null) {
             val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
             val date = inputDate.let { inputFormat.parse(it) }
             date?.let { outputFormat.format(it) }
         } else ""
-
     }
+
     fun convertDateAPIToDisplay(inputDate: String?): String? {
         return if (inputDate != null) {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
             val date = inputDate.let { inputFormat.parse(it) }
             date?.let { outputFormat.format(it) }
         } else ""
-
     }
     fun convertDateAPIToFirebase(inputDate: String?): String? {
         return if (inputDate != null) {
@@ -77,7 +76,6 @@ object Formatter {
             val date = inputDate.let { inputFormat.parse(it) }
             date?.let { outputFormat.format(it) }
         } else ""
-
     }
 
     fun getRawValue(editText: EditText): String {
@@ -89,10 +87,9 @@ object Formatter {
             val instant = Instant.ofEpochMilli(timestamp.toString().toLong())
             val zoneId = ZoneId.of("Asia/Jakarta") // Example: "America/New_York"
             val zonedDateTime = instant.atZone(zoneId)
-            val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+            val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm")
             zonedDateTime.format(formatter)
         } else ""
-
     }
 
     fun convertToInternationalFormat(phoneNumber: String): String {
