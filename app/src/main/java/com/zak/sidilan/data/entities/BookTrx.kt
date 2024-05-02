@@ -2,14 +2,21 @@ package com.zak.sidilan.data.entities
 
 import com.google.firebase.database.PropertyName
 
+sealed class BookTrx {
+    abstract var id: String
+    abstract val type: String
+}
 data class BookSubtotal(
     val bookId: String,
     val qty: Long,
     val subtotalPrice: Long
-)
+) {
+    constructor() : this("", 0L, 0L)
+}
 
 data class BookInPrintingTrx(
-    val type: String = "book_in_printing",
+    override var id: String = "",
+    override val type: String = "book_in_printing",
     @JvmField @PropertyName("printing_shop_name")
     val printingShopName: String,
     @JvmField @PropertyName("book_in_date")
@@ -30,10 +37,13 @@ data class BookInPrintingTrx(
     @JvmField @PropertyName("final_cost")
     val finalCost: Long,
     val notes: String?
-)
+) : BookTrx() {
+    constructor() : this("", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
+}
 
 data class BookInDonationTrx(
-    val type: String = "book_in_donation",
+    override var id: String = "",
+    override val type: String = "book_in_donation",
     @JvmField @PropertyName("donor_name")
     val donorName: String,
     @JvmField @PropertyName("book_in_date")
@@ -44,10 +54,13 @@ data class BookInDonationTrx(
     @JvmField @PropertyName("total_book_kind")
     val totalBookKind : Long,
     val notes: String
-)
+) : BookTrx() {
+    constructor() : this("", "", "", "", listOf(), 0L, 0L, "")
+}
 
 data class BookOutSellingTrx(
-    val type: String = "book_out_selling",
+    override var id: String = "",
+    override val type: String = "book_out_selling",
     @JvmField @PropertyName("buyer_name")
     val buyerName: String,
     @JvmField @PropertyName("book_out_date")
@@ -68,10 +81,13 @@ data class BookOutSellingTrx(
     @JvmField @PropertyName("final_price")
     val finalPrice: Long,
     val notes: String?
-)
+) : BookTrx() {
+    constructor() : this("", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
+}
 
 data class BookOutDonationTrx(
-    val type: String = "book_out_donation",
+    override var id: String = "",
+    override val type: String = "book_out_donation",
     @JvmField @PropertyName("donee_name")
     val doneeName: String,
     @JvmField @PropertyName("book_out_date")
@@ -82,4 +98,6 @@ data class BookOutDonationTrx(
     @JvmField @PropertyName("total_book_kind")
     val totalBookKind : Long,
     val notes: String?
-)
+) : BookTrx() {
+    constructor() : this("", "", "", "", listOf(), 0L, 0L, "")
+}

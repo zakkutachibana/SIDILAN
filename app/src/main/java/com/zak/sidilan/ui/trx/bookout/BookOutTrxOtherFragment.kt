@@ -109,6 +109,7 @@ class BookOutTrxOtherFragment : Fragment() {
                 }
             }
         }
+
     private fun setupView() {
         val currentUser = hawkManager.retrieveData<User>("user")
 
@@ -265,6 +266,7 @@ class BookOutTrxOtherFragment : Fragment() {
             month,
             day
         )
+
         datePickerDialog.setTitle(title)
         datePickerDialog.show()
     }

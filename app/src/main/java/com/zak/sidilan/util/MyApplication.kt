@@ -22,6 +22,7 @@ import com.zak.sidilan.ui.trx.bookin.bookInTrxPrintFragmentModule
 import com.zak.sidilan.ui.trx.bookTrxViewModelModule
 import com.zak.sidilan.ui.trx.bookout.bookOutTrxActivityModule
 import com.zak.sidilan.ui.trx.bookout.bookOutTrxSellFragmentModule
+import com.zak.sidilan.ui.trxhistory.trxHistoryViewModelModule
 import com.zak.sidilan.ui.users.userDetailActivityModule
 import com.zak.sidilan.ui.users.userDetailViewModelModule
 import com.zak.sidilan.ui.users.userListActivityModule
@@ -53,6 +54,7 @@ class MyApplication : Application() {
                 bookRepositoryModule,
                 userRepositoryModule,
                 trxRepositoryModule,
+                trxHistoryViewModelModule,
                 bookInTrxActivityModule,
                 bookOutTrxSellFragmentModule,
                 bookOutTrxActivityModule,

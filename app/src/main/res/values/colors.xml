@@ -17,5 +17,7 @@
     <color name="black_surface">#282432</color>
     <color name="red_light">#DC362E</color>
     <color name="red_dark">#8C1D18</color>
+    <color name="safe_green">#4CAF50</color>
+    <color name="safe_red">#E53935</color>
 
 </resources>

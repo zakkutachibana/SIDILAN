@@ -26,6 +26,7 @@ import com.zak.sidilan.ui.executivemenus.ExecutiveMenusActivity
 import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
 import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
 import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
+import com.zak.sidilan.ui.trxhistory.TrxHistoryActivity
 import com.zak.sidilan.ui.users.UserManagementActivity
 import com.zak.sidilan.util.HawkManager
 import com.zak.sidilan.util.UserRole
@@ -111,11 +112,10 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "stock_opname_item", Toast.LENGTH_SHORT).show()
                 }
 
-                R.id.book_in_trx_item -> Toast.makeText(
-                    this,
-                    "book_in_trx_item",
-                    Toast.LENGTH_SHORT
-                ).show()
+                R.id.book_in_trx_item -> {
+                    val intent = Intent(this, TrxHistoryActivity::class.java)
+                    startActivity(intent)
+                }
 
                 R.id.book_out_trx_item -> Toast.makeText(
                     this,
