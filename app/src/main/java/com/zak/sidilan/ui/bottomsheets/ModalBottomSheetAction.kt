@@ -98,13 +98,11 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                             bookDetailViewModel.deleteBookById(bookDetail.book.id) { isSuccess, message ->
                                 if (isSuccess) {
                                     Toast.makeText(requireContext(), "Book deleted successfully", Toast.LENGTH_SHORT).show()
-                                    dialog.dismiss()
-                                    dismiss()
-                                    attachedActivity.finish()
                                 } else {
                                     Toast.makeText(requireContext(), "Failed to delete book: $message", Toast.LENGTH_SHORT).show()
                                 }
                             }
+                            attachedActivity.finish()
                         } else {
                             editTextLayout.error = "Judul buku tidak sesuai!"
                         }

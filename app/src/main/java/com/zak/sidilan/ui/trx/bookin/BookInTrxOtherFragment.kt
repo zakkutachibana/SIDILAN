@@ -25,6 +25,7 @@ import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.entities.BookSubtotal
+import com.zak.sidilan.data.entities.Logs
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentBookInTrxOtherBinding
 import com.zak.sidilan.ui.trx.BookTrxViewModel
@@ -136,6 +137,7 @@ class BookInTrxOtherFragment : Fragment() {
                 val donorName = binding.edDonorName.text.toString()
                 val donorDate = binding.edDonorDate.text.toString()
                 val note = binding.edNote.text.toString()
+                val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
 
                 viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
                     val bookItems = books.map { eachBook ->
@@ -145,7 +147,10 @@ class BookInTrxOtherFragment : Fragment() {
                             subtotalPrice = eachBook.bookPrice
                         )
                     }
-
+                    val logs = Logs(
+                        createdBy = createdBy,
+                        createdAt = ""
+                    )
                     // Create a BookInPrintingTransaction instance
                     val transaction = BookInDonationTrx(
                         donorName = donorName,
@@ -155,7 +160,7 @@ class BookInTrxOtherFragment : Fragment() {
                         totalBookKind = bookItems.size.toLong(),
                         notes = note
                     )
-                    viewModel.addTrxInDonation(transaction) { _, success ->
+                    viewModel.addTrxInDonation(transaction, logs) { _, success ->
                         if (success) {
                             for (bookItem in bookItems) {
                                 viewModel.updateStock(

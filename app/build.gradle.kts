@@ -116,5 +116,9 @@ dependencies {
     //Hawk
     implementation("com.orhanobut:hawk:2.0.1")
 
+    //Zigzag View
+    implementation("com.github.beigirad:ZigzagView:1.2.0")
+
+
 }
 

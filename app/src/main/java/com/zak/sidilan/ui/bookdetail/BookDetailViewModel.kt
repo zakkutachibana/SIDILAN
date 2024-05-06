@@ -2,6 +2,7 @@ package com.zak.sidilan.ui.bookdetail
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.entities.Whitelist
@@ -38,7 +39,11 @@ class BookDetailViewModel(private val bookRepository: BookRepository, private va
         }
     }
 
-
+    fun getBookDetailByIdCallback(bookId: String, callback: (Book?) -> Unit) {
+        bookRepository.getBookDetailByIdCallback(bookId)  { book ->
+            callback(book)
+        }
+    }
     override fun onCleared() {
         super.onCleared()
         _bookDetail.value = null

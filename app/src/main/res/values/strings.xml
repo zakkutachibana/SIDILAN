@@ -31,7 +31,7 @@
     <string name="title_book_in_trx">Riwayat Transaksi Buku</string>
     <string name="title_book_trx_history">Riwayat Transaksi Buku</string>
     <string name="title_book_out">Buku Keluar</string>
-    <string name="title_book_out_selling">Buku Keluar (Jual)</string>
+    <string name="title_book_out_selling">Penjualan Buku via %1$s</string>
     <string name="title_book_out_other">Buku Keluar (Lainnya)</string>
     <string name="title_book_out_trx">Riwayat Transaksi Buku Keluar</string>
     <string name="title_dashboard">Dashboard</string>
@@ -65,6 +65,7 @@
     <string name="total_stock_qty">%1$s buku</string>
     <string name="plus_qty">+ %1$s buku</string>
     <string name="minus_qty">- %1$s buku</string>
+    <string name="discount_percent_view">Diskon (%1$s%%)</string>
     <string name="created_by">Ditambahkan oleh</string>
     <string name="will_be_deleted">Buku \"%1$s\" akan dihapus. Apakah anda yakin ingin menghapusnya? Ketik \"%1$s\" untuk menghapus buku.</string>
     <string name="forever_contract">Perjanjian Berlaku Selamanya</string>

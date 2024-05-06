@@ -54,27 +54,12 @@ class BookRepository {
         return bookList
     }
 
-    fun saveBookToFirebase(
-        isbn: Long,
-        title: String,
-        authors: List<String>,
-        coverImage: Uri?,
-        genre: String,
-        publishedDate: String,
-        printPrice: Long,
-        sellPrice: Long,
-        isPerpetual: Boolean,
-        startContractDate: String?,
-        endContractDate: String?,
-        createdBy: String,
-        callback: (Boolean, String?) -> Unit
-    ) {
+    fun saveBookToFirebase(book: Book, createdBy: String, callback: (Boolean, String?) -> Unit) {
         // Upload the image to Firebase Storage
-
-        if (coverImage != null) {
+        if (book.coverUrl != null) {
             // Upload the image to Firebase Storage
             val imageRef = storage.reference.child("book_covers/${UUID.randomUUID()}")
-            val uploadTask = imageRef.putFile(coverImage)
+            val uploadTask = imageRef.putFile(book.coverUrl as Uri)
 
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
@@ -84,13 +69,11 @@ class BookRepository {
             }.addOnSuccessListener { uri ->
                 // Image uploaded successfully, get the download URL
                 val coverUrl = uri.toString()
+                val book = book
+                book.coverUrl = coverUrl
 
                 // Save the book details to the Realtime Database
-                saveBookDetailsToDatabase(
-                    isbn, title, authors, coverUrl, genre, publishedDate,
-                    printPrice, sellPrice, isPerpetual, startContractDate, endContractDate,
-                    createdBy, callback
-                )
+                saveBookDetailsToDatabase(book, createdBy, callback)
             }.addOnFailureListener { exception ->
                 // Handle any errors during image upload
                 callback(false, exception.message)
@@ -100,40 +83,20 @@ class BookRepository {
 
             storageReference.downloadUrl.addOnSuccessListener { uri ->
                 val placeholderUrl = uri.toString()
-                saveBookDetailsToDatabase(
-                    isbn, title, authors, placeholderUrl, genre, publishedDate,
-                    printPrice, sellPrice, isPerpetual, startContractDate, endContractDate,
-                    createdBy, callback
-                )
+                val book = book
+                book.coverUrl = placeholderUrl
+                saveBookDetailsToDatabase(book, createdBy, callback)
             }.addOnFailureListener { exception ->
                 callback(false, exception.message)
             }
         }
     }
 
-    private fun saveBookDetailsToDatabase(
-        isbn: Long,
-        title: String,
-        authors: List<String>,
-        coverUrl: String,
-        genre: String,
-        publishedDate: String,
-        printPrice: Long,
-        sellPrice: Long,
-        isPerpetual: Boolean,
-        startContractDate: String?,
-        endContractDate: String?,
-        createdBy: String,
-        callback: (Boolean, String?) -> Unit
-    ) {
+    private fun saveBookDetailsToDatabase(book: Book, createdBy: String, callback: (Boolean, String?) -> Unit) {
         val id = reference.push().key ?: return
+        book.id = id
 
-        val book = Book(
-            id, isbn, title, authors, coverUrl, genre, publishedDate, printPrice,
-            sellPrice, isPerpetual, startContractDate, endContractDate
-        )
-
-        val initialStock = Stock( 0)
+        val initialStock = Stock(0)
         val createdAt = ServerValue.TIMESTAMP
         val logs = Logs(createdBy, createdAt)
 
@@ -149,37 +112,49 @@ class BookRepository {
                 callback(false, dbTask.exception?.message)
             }
         }
-
-
     }
-    fun updateBookFirebase(
-        bookId: String,
-        isbn: Long,
-        title: String,
-        authors: List<String>,
-        coverImage: Uri?,
-        genre: String,
-        publishedDate: String,
-        printPrice: Long,
-        sellPrice: Long,
-        isPerpetual: Boolean,
-        startContractDate: String?,
-        endContractDate: String?,
-        callback: (Boolean, String?) -> Unit
-    ) {
-        val book = Book(
-            bookId, isbn, title, authors, coverImage, genre, publishedDate, printPrice,
-            sellPrice, isPerpetual, startContractDate, endContractDate
-        )
-        val bookMap = mutableMapOf<String, Any>()
-        bookMap["book"] = book
+    fun updateBookFirebase(book: Book, oldCover: String, callback: (Boolean, String?) -> Unit) {
+        if (book.coverUrl != null) {
+            // Upload the new image to Firebase Storage
+            val imageRef = storage.reference.child("book_covers/${UUID.randomUUID()}")
+            val uploadTask = imageRef.putFile(Uri.parse(book.coverUrl.toString()))
 
-        reference.child(bookId).updateChildren(bookMap).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                callback(true, null)
-            } else {
-                callback(false, task.exception?.message)
+            uploadTask.continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let { throw it }
+                }
+                imageRef.downloadUrl
+            }.addOnSuccessListener { uri ->
+                // Image uploaded successfully, get the download URL
+                val newCoverUrl = uri.toString()
+
+                // Delete the previous image from Firebase Storage (if it exists)
+                if (book.coverUrl != null) {
+                    val previousImageRef = storage.getReferenceFromUrl(oldCover)
+                    previousImageRef.delete()
+                }
+
+                // Update the book cover URL
+                book.coverUrl = newCoverUrl
+
+                // Save the updated book details to the Realtime Database
+                val bookMap = mutableMapOf<String, Any>()
+                bookMap["book"] = book
+
+                reference.child(book.id).updateChildren(bookMap).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        callback(true, null)
+                    } else {
+                        callback(false, task.exception?.message)
+                    }
+                }
+            }.addOnFailureListener { exception ->
+                // Handle any errors during image upload
+                callback(false, exception.message)
             }
+        } else {
+            // Handle the scenario when the book doesn't have a cover URL
+            callback(false, "Book cover URL is null.")
         }
 
     }
@@ -228,14 +203,41 @@ class BookRepository {
         return bookDetailLiveData
     }
 
-    fun deleteBookById(bookId: String, callback: (Boolean, String?) -> Unit) {
-        reference.child(bookId).removeValue().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                callback(true, null)
-            } else {
-                callback(false, task.exception?.message)
+    fun getBookDetailByIdCallback(bookId: String, callback : (Book?) -> Unit){
+        val bookReference = reference.child(bookId)
+        bookReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val book = snapshot.child("book").getValue(Book::class.java)
+
+                callback(book)
+
             }
-        }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+    fun deleteBookById(bookId: String, callback: (Boolean, String?) -> Unit) {
+        reference.child(bookId).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val coverUrl = snapshot.child("book").child("cover_url").getValue(String::class.java)
+                val previousImageRef = coverUrl?.let { storage.getReferenceFromUrl(it) }
+                previousImageRef?.delete()
+
+                reference.child(bookId).removeValue().addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        callback(true, null)
+                    } else {
+                        callback(false, task.exception?.message)
+                    }
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+
     }
 
     // STOCK STUFF

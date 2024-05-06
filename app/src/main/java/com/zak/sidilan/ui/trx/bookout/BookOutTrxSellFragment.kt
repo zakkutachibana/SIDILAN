@@ -26,6 +26,7 @@ import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.entities.BookSubtotal
+import com.zak.sidilan.data.entities.Logs
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentBookOutTrxSellBinding
 import com.zak.sidilan.ui.trx.BookTrxViewModel
@@ -202,6 +203,9 @@ class BookOutTrxSellFragment : Fragment() {
         }
         viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
             binding.btnAddTrx.isEnabled = !isEmpty
+            binding.rbFlat.isEnabled = !isEmpty
+            binding.rbPercent.isEnabled = !isEmpty
+            binding.rbRegular.isEnabled = !isEmpty
         }
     }
 
@@ -220,6 +224,7 @@ class BookOutTrxSellFragment : Fragment() {
                 binding.btnAddTrx.isEnabled = false
                 val buyerName = binding.edBuyerName.text.toString()
                 val sellDate = binding.edSellDate.text.toString()
+                val sellingPlatform = binding.edSellPlatform.text.toString()
                 val totalPrice = Formatter.getRawValue(binding.edTotalPrice).toLong()
                 val finalPrice = Formatter.getRawValue(binding.edFinalPrice).toLong()
                 val discountAmount = Formatter.getRawValue(binding.edDiscountAmount).toLong()
@@ -231,6 +236,7 @@ class BookOutTrxSellFragment : Fragment() {
                     binding.rbRegular.isChecked -> "none"
                     else -> "none"
                 }
+                val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
 
                 viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
                     val bookItems = books.map { eachBook ->
@@ -241,10 +247,15 @@ class BookOutTrxSellFragment : Fragment() {
                         )
                     }
 
+                    val logs = Logs(
+                        createdBy = createdBy,
+                        createdAt = ""
+                    )
                     // Create a BookInPrintingTransaction instance
                     val transaction = BookOutSellingTrx(
                         buyerName = buyerName,
                         bookOutDate = sellDate,
+                        sellingPlatform = sellingPlatform,
                         books = bookItems, // Pass the list of BookItems
                         totalBookQty = books.sumOf { it.bookQty }, // Calculate total books quantity
                         totalBookKind = bookItems.size.toLong(),
@@ -255,7 +266,7 @@ class BookOutTrxSellFragment : Fragment() {
                         discountPercent = discountPercent,
                         notes = note
                     )
-                    viewModel.addTrxSell(transaction) { _, success ->
+                    viewModel.addTrxSell(transaction, logs) { _, success ->
                         if (success) {
                             for (bookItem in bookItems) {
                                 viewModel.updateStock(

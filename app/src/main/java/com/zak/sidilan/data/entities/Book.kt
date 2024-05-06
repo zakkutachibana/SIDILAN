@@ -7,12 +7,12 @@ import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class Book(
-    val id: String,
+    var id: String,
     val isbn: Long,
     val title: String,
     val authors: List<String>,
     @JvmField @PropertyName("cover_url")
-    val coverUrl: @RawValue Any?,
+    var coverUrl: @RawValue Any?,
     val genre: String,
     @JvmField @PropertyName("published_date")
     val publishedDate: String,
@@ -26,10 +26,8 @@ data class Book(
     val startContractDate: String? = "",
     @JvmField @PropertyName("end_contract_date")
     val endContractDate: String? = "",
-//    @JvmField @PropertyName("stock_qty")
-//    val stockQty: Long? = 0,
 
-) : Parcelable {
+    ) : Parcelable {
     constructor() : this("", 0, "", listOf(), "", "", "", 0, 0, false, "", "")
 }
 

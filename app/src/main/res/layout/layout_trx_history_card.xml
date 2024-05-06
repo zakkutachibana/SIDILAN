@@ -48,11 +48,12 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tv_title_trx"
+                android:id="@+id/tv_source"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="Buku Masuk (Cetak)"
+                android:drawablePadding="4dp"
+                android:text="Toko Percetakan"
                 android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toEndOf="@+id/iv_icon"
@@ -67,18 +68,18 @@
                 android:textStyle="italic"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
-                app:layout_constraintStart_toStartOf="@+id/tv_title_trx"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title_trx" />
+                app:layout_constraintStart_toStartOf="@+id/tv_source"
+                app:layout_constraintTop_toBottomOf="@+id/tv_source" />
 
             <TextView
-                android:id="@+id/tv_source"
+                android:id="@+id/tv_title_trx"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Toko Percetakan"
+                android:text="Buku Masuk (Cetak)"
                 android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
-                app:layout_constraintStart_toStartOf="@+id/tv_title_trx"
+                app:layout_constraintStart_toStartOf="@+id/tv_source"
                 app:layout_constraintTop_toBottomOf="@+id/tv_trx_date" />
 
             <TextView

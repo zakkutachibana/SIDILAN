@@ -1,16 +1,20 @@
 package com.zak.sidilan.data.repositories
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookInPrintingTrx
 import com.zak.sidilan.data.entities.BookOutDonationTrx
 import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.data.entities.BookTrx
+import com.zak.sidilan.data.entities.BookTrxDetail
+import com.zak.sidilan.data.entities.Logs
 import org.koin.dsl.module
 
 val trxRepositoryModule = module {
@@ -21,30 +25,27 @@ class TrxRepository {
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val reference = database.reference.child("transactions")
 
-    fun getAllTrx(): MutableLiveData<ArrayList<BookTrx>> {
-        val bookTrx = MutableLiveData<ArrayList<BookTrx>>()
+    fun getAllTrx(): MutableLiveData<ArrayList<BookTrxDetail>> {
+        val bookTrx = MutableLiveData<ArrayList<BookTrxDetail>>()
 
         reference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val transactions = ArrayList<BookTrx>()
+                val transactions = ArrayList<BookTrxDetail>()
                 for (eachTransaction in snapshot.children) {
-                    val type = eachTransaction.child("type").getValue(String::class.java)
-                    Log.d("TRX TYPE", "$type")
-
+                    val type = eachTransaction.child("transaction").child("type").getValue(String::class.java)
                     val transaction = when (type) {
-                        "book_in_printing" -> eachTransaction.getValue(BookInPrintingTrx::class.java)
-                        "book_in_donation" -> eachTransaction.getValue(BookInDonationTrx::class.java)
-                        "book_out_selling" -> eachTransaction.getValue(BookOutSellingTrx::class.java)
-                        "book_out_donation" -> eachTransaction.getValue(BookOutDonationTrx::class.java)
+                        "book_in_printing" -> eachTransaction.child("transaction").getValue(BookInPrintingTrx::class.java)
+                        "book_in_donation" -> eachTransaction.child("transaction").getValue(BookInDonationTrx::class.java)
+                        "book_out_selling" -> eachTransaction.child("transaction").getValue(BookOutSellingTrx::class.java)
+                        "book_out_donation" -> eachTransaction.child("transaction").getValue(BookOutDonationTrx::class.java)
                         else -> null
                     }
-                    transaction?.let { transactions.add(it) }
+                    val logs = eachTransaction.child("logs").getValue(Logs::class.java)
+                    val trxDetail = BookTrxDetail(transaction, logs)
+                    trxDetail.let { transactions.add(it) }
 
                 }
                 bookTrx.value = transactions
-                Log.d("SUCCESS GET ALL TRX", "${bookTrx.value}")
-                Log.d("SUCCESS GET ALL TRX", "${bookTrx.value}")
-
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -53,10 +54,44 @@ class TrxRepository {
         })
         return bookTrx
     }
-    fun addBookInPrintTrx(trx: BookInPrintingTrx, callback: (String, Boolean) -> Unit) {
-        val id = reference.push().key ?: ""
+
+    fun getTrxDetailById(trxId: String): LiveData<BookTrxDetail?> {
+        val trxDetailLiveData = MutableLiveData<BookTrxDetail?>()
+
+        reference.child(trxId).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val type = snapshot.child("transaction").child("type").getValue(String::class.java)
+                val trx = when (type) {
+                    "book_in_printing" -> snapshot.child("transaction").getValue(BookInPrintingTrx::class.java)
+                    "book_in_donation" -> snapshot.child("transaction").getValue(BookInDonationTrx::class.java)
+                    "book_out_selling" -> snapshot.child("transaction").getValue(BookOutSellingTrx::class.java)
+                    "book_out_donation" -> snapshot.child("transaction").getValue(BookOutDonationTrx::class.java)
+                    else -> null
+                }
+                val logs = snapshot.child("logs").getValue(Logs::class.java)
+
+                val bookDetail = BookTrxDetail(trx, logs)
+                trxDetailLiveData.value = bookDetail
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+
+        return trxDetailLiveData
+    }
+
+    fun addBookInPrintTrx(trx: BookInPrintingTrx, logs: Logs, callback: (String, Boolean) -> Unit) {
+        val id = generateInvoiceId(trx.type)
         trx.id = id
-        reference.child(id).setValue(trx)
+        logs.createdAt = ServerValue.TIMESTAMP
+
+        val trxMap = mutableMapOf<String, Any>()
+        trxMap["transaction"] = trx
+        trxMap["logs"] = logs
+
+        reference.child(id).setValue(trxMap)
             .addOnSuccessListener {
                 // Data successfully inserted
                 callback("Successfully inserted transaction", true)
@@ -66,10 +101,16 @@ class TrxRepository {
                 callback("Error inserting transaction: $e", false)
             }
     }
-    fun addBookInDonationTrx(trx: BookInDonationTrx, callback: (String, Boolean) -> Unit) {
-        val id = reference.push().key ?: ""
+    fun addBookInDonationTrx(trx: BookInDonationTrx, logs: Logs, callback: (String, Boolean) -> Unit) {
+        val id = generateInvoiceId(trx.type)
         trx.id = id
-        reference.child(id).setValue(trx)
+        logs.createdAt = ServerValue.TIMESTAMP
+
+        val trxMap = mutableMapOf<String, Any>()
+        trxMap["transaction"] = trx
+        trxMap["logs"] = logs
+
+        reference.child(id).setValue(trxMap)
             .addOnSuccessListener {
                 // Data successfully inserted
                 callback("Successfully inserted transaction", true)
@@ -79,10 +120,16 @@ class TrxRepository {
                 callback("Error inserting transaction: $e", false)
             }
     }
-    fun addBookOutSellTrx(trx: BookOutSellingTrx, callback: (String, Boolean) -> Unit) {
-        val id = reference.push().key ?: ""
+    fun addBookOutSellTrx(trx: BookOutSellingTrx, logs: Logs, callback: (String, Boolean) -> Unit) {
+        val id = generateInvoiceId(trx.type)
         trx.id = id
-        reference.child(id).setValue(trx)
+        logs.createdAt = ServerValue.TIMESTAMP
+
+        val trxMap = mutableMapOf<String, Any>()
+        trxMap["transaction"] = trx
+        trxMap["logs"] = logs
+
+        reference.child(id).setValue(trxMap)
             .addOnSuccessListener {
                 // Data successfully inserted
                 callback("Successfully inserted transaction", true)
@@ -92,10 +139,16 @@ class TrxRepository {
                 callback("Error inserting transaction: $e", false)
             }
     }
-    fun addBookOutDonationTrx(trx: BookOutDonationTrx, callback: (String, Boolean) -> Unit) {
-        val id = reference.push().key ?: ""
+    fun addBookOutDonationTrx(trx: BookOutDonationTrx, logs: Logs, callback: (String, Boolean) -> Unit) {
+        val id = generateInvoiceId(trx.type)
         trx.id = id
-        reference.child(id).setValue(trx)
+        logs.createdAt = ServerValue.TIMESTAMP
+
+        val trxMap = mutableMapOf<String, Any>()
+        trxMap["transaction"] = trx
+        trxMap["logs"] = logs
+
+        reference.child(id).setValue(trxMap)
             .addOnSuccessListener {
                 // Data successfully inserted
                 callback("Successfully inserted transaction", true)
@@ -137,5 +190,27 @@ class TrxRepository {
                     // Handle onCancelled
                 }
             })
+    }
+
+    private fun generateInvoiceId(transactionType: String): String {
+        val prefix = when (transactionType) {
+            "book_in_printing" -> "INVP"
+            "book_in_donation" -> "INVI"
+            "book_out_selling" -> "INVS"
+            "book_out_donation" -> "INVO"
+            else -> "INV" // Default prefix
+        }
+
+        val sequentialNumber = generateRandomKey(8)
+
+        // Construct the invoice ID by combining prefix, timestamp, and sequential number
+        return "$prefix-${sequentialNumber}"
+    }
+
+    private fun generateRandomKey(length: Int): String {
+        val allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
     }
 }

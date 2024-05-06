@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.GoogleBooksResponse
 import com.zak.sidilan.data.repositories.BookRepository
@@ -25,47 +26,13 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
 
     private val _bookDetail = MutableLiveData<BookDetail?>()
     val bookDetail: MutableLiveData<BookDetail?> get() = _bookDetail
-    fun saveBookToFirebase(
-        isbn: Long,
-        title: String,
-        authors: List<String>,
-        coverImage: Uri?,
-        genre: String,
-        publishedDate: String,
-        printPrice: Long,
-        sellPrice: Long,
-        isPerpetual: Boolean,
-        startContractDate: String?,
-        endContractDate: String?,
-        createdBy: String,
-        callback: (Boolean, String?) -> Unit
-    ) {
-        repository.saveBookToFirebase(
-            isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice,
-            isPerpetual, startContractDate, endContractDate, createdBy
-        ) { isSuccess, message ->
+    fun saveBookToFirebase(book: Book, createdBy: String, callback: (Boolean, String?) -> Unit) {
+        repository.saveBookToFirebase(book, createdBy) { isSuccess, message ->
             callback(isSuccess, message)
         }
     }
-    fun updateBookFirebase(
-        bookId: String,
-        isbn: Long,
-        title: String,
-        authors: List<String>,
-        coverImage: Uri?,
-        genre: String,
-        publishedDate: String,
-        printPrice: Long,
-        sellPrice: Long,
-        isPerpetual: Boolean,
-        startContractDate: String?,
-        endContractDate: String?,
-        callback: (Boolean, String?) -> Unit
-    ) {
-        repository.updateBookFirebase(
-            bookId, isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice,
-            isPerpetual, startContractDate, endContractDate
-        ) { isSuccess, message ->
+    fun updateBookFirebase(book: Book, oldCover: String,  callback: (Boolean, String?) -> Unit) {
+        repository.updateBookFirebase(book, oldCover) { isSuccess, message ->
             callback(isSuccess, message)
         }
     }
@@ -82,7 +49,7 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
 
 
     fun getBookDetailById(bookId: String) {
-        _bookDetail.value = null // Optional: Clear previous value before loading new data
+        _bookDetail.value = null
         repository.getBookDetailById(bookId).observeForever { book ->
             _bookDetail.value = book
         }

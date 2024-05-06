@@ -82,12 +82,12 @@ object Formatter {
         return editText.text.toString().replace("[.,]".toRegex(), "")
     }
 
-    fun convertUTCToLocal(timestamp: @RawValue Any?): String {
+    fun convertEpochToLocal(timestamp: @RawValue Any?): String {
         return if (timestamp != null) {
             val instant = Instant.ofEpochMilli(timestamp.toString().toLong())
-            val zoneId = ZoneId.of("Asia/Jakarta") // Example: "America/New_York"
+            val zoneId = ZoneId.of("Asia/Jakarta")
             val zonedDateTime = instant.atZone(zoneId)
-            val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm")
+            val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy (HH:mm)", Locale("id", "ID"))
             zonedDateTime.format(formatter)
         } else ""
     }

@@ -26,6 +26,7 @@ import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookInPrintingTrx
 import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.entities.BookSubtotal
+import com.zak.sidilan.data.entities.Logs
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentBookInTrxPrintBinding
 import com.zak.sidilan.ui.trx.BookTrxViewModel
@@ -208,6 +209,9 @@ class BookInTrxPrintFragment : Fragment() {
         }
         viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
             binding.btnAddTrx.isEnabled = !isEmpty
+            binding.rbFlat.isEnabled = !isEmpty
+            binding.rbPercent.isEnabled = !isEmpty
+            binding.rbRegular.isEnabled = !isEmpty
         }
     }
 
@@ -237,6 +241,8 @@ class BookInTrxPrintFragment : Fragment() {
                     binding.rbRegular.isChecked -> "none"
                     else -> "none"
                 }
+                val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
+
 
                 viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
                     val bookItems = books.map { eachBook ->
@@ -247,6 +253,10 @@ class BookInTrxPrintFragment : Fragment() {
                         )
                     }
 
+                    val logs = Logs(
+                        createdBy = createdBy,
+                        createdAt = ""
+                    )
                     // Create a BookInPrintingTransaction instance
                     val transaction = BookInPrintingTrx(
                         printingShopName = shopName,
@@ -261,7 +271,7 @@ class BookInTrxPrintFragment : Fragment() {
                         discountPercent = discountPercent,
                         notes = note
                     )
-                    viewModel.addTrxPrint(transaction) { _, success ->
+                    viewModel.addTrxPrint(transaction, logs) { _, success ->
                         if (success) {
                             for (bookItem in bookItems) {
                                 viewModel.updateStock(

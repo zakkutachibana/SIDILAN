@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
     private fun setAction() {
         val userId = hawkManager.retrieveData<User>("user")?.id.toString()
         authViewModel.checkRole(userId) { userRole, exception ->
-            updateUIVisisibility(userRole)
+            updateUIVisibility(userRole)
         }
         binding.fab.setOnClickListener {
             val modalBottomSheetAction = ModalBottomSheetAction(1, null, this)
@@ -112,22 +112,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "stock_opname_item", Toast.LENGTH_SHORT).show()
                 }
 
-                R.id.book_in_trx_item -> {
+                R.id.book_trx_history_item -> {
                     val intent = Intent(this, TrxHistoryActivity::class.java)
                     startActivity(intent)
                 }
 
-                R.id.book_out_trx_item -> Toast.makeText(
-                    this,
-                    "book_out_trx_item",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                R.id.stock_opname_trx_item -> Toast.makeText(
-                    this,
-                    "stock_opname_trx_item",
-                    Toast.LENGTH_SHORT
-                ).show()
+                R.id.stock_opname_history_item -> Toast.makeText(this, "stock_opname_trx_item", Toast.LENGTH_SHORT).show()
 
                 R.id.executive_charts -> {
                     val intent = Intent(this, ExecutiveMenusActivity::class.java)
@@ -146,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUIVisisibility(userRole: UserRole?) {
+    private fun updateUIVisibility(userRole: UserRole?) {
         when (userRole) {
             null -> { signOut() }
             UserRole.DIRECTOR -> {

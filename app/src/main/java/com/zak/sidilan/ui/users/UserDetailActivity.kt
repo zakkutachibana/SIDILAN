@@ -10,7 +10,6 @@ import androidx.core.content.res.ResourcesCompat
 import coil.load
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.User
-import com.zak.sidilan.data.entities.Whitelist
 import com.zak.sidilan.databinding.ActivityUserDetailBinding
 import com.zak.sidilan.util.Formatter
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -73,7 +72,7 @@ class UserDetailActivity : AppCompatActivity() {
             binding.itemRole.tvItemValue.text = user?.role
             binding.itemEmail.tvItemValue.text = user?.email
             binding.itemPhoneNumber.tvItemValue.text = user?.phoneNumber
-            binding.itemJoinTime.tvItemValue.text = Formatter.convertUTCToLocal(user?.joinedAt)
+            binding.itemJoinTime.tvItemValue.text = Formatter.convertEpochToLocal(user?.joinedAt)
         }
 
 

@@ -91,6 +91,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
     private fun loadBookData(bookId: String) {
         viewModel.getBookDetailById(bookId)
         viewModel.bookDetail.observe(this) { bookDetail ->
+            binding.ivBookCoverAdd.load(bookDetail?.book?.coverUrl)
             binding.edIsbn.setText(bookDetail?.book?.isbn.toString())
             binding.edBookTitle.setText(bookDetail?.book?.title.toString())
             binding.edPublishedDate.setText(bookDetail?.book?.publishedDate.toString())
@@ -118,7 +119,11 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
             val imageUrlFromApi = volumeInfo.imageLinks?.thumbnail.toString()
             val trimmedImageUrl = imageUrlFromApi.substringBefore("&img=1") + "&img=1"
             binding.ivBookCoverAdd.load(trimmedImageUrl)
-            binding.edBookTitle.setText(volumeInfo.title.toString())
+            val title = volumeInfo.title.toString()
+            val subtitle = volumeInfo.subtitle.toString()
+            val fullTitle =
+                if (subtitle != "null" && subtitle.isNotEmpty()) "$title: $subtitle" else title
+            binding.edBookTitle.setText(fullTitle)
             binding.edPublishedDate.setText(Formatter.convertDateAPIToFirebase(volumeInfo.publishedDate.toString()))
             binding.edAuthors.setText(volumeInfo.authors?.joinToString("\n"))
             binding.edGenre.setText(volumeInfo.categories?.getOrNull(0).toString())
@@ -221,10 +226,17 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
                 val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
 
+                val book = Book(id= "", isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
+
                 if (isUpdateMode) {
-                    updateBook(bookId, isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
+                    viewModel.bookDetail.observe(this) { bookDetail ->
+                        val oldCover = bookDetail?.book?.coverUrl
+                        book.id = bookId
+                        updateBook(book, oldCover as String)
+                    }
+
                 } else {
-                    saveBook(isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy)
+                    saveBook(book, createdBy)
                 }
             }
         }
@@ -283,11 +295,8 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
 
     override fun onDismissed() { }
 
-    private fun saveBook(isbn: Long, title: String, authors: List<String>, coverImage: Uri?, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?, createdBy: String) {
-        viewModel.saveBookToFirebase(
-            isbn, title, authors, coverImage, genre, publishedDate,
-            printPrice, sellPrice, isPerpetual, startContractDate, endContractDate, createdBy
-        ) { success, message ->
+    private fun saveBook(book: Book, createdBy: String) {
+        viewModel.saveBookToFirebase(book, createdBy) { success, message ->
             binding.btnAddBook.isEnabled = true
             if (success) {
                 Toast.makeText(this, "Book added successfully", Toast.LENGTH_SHORT).show()
@@ -297,17 +306,15 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
             }
         }
     }
-    private fun updateBook(bookId: String, isbn: Long, title: String, authors: List<String>, coverUrl: Uri?, genre: String, publishedDate: String, printPrice: Long, sellPrice: Long, isPerpetual: Boolean, startContractDate: String?, endContractDate: String?) {
-        viewModel.updateBookFirebase(
-            bookId, isbn, title, authors, coverUrl, genre, publishedDate,
-            printPrice, sellPrice, isPerpetual, startContractDate, endContractDate
-        ) { success, message ->
+    private fun updateBook(book: Book, oldCover: String) {
+        viewModel.updateBookFirebase(book, oldCover) { success, message ->
             binding.btnAddBook.isEnabled = true
             if (success) {
                 Toast.makeText(this, "Book updated successfully", Toast.LENGTH_SHORT).show()
                 finish()
             } else {
                 Toast.makeText(this, "Failed to update book: $message", Toast.LENGTH_SHORT).show()
+                Log.d("FAILED", "Gagal: $message")
             }
         }
     }

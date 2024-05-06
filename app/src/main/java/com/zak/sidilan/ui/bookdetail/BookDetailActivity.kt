@@ -88,12 +88,11 @@ class BookDetailActivity : AppCompatActivity() {
                 }
                 viewModel.getUserById(bookDetail.logs?.createdBy.toString())
                 viewModel.user.observe(this) { user ->
-                    binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, user?.role, Formatter.convertUTCToLocal(bookDetail.logs?.createdAt))
+                    binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, user?.role, Formatter.convertEpochToLocal(bookDetail.logs?.createdAt))
                     binding.userCard.ivProfilePicture.load(user?.photoUrl)
                 }
             }
         }
-
     }
 
 

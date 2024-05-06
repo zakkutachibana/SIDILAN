@@ -11,6 +11,7 @@ import androidx.lifecycle.map
 import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookOutDonationTrx
 import com.zak.sidilan.data.entities.BookOutSellingTrx
+import com.zak.sidilan.data.entities.Logs
 
 
 val bookTrxViewModelModule = module {
@@ -59,26 +60,26 @@ class BookTrxViewModel(private val repository: TrxRepository) : ViewModel() {
     fun updateStock(bookId: String, transactionType: String, quantity: Long) {
         repository.updateBookStock(bookId, transactionType, quantity)
     }
-    fun addTrxPrint(trx: BookInPrintingTrx, callback : (String, Boolean) -> Unit) {
-        repository.addBookInPrintTrx(trx) { status, bool ->
+    fun addTrxPrint(trx: BookInPrintingTrx, logs: Logs, callback : (String, Boolean) -> Unit) {
+        repository.addBookInPrintTrx(trx, logs) { status, bool ->
             _toastMessage.value = status
             callback(status, bool)
         }
     }
-    fun addTrxInDonation(trx: BookInDonationTrx, callback : (String, Boolean) -> Unit) {
-        repository.addBookInDonationTrx(trx) { status, bool ->
+    fun addTrxInDonation(trx: BookInDonationTrx, logs: Logs, callback : (String, Boolean) -> Unit) {
+        repository.addBookInDonationTrx(trx, logs) { status, bool ->
             _toastMessage.value = status
             callback(status, bool)
         }
     }
-    fun addTrxSell(trx: BookOutSellingTrx, callback : (String, Boolean) -> Unit) {
-        repository.addBookOutSellTrx(trx) { status, bool ->
+    fun addTrxSell(trx: BookOutSellingTrx, logs: Logs, callback : (String, Boolean) -> Unit) {
+        repository.addBookOutSellTrx(trx, logs) { status, bool ->
             _toastMessage.value = status
             callback(status, bool)
         }
     }
-    fun addTrxOutDonation(trx: BookOutDonationTrx, callback : (String, Boolean) -> Unit) {
-        repository.addBookOutDonationTrx(trx) { status, bool ->
+    fun addTrxOutDonation(trx: BookOutDonationTrx, logs: Logs, callback : (String, Boolean) -> Unit) {
+        repository.addBookOutDonationTrx(trx, logs) { status, bool ->
             _toastMessage.value = status
             callback(status, bool)
         }

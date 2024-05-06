@@ -14,6 +14,13 @@ data class BookSubtotal(
     constructor() : this("", 0L, 0L)
 }
 
+data class BookTrxDetail(
+    val bookTrx: BookTrx?,
+    val logs: Logs?
+) {
+    constructor() : this(null, null)
+}
+
 data class BookInPrintingTrx(
     override var id: String = "",
     override val type: String = "book_in_printing",
@@ -65,6 +72,8 @@ data class BookOutSellingTrx(
     val buyerName: String,
     @JvmField @PropertyName("book_out_date")
     val bookOutDate: String,
+    @JvmField @PropertyName("selling_platform")
+    val sellingPlatform: String,
     val books: List<BookSubtotal>,
     @JvmField @PropertyName("total_book_qty")
     val totalBookQty: Long,
@@ -82,7 +91,7 @@ data class BookOutSellingTrx(
     val finalPrice: Long,
     val notes: String?
 ) : BookTrx() {
-    constructor() : this("", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
+    constructor() : this("", "", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
 }
 
 data class BookOutDonationTrx(

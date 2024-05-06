@@ -10,7 +10,7 @@ data class Logs(
     @JvmField @PropertyName("created_by")
     val createdBy: String,
     @JvmField @PropertyName("created_at")
-    val createdAt: @RawValue Any?,
+    var createdAt: @RawValue Any?,
 ) : Parcelable {
     constructor() : this("", 0)
 }

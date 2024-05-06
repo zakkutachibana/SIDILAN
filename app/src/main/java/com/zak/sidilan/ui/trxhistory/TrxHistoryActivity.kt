@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityTrxHistoryBinding
+import com.zak.sidilan.ui.trxdetail.TrxDetailActivity
 import com.zak.sidilan.ui.users.UserDetailActivity
 import com.zak.sidilan.util.FirstItemMarginDecoration
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -32,11 +33,12 @@ class TrxHistoryActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = getString(R.string.title_book_trx_history)
         supportActionBar?.elevation = 0f
+
     }
     private fun setupRecyclerView() {
-        adapter = BookTrxAdapter(this) { user ->
-            val intent = Intent(this, UserDetailActivity::class.java)
-            intent.putExtra("userId", user.id)
+        adapter = BookTrxAdapter(this) { trxDetail ->
+            val intent = Intent(this, TrxDetailActivity::class.java)
+            intent.putExtra("trxId", trxDetail.bookTrx?.id)
             startActivity(intent)
         }
         val pixel = resources.getDimensionPixelOffset(R.dimen.first_item_margin)

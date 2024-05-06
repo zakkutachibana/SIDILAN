@@ -28,15 +28,11 @@
         android:title="@string/title_manager">
         <menu>
             <item
-                android:id="@+id/book_in_trx_item"
-                android:icon="@drawable/ic_book_in_trx"
+                android:id="@+id/book_trx_history_item"
+                android:icon="@drawable/ic_book_trx_history"
                 android:title="@string/title_book_in_trx" />
             <item
-                android:id="@+id/book_out_trx_item"
-                android:icon="@drawable/ic_book_out_trx"
-                android:title="@string/title_book_out_trx" />
-            <item
-                android:id="@+id/stock_opname_trx_item"
+                android:id="@+id/stock_opname_history_item"
                 android:icon="@drawable/ic_stock_opname_trx"
                 android:title="@string/title_stock_opname_trx" />
         </menu>
