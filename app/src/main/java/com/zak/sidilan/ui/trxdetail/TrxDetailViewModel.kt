@@ -7,6 +7,7 @@ import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.repositories.TrxRepository
 import com.zak.sidilan.data.repositories.UserRepository
 import org.koin.dsl.module
+import java.io.File
 
 val trxDetailViewModel = module {
     factory { TrxDetailViewModel(get(), get()) }
@@ -27,5 +28,9 @@ class TrxDetailViewModel(private val repository: TrxRepository, private val user
         userRepository.getUserById(userId).observeForever { user ->
             _user.value = user
         }
+    }
+
+    fun saveInvoicePDF(file : File) {
+        repository.saveInvoicePDF(file)
     }
 }

@@ -1,16 +1,22 @@
 package com.zak.sidilan.ui.trxdetail
 
-import android.content.Intent
+import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.pdf.PdfDocument
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookInPrintingTrx
@@ -18,10 +24,11 @@ import com.zak.sidilan.data.entities.BookOutDonationTrx
 import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.databinding.ActivityTrxDetailBinding
 import com.zak.sidilan.ui.bookdetail.BookDetailViewModel
-import com.zak.sidilan.ui.trxhistory.BookTrxAdapter
-import com.zak.sidilan.util.FirstItemMarginDecoration
 import com.zak.sidilan.util.Formatter
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class TrxDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrxDetailBinding
@@ -40,6 +47,7 @@ class TrxDetailActivity : AppCompatActivity() {
         }
         setupView()
         setupViewModel()
+        setupAction()
 
         setContentView(binding.root)
     }
@@ -93,6 +101,7 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.footer.tvBookSubtotal.text = Formatter.addThousandSeparatorTextView(bookTrx.totalCost)
                     binding.footer.tvBookQty.text = bookTrx.totalBookQty.toString()
                     binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvNumberAsWords.text = getString(R.string.rupiah, Formatter.convertNumberToWords(bookTrx.finalCost))
 
                     when (bookTrx.discountType) {
                         "percent" -> {
@@ -139,6 +148,7 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
 
                     binding.layoutDiscount.visibility = View.GONE
+                    binding.tvNumberAsWords.visibility = View.GONE
                 }
                 is BookOutSellingTrx -> {
                     setupRecyclerView(2)
@@ -155,6 +165,7 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.footer.tvBookSubtotal.text = Formatter.addThousandSeparatorTextView(bookTrx.totalPrice)
                     binding.footer.tvBookQty.text = bookTrx.totalBookQty.toString()
                     binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvNumberAsWords.text = getString(R.string.rupiah, Formatter.convertNumberToWords(bookTrx.finalPrice))
 
                     when (bookTrx.discountType) {
                         "percent" -> {
@@ -195,8 +206,8 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
                     binding.footer.materialDivider.visibility = View.GONE
 
-
                     binding.layoutDiscount.visibility = View.GONE
+                    binding.tvNumberAsWords.visibility = View.GONE
                 }
                 else -> {
                     finish()
@@ -208,16 +219,77 @@ class TrxDetailActivity : AppCompatActivity() {
                 binding.userCard.ivProfilePicture.load(user?.photoUrl)
             }
         }
-
     }
 
+    private fun setupAction () {
+        binding.btnInvoice.setOnClickListener {
+            viewModel.trxDetail.observe(this) { trxDetail ->
+                val invId = trxDetail?.bookTrx?.id
+                generatePdfInvoice(this, invId)
+            }
+
+        }
+    }
+
+    private fun generatePdfInvoice(context: Context, invId: String?): Uri? {
+
+            val pdfDocument = PdfDocument()
+
+            // Create a PageInfo object defining the page size
+            val pageInfo = PdfDocument.PageInfo.Builder(612, 792, 1)
+                .create() // US Letter size: 612 x 792 points
+
+            // Start a new page
+            val page = pdfDocument.startPage(pageInfo)
+
+            // Get the Canvas object to draw on the page
+            val canvas = page.canvas
+
+            // Add content to the page
+            // For example, draw text
+            val paint = Paint()
+            paint.textSize = 12f
+            canvas.drawText("Invoice", 100f, 100f, paint)
+
+            // Finish the page
+            pdfDocument.finishPage(page)
+
+            // Define the file path where the PDF file will be saved locally
+            val fileName = "${invId}.pdf"
+            val file = File(context.cacheDir, fileName)
+
+            try {
+                // Create a FileOutputStream to write to the file
+                val fileOutputStream = FileOutputStream(file)
+
+                // Write the PDF document to the FileOutputStream
+                pdfDocument.writeTo(fileOutputStream)
+
+                // Close the FileOutputStream
+                fileOutputStream.close()
+
+                // Close the PdfDocument
+                pdfDocument.close()
+
+                Log.d("PDF", "PDF invoice created locally: ${file.absolutePath}")
+
+                // Upload the PDF file to Firebase Storage
+                viewModel.saveInvoicePDF(file)
+
+                // Return the Uri of the local PDF file
+                return Uri.fromFile(file)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                return null
+            }
+
+    }
     private fun setupRecyclerView(type: Int) {
         adapter = BookTrxHistoryAdapter(this, bookViewModel, type)
         binding.rvTrxHistory.layoutManager = LinearLayoutManager(this)
         binding.rvTrxHistory.adapter = adapter
         binding.rvTrxHistory.itemAnimator = DefaultItemAnimator()
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

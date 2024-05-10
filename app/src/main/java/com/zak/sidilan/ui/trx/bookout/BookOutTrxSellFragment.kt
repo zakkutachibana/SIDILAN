@@ -223,6 +223,7 @@ class BookOutTrxSellFragment : Fragment() {
             if (isValid()) {
                 binding.btnAddTrx.isEnabled = false
                 val buyerName = binding.edBuyerName.text.toString()
+                val address = binding.edAddress.text.toString()
                 val sellDate = binding.edSellDate.text.toString()
                 val sellingPlatform = binding.edSellPlatform.text.toString()
                 val totalPrice = Formatter.getRawValue(binding.edTotalPrice).toLong()
@@ -254,6 +255,7 @@ class BookOutTrxSellFragment : Fragment() {
                     // Create a BookInPrintingTransaction instance
                     val transaction = BookOutSellingTrx(
                         buyerName = buyerName,
+                        address = address,
                         bookOutDate = sellDate,
                         sellingPlatform = sellingPlatform,
                         books = bookItems, // Pass the list of BookItems

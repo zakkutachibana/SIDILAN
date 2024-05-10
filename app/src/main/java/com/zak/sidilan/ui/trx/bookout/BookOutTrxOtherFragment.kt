@@ -140,6 +140,7 @@ class BookOutTrxOtherFragment : Fragment() {
             if (isValid()) {
                 binding.btnAddTrx.isEnabled = false
                 val doneeName = binding.edDoneeName.text.toString()
+                val address = binding.edAddress.text.toString()
                 val doneeDate = binding.edDoneeDate.text.toString()
                 val note = binding.edNote.text.toString()
                 val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
@@ -160,6 +161,7 @@ class BookOutTrxOtherFragment : Fragment() {
                     // Create a BookInPrintingTransaction instance
                     val transaction = BookOutDonationTrx(
                         doneeName = doneeName,
+                        address = address,
                         bookOutDate = doneeDate,
                         books = bookItems, // Pass the list of BookItems
                         totalBookQty = books.sumOf { it.bookQty }, // Calculate total books quantity

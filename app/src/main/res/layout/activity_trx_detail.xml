@@ -68,7 +68,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="xxxxxxx"
+                    android:text="xxxxxxx \n yyyyyyyyyyyyyyyyyy"
                     android:textAlignment="textEnd"
                     android:maxLines="2"
                     android:ellipsize="end"
@@ -79,12 +79,42 @@
                     app:layout_constraintTop_toBottomOf="@+id/tv_participant_title" />
 
                 <TextView
+                    android:id="@+id/tv_participant_address"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:text="xxxxxxx \n yyyyyyyyyyyyyyyyyy"
+                    android:textAlignment="textEnd"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline5"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_participant_value" />
+                <TextView
+                    android:id="@+id/tv_trx_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tipe"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_trx_type_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Buku Masuk"
+                    android:textStyle="italic|bold"
+                    app:layout_constraintBottom_toTopOf="@+id/tv_trx_date"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                    app:layout_constraintTop_toTopOf="@+id/tv_trx_type" />
+
+                <TextView
                     android:id="@+id/tv_trx_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tanggal"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_trx_type" />
 
                 <TextView
                     android:id="@+id/tv_trx_date_value"
@@ -96,14 +126,23 @@
                     app:layout_constraintEnd_toStartOf="@+id/guideline5"
                     app:layout_constraintTop_toTopOf="@+id/tv_trx_date" />
 
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider5"
+                    android:layout_width="0dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_trx_date" />
+
                 <TextView
                     android:id="@+id/tv_total_money"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total Biaya"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_trx_date" />
+                    app:layout_constraintTop_toBottomOf="@id/divider5" />
 
                 <TextView
                     android:id="@+id/tv_total_money_value"
@@ -131,7 +170,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total Buku"
-                    android:layout_marginTop="4dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_total_money" />
 
@@ -140,7 +178,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total Judul"
-                    android:layout_marginTop="4dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_total_book" />
 
@@ -161,6 +198,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     app:layout_constraintGuide_percent="0.55" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.25" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -185,7 +229,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:paddingHorizontal="4dp">
 
                 <include
                     android:id="@+id/header"
@@ -303,9 +348,20 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+                <TextView
+                    android:id="@+id/tv_number_as_words"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="dua puluh enam ribu rupiah"
+                    android:textStyle="italic"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:paddingBottom="4dp"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_discount" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
         </ir.beigirad.zigzagview.ZigzagView>
 
         <include
@@ -321,7 +377,7 @@
             style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
             android:layout_width="65dp"
             android:layout_height="65dp"
-            app:icon="@drawable/ic_whatsapp"
+            app:icon="@drawable/ic_invoice"
             app:iconSize="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"

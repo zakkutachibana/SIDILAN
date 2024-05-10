@@ -119,8 +119,8 @@ dependencies {
     //Zigzag View
     implementation("com.github.beigirad:ZigzagView:1.2.0")
 
-    //Invoice Generator
-    implementation("com.github.kariot:pdf-invoice-generator:1.0.1")
+    //iText
+    implementation("com.itextpdf:itext7-core:7.1.15")
 
     //Chart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")

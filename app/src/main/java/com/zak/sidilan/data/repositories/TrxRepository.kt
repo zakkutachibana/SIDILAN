@@ -1,13 +1,16 @@
 package com.zak.sidilan.data.repositories
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.storage.storage
 import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookInPrintingTrx
 import com.zak.sidilan.data.entities.BookOutDonationTrx
@@ -16,6 +19,7 @@ import com.zak.sidilan.data.entities.BookTrx
 import com.zak.sidilan.data.entities.BookTrxDetail
 import com.zak.sidilan.data.entities.Logs
 import org.koin.dsl.module
+import java.io.File
 
 val trxRepositoryModule = module {
     factory { TrxRepository() }
@@ -191,6 +195,21 @@ class TrxRepository {
                 }
             })
     }
+    fun saveInvoicePDF(file: File) {
+        val storageRef = Firebase.storage.reference.child("invoices/${file.name}")
+        storageRef.putFile(Uri.fromFile(file))
+            .addOnSuccessListener {
+                Log.d("PDF", "PDF invoice uploaded to Firebase Storage.")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(
+                    "PDF",
+                    "Failed to upload PDF invoice: ${exception.message}",
+                    exception
+                )
+            }
+    }
+
 
     private fun generateInvoiceId(transactionType: String): String {
         val prefix = when (transactionType) {

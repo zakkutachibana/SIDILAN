@@ -99,5 +99,47 @@ object Formatter {
         return "62$cleanedPhoneNumber"
     }
 
+    fun convertNumberToWords(nominal: Long): String {
+        val satuBelasDuaPuluh = arrayOf("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas")
+
+        if (nominal < 12) {
+            return satuBelasDuaPuluh[nominal.toInt()]
+        }
+
+        if (nominal < 20) {
+            return satuBelasDuaPuluh[(nominal - 10).toInt()] + " belas"
+        }
+
+        if (nominal < 100) {
+            return satuBelasDuaPuluh[(nominal / 10).toInt()] + " puluh " + satuBelasDuaPuluh[(nominal % 10).toInt()]
+        }
+
+        if (nominal < 200) {
+            return "seratus " + convertNumberToWords(nominal - 100)
+        }
+
+        if (nominal < 1000) {
+            return satuBelasDuaPuluh[(nominal / 100).toInt()] + " ratus " + convertNumberToWords(nominal % 100)
+        }
+
+        if (nominal < 2000) {
+            return "seribu " + convertNumberToWords(nominal - 1000)
+        }
+
+        if (nominal < 1000000) {
+            return convertNumberToWords(nominal / 1000) + " ribu " + convertNumberToWords(nominal % 1000)
+        }
+
+        if (nominal < 1000000000) {
+            return convertNumberToWords(nominal / 1000000) + " juta " + convertNumberToWords(nominal % 1000000)
+        }
+
+        if (nominal < 1000000000000) {
+            return convertNumberToWords(nominal / 1000000000) + " miliar " + convertNumberToWords(nominal % 1000000000)
+        }
+
+        return "Nominal terlalu besar"
+    }
+
 }
 

@@ -26,6 +26,7 @@ data class BookInPrintingTrx(
     override val type: String = "book_in_printing",
     @JvmField @PropertyName("printing_shop_name")
     val printingShopName: String,
+    val address: String,
     @JvmField @PropertyName("book_in_date")
     val bookInDate: String,
     val books: List<BookSubtotal>,
@@ -45,7 +46,7 @@ data class BookInPrintingTrx(
     val finalCost: Long,
     val notes: String?
 ) : BookTrx() {
-    constructor() : this("", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
+    constructor() : this("", "", "", "","", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
 }
 
 data class BookInDonationTrx(
@@ -53,6 +54,7 @@ data class BookInDonationTrx(
     override val type: String = "book_in_donation",
     @JvmField @PropertyName("donor_name")
     val donorName: String,
+    val address: String,
     @JvmField @PropertyName("book_in_date")
     val bookInDate: String,
     val books: List<BookSubtotal>,
@@ -62,7 +64,7 @@ data class BookInDonationTrx(
     val totalBookKind : Long,
     val notes: String
 ) : BookTrx() {
-    constructor() : this("", "", "", "", listOf(), 0L, 0L, "")
+    constructor() : this("", "", "", "", "", listOf(), 0L, 0L, "")
 }
 
 data class BookOutSellingTrx(
@@ -70,6 +72,7 @@ data class BookOutSellingTrx(
     override val type: String = "book_out_selling",
     @JvmField @PropertyName("buyer_name")
     val buyerName: String,
+    val address: String,
     @JvmField @PropertyName("book_out_date")
     val bookOutDate: String,
     @JvmField @PropertyName("selling_platform")
@@ -91,7 +94,7 @@ data class BookOutSellingTrx(
     val finalPrice: Long,
     val notes: String?
 ) : BookTrx() {
-    constructor() : this("", "", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
+    constructor() : this("", "","", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
 }
 
 data class BookOutDonationTrx(
@@ -99,6 +102,7 @@ data class BookOutDonationTrx(
     override val type: String = "book_out_donation",
     @JvmField @PropertyName("donee_name")
     val doneeName: String,
+    val address: String,
     @JvmField @PropertyName("book_out_date")
     val bookOutDate: String,
     val books: List<BookSubtotal>,
@@ -108,5 +112,5 @@ data class BookOutDonationTrx(
     val totalBookKind : Long,
     val notes: String?
 ) : BookTrx() {
-    constructor() : this("", "", "", "", listOf(), 0L, 0L, "")
+    constructor() : this("", "","", "", "", listOf(), 0L, 0L, "")
 }

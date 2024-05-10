@@ -29,6 +29,24 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edl_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Alamat"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edl_buyer_name"
+            app:startIconDrawable="@drawable/ic_address">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ed_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edl_sell_platform"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +55,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            app:layout_constraintTop_toBottomOf="@+id/edl_buyer_name"
+            app:layout_constraintTop_toBottomOf="@+id/edl_address"
             app:startIconDrawable="@drawable/ic_store">
 
             <AutoCompleteTextView

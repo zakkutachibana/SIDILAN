@@ -229,6 +229,7 @@ class BookInTrxPrintFragment : Fragment() {
             if (isValid()) {
                 binding.btnAddTrx.isEnabled = false
                 val shopName = binding.edPrintShop.text.toString()
+                val address = binding.edAddress.text.toString()
                 val printDate = binding.edPrintDate.text.toString()
                 val totalCost = Formatter.getRawValue(binding.edTotalCost).toLong()
                 val finalCost = Formatter.getRawValue(binding.edFinalCost).toLong()
@@ -261,6 +262,7 @@ class BookInTrxPrintFragment : Fragment() {
                     val transaction = BookInPrintingTrx(
                         printingShopName = shopName,
                         bookInDate = printDate,
+                        address = address,
                         books = bookItems, // Pass the list of BookItems
                         totalBookQty = books.sumOf { it.bookQty }, // Calculate total books quantity
                         totalBookKind = bookItems.size.toLong(),
