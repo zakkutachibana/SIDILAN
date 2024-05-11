@@ -217,7 +217,7 @@ class TrxRepository {
             "book_in_donation" -> "INVI"
             "book_out_selling" -> "INVS"
             "book_out_donation" -> "INVO"
-            else -> "INV" // Default prefix
+            else -> "ERR!" // Default prefix
         }
 
         val sequentialNumber = generateRandomKey(8)
