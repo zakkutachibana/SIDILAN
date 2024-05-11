@@ -64,7 +64,10 @@ class BookDetailActivity : AppCompatActivity() {
     private fun setupViewModel() {
         viewModel.bookDetail.observe(this) { bookDetail ->
             if (bookDetail != null) {
-                binding.ivBookCover.load(bookDetail.book?.coverUrl)
+                binding.ivBookCover.load(bookDetail.book?.coverUrl) {
+                    crossfade(true)
+                    placeholder(R.drawable.book_placeholder)
+                }
                 binding.tvBookTitleDetail.text = bookDetail.book?.title
                 binding.tvBookTitleValue.text = bookDetail.book?.title
                 binding.tvIsbnValue.text = bookDetail.book?.isbn.toString()

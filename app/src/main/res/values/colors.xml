@@ -25,4 +25,11 @@
 
     <color name="yellow">#FFEB3B</color>
     <color name="red">#F44336</color>
+
+    <color name="gray_one">#D4D4D4</color>
+    <color name="gray_two">#B4B4B4</color>
+    <color name="gray_three">#909090</color>
+    <color name="gray_four">#636363</color>
+    <color name="gray_five">#494848</color>
+
 </resources>

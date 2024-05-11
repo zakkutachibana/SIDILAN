@@ -38,7 +38,10 @@ class ChooseBookAdapter(
         }
 
         fun bind(bookDetail: BookDetail) {
-            adapterBinding.ivBookCover.load(bookDetail.book?.coverUrl)
+            adapterBinding.ivBookCover.load(bookDetail.book?.coverUrl) {
+                crossfade(true)
+                placeholder(R.drawable.book_placeholder)
+            }
             adapterBinding.tvBookTitle.text = bookDetail.book?.title
             adapterBinding.tvBookAuthors.text = bookDetail.book?.authors?.joinToString(", ")
             adapterBinding.tvBookStock.text = context.getString(R.string.current_stock_is, Formatter.addThousandSeparatorTextView(bookDetail.stock?.stockQty))

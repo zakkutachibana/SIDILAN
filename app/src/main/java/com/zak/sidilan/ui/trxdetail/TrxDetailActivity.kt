@@ -140,7 +140,6 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.tvTotalMoney.visibility = View.GONE
                     binding.footer.materialDivider.visibility = View.GONE
 
-
                     binding.footer.tvBookSubtotal.textAlignment = View.TEXT_ALIGNMENT_CENTER
                     binding.footer.tvBookSubtotal.text = "-"
                     binding.footer.tvBookSubtotalRp.visibility = View.GONE
@@ -235,7 +234,6 @@ class TrxDetailActivity : AppCompatActivity() {
 
             val pdfDocument = PdfDocument()
 
-            // Create a PageInfo object defining the page size
             val pageInfo = PdfDocument.PageInfo.Builder(612, 792, 1)
                 .create() // US Letter size: 612 x 792 points
 

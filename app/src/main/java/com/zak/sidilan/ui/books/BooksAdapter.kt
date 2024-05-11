@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.databinding.LayoutBookCardBinding
@@ -38,7 +39,10 @@ class BooksAdapter(
         }
 
         fun bind(bookDetail: BookDetail) {
-            adapterBinding.ivBookCover.load(bookDetail.book?.coverUrl)
+            adapterBinding.ivBookCover.load(bookDetail.book?.coverUrl) {
+                crossfade(true)
+                placeholder(R.drawable.book_placeholder)
+            }
             adapterBinding.tvBookTitle.text = bookDetail.book?.title
             adapterBinding.tvAuthorName.text = bookDetail.book?.authors?.joinToString(", ")
             adapterBinding.tvIsbn.text = bookDetail.book?.isbn.toString()
