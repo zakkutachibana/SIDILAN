@@ -209,6 +209,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
 
         binding.btnAddBook.setOnClickListener {
             if (isValid()) {
+//                binding.loading.visibility = View.VISIBLE
                 binding.btnAddBook.isEnabled = false
 
                 val isbn = binding.edIsbn.text.toString().toLong()
@@ -233,10 +234,12 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                         val oldCover = bookDetail?.book?.coverUrl
                         book.id = bookId
                         updateBook(book, oldCover as String)
+//                        binding.loading.visibility = View.GONE
                     }
 
                 } else {
                     saveBook(book, createdBy)
+//                    binding.loading.visibility = View.GONE
                 }
             }
         }

@@ -33,15 +33,13 @@ class BooksFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentBooksBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.shimmerView.startShimmer()
 
         Handler(Looper.getMainLooper()).postDelayed({
             setupRecyclerView()
             setupViewModel() }, 300)
+
+        return binding.root
     }
 
     private fun setupRecyclerView() {
@@ -59,6 +57,12 @@ class BooksFragment : Fragment() {
         viewModel.getBooks()
         viewModel.bookList.observe(viewLifecycleOwner) { books ->
             adapter.submitList(books)
+            Handler(Looper.getMainLooper()).postDelayed({
+                binding.shimmerView.stopShimmer()
+                binding.shimmerView.visibility = View.GONE }, 1000)
+        }
+        viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
+
         }
     }
 

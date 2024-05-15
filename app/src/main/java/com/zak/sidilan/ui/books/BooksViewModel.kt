@@ -1,7 +1,9 @@
 package com.zak.sidilan.ui.books
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.map
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -23,6 +25,9 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
     private val _bookList = MutableLiveData<ArrayList<BookDetail>>()
     val bookList: MutableLiveData<ArrayList<BookDetail>> get() = _bookList
 
+    val isBookListEmpty: LiveData<Boolean> = bookList.map { books ->
+        books.isEmpty()
+    }
     fun getBooks() {
         repository.getAllBooks().observeForever { bookList ->
             _bookList.value = bookList

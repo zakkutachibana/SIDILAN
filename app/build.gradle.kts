@@ -125,5 +125,12 @@ dependencies {
     //Chart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
+    //Shimmer
+    implementation("com.facebook.shimmer:shimmer:0.5.0")
+
+    //Lottie
+    implementation("com.airbnb.android:lottie:6.4.0")
+
+
 }
 

@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.addbook.AddBookActivity">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        tools:context=".ui.addbook.AddBookActivity">
-
+        android:layout_height="match_parent"
+        android:padding="16dp">
         <Button
             android:id="@+id/btn_change_book_pic"
             style="?attr/materialIconButtonFilledTonalStyle"
@@ -50,19 +49,19 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:hint="ISBN"
-            app:layout_constraintTop_toBottomOf="@+id/btn_change_book_pic"
-            tools:layout_editor_absoluteX="16dp"
-            app:startIconDrawable="@drawable/ic_number"
+            app:endIconDrawable="@drawable/ic_search"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_search">
+            app:layout_constraintTop_toBottomOf="@+id/btn_change_book_pic"
+            app:startIconDrawable="@drawable/ic_number"
+            tools:layout_editor_absoluteX="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ed_isbn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
                 android:inputType="number"
-                android:maxLength="13"/>
+                android:maxLength="13"
+                android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,11 +88,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="Penulis"
+            app:helperText="Pisahkan nama penulis dengan membuat baris baru (Enter)"
+            app:helperTextEnabled="true"
             app:layout_constraintTop_toBottomOf="@+id/edl_book_title"
             app:startIconDrawable="@drawable/ic_author"
-            tools:layout_editor_absoluteX="16dp"
-            app:helperTextEnabled="true"
-            app:helperText="Pisahkan nama penulis dengan membuat baris baru (Enter)">
+            tools:layout_editor_absoluteX="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ed_authors"
@@ -103,10 +102,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edl_genre"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:hint="Genre"
             app:layout_constraintTop_toBottomOf="@+id/edl_authors"
             app:startIconDrawable="@drawable/ic_genre"
@@ -117,29 +116,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                app:simpleItems="@array/genres"/>
+                app:simpleItems="@array/genres" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edl_published_date"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:hint="Tanggal Terbit Buku"
             app:layout_constraintTop_toBottomOf="@+id/edl_genre"
             app:startIconDrawable="@drawable/ic_date"
-            tools:layout_editor_absoluteX="16dp"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            >
+            tools:layout_editor_absoluteX="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ed_published_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:clickable="false"
-                />
+                android:focusable="false" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -168,7 +165,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:maxLength="9"/>
+                android:maxLength="9" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -189,7 +186,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"
-                android:maxLength="9"/>
+                android:maxLength="9" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -208,9 +205,9 @@
                 android:id="@+id/ed_start_contract_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:clickable="false"
-                android:hint="Mulai PKS"/>
+                android:focusable="false"
+                android:hint="Mulai PKS" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -229,10 +226,9 @@
                 android:id="@+id/ed_end_contract_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="false"
                 android:clickable="false"
-                android:hint="Selesai PKS"
-                />
+                android:focusable="false"
+                android:hint="Selesai PKS" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -261,8 +257,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/divider"
-            />
+            app:layout_constraintTop_toBottomOf="@id/divider" />
 
         <Button
             android:id="@+id/btn_add_book"
