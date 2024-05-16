@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import coil.load
+import com.zak.sidilan.MainActivity
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentDashboardBinding
@@ -24,8 +25,7 @@ val dashboardFragmentModule = module {
 }
 class DashboardFragment : Fragment() {
     private val viewModel: DashboardViewModel by viewModel()
-    private var _binding: FragmentDashboardBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentDashboardBinding
     private lateinit var hawkManager: HawkManager
 
 
@@ -34,16 +34,15 @@ class DashboardFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        hawkManager = HawkManager(requireActivity())
+        binding = FragmentDashboardBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setView()
-
+        hawkManager = HawkManager(requireActivity())
+        binding.shimmerView.startShimmer()
         Handler(Looper.getMainLooper()).postDelayed({
             setViewModel()
             setAction()
@@ -65,23 +64,40 @@ class DashboardFragment : Fragment() {
         binding.itemSales1.tvItemValue.text = "379 buku"
         binding.itemSales2.tvItemTitle.text = "Pendapatan"
         binding.itemSales2.tvItemValue.text = "10.000.000"
-    }
 
-    private fun setViewModel() {
         binding.itemStock1.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_bookshelf, null)
         binding.itemStock2.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_warehouse, null)
         binding.itemStock3.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_rupiah, null)
         binding.itemSales1.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_cart_check, null)
         binding.itemSales2.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_rupiah, null)
 
+        (requireActivity() as MainActivity).binding.fab.hide()
+    }
+
+    private fun setViewModel() {
+
+
         viewModel.getBookCount()
         viewModel.bookCount.observe(viewLifecycleOwner) { bookCount ->
             binding.itemStock1.tvItemValue.text = getString(R.string.book_count, bookCount.toString())
         }
+
         viewModel.getTotalStockQty()
         viewModel.totalStockQty.observe(viewLifecycleOwner) { totalStockQty ->
             binding.itemStock2.tvItemValue.text = getString(R.string.total_stock_qty, totalStockQty.toString())
         }
+
+        Handler(Looper.getMainLooper()).postDelayed({
+            setView()
+            binding.timeFilter.visibility = View.VISIBLE
+            binding.userCard.root.visibility = View.VISIBLE
+            binding.cardSaleSummary.visibility = View.VISIBLE
+            binding.cardStockSummary.visibility = View.VISIBLE
+            binding.shimmerView.visibility = View.GONE
+            binding.shimmerView.stopShimmer()
+        }, 1000)
+
+
     }
 
     private fun setAction() {
@@ -102,9 +118,8 @@ class DashboardFragment : Fragment() {
             intent.putExtra("userId", currentUser?.id)
             startActivity(intent)
         }
-    }
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        binding.drawerIcon.setOnClickListener {
+            (requireActivity() as MainActivity).binding.drawerLayout.open()
+        }
     }
 }

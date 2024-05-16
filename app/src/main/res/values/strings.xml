@@ -49,7 +49,7 @@
     <string name="title_stock_opname_trx">Stock Opname</string>
     <string name="title_user_management">Manajemen Pengguna</string>
     <string name="title_delete_book">Hapus Buku?</string>
-    <string name="welcome">"Welcome !"</string>
+    <string name="welcome">"Selamat Datang !"</string>
     <string name="record_book_in">Catat Buku Masuk</string>
     <string name="record_book_out">Catat Buku Keluar</string>
     <string name="title_book_out_sell">Jual Buku</string>

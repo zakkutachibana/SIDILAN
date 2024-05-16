@@ -34,13 +34,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
     private val authViewModel: AuthViewModel by viewModel()
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var hawkManager: HawkManager
 
-    @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.Theme_SIDILAN)
@@ -57,20 +56,6 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
-        navController.addOnDestinationChangedListener { _, destination, _ ->
-            when (destination.id) {
-                R.id.navigation_books -> binding.fab.show()
-                R.id.navigation_dashboard -> Handler(Looper.getMainLooper()).postDelayed({
-                    binding.fab.hide()
-                }, 400)
-
-                R.id.navigation_profile -> Handler(Looper.getMainLooper()).postDelayed({
-                    binding.fab.hide()
-                }, 200)
-
-                else -> {}
-            }
-        }
 
         auth = Firebase.auth
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -92,9 +77,7 @@ class MainActivity : AppCompatActivity() {
             val modalBottomSheetAction = ModalBottomSheetAction(1, null, this)
             modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
         }
-        binding.searchBar.setNavigationOnClickListener {
-            binding.drawerLayout.open()
-        }
+
         binding.navigationView.setCheckedItem(R.id.home)
         binding.navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {

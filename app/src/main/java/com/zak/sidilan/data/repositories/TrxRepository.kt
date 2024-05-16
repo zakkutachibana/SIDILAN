@@ -8,6 +8,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.storage
@@ -32,10 +33,10 @@ class TrxRepository {
     fun getAllTrx(): MutableLiveData<ArrayList<BookTrxDetail>> {
         val bookTrx = MutableLiveData<ArrayList<BookTrxDetail>>()
 
-        reference.addValueEventListener(object : ValueEventListener {
+        reference.orderByChild("logs/created_at").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val transactions = ArrayList<BookTrxDetail>()
-                for (eachTransaction in snapshot.children) {
+                for (eachTransaction in snapshot.children.reversed()) {
                     val type = eachTransaction.child("transaction").child("type").getValue(String::class.java)
                     val transaction = when (type) {
                         "book_in_printing" -> eachTransaction.child("transaction").getValue(BookInPrintingTrx::class.java)

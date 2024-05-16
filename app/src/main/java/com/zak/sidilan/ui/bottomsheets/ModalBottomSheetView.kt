@@ -75,7 +75,7 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
                     listener?.onDismissed()
                 }
             }
-            //Type 3: Add Book Transaction
+            //Type 3: Add Book Transaction (Add Stock)
             3 -> {
                 binding.tvTitleBookView.text = createdBook?.book?.title
                 binding.tvTitleBookView.maxLines = 1
@@ -85,12 +85,34 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
                 binding.ivBookCoverView.load(createdBook?.book?.coverUrl)
 
                 binding.btnAddView.setOnClickListener {
-                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString() != "0") {
+                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString() > "0") {
                         val bookQty = binding.edBookQty.text.toString().toLong()
                         listener?.onButtonClicked(null, createdBook?.book, bookQty)
                         dismiss()
                     } else {
                         binding.edlBookQty.error = "${binding.edlBookQty.hint} tidak boleh kosong"
+                    }
+                }
+                dialog?.setOnDismissListener {
+                    listener?.onDismissed()
+                }
+            }
+            //Type 4: Add Book Transaction (Substract Stock)
+            4 -> {
+                binding.tvTitleBookView.text = createdBook?.book?.title
+                binding.tvTitleBookView.maxLines = 1
+                binding.tvAuthorBookView.text = createdBook?.book?.authors?.joinToString(", ")
+                binding.tvAuthorBookView.maxLines = 1
+                binding.tvPublishedDateView.text = getString(R.string.current_stock_is, createdBook?.stock?.stockQty.toString())
+                binding.ivBookCoverView.load(createdBook?.book?.coverUrl)
+
+                binding.btnAddView.setOnClickListener {
+                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString().toLong() <= createdBook?.stock?.stockQty!!) {
+                        val bookQty = binding.edBookQty.text.toString().toLong()
+                        listener?.onButtonClicked(null, createdBook?.book, bookQty)
+                        dismiss()
+                    } else {
+                        binding.edlBookQty.error = "${binding.edlBookQty.hint} tidak boleh kosong atau melebihi stok saat ini"
                     }
                 }
                 dialog?.setOnDismissListener {

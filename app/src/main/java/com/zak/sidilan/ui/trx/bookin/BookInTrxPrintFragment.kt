@@ -342,6 +342,11 @@ class BookInTrxPrintFragment : Fragment() {
             binding.edlTotalCost,
             binding.edTotalCost
         )
+                && isNotNegative(
+            Formatter.getRawValue(binding.edFinalCost).toLong(),
+            binding.edlFinalCost,
+            binding.edFinalCost
+        )
     }
 
     inner class TextFieldValidation(private val view: View) : TextWatcher {
@@ -382,6 +387,13 @@ class BookInTrxPrintFragment : Fragment() {
                         binding.edPrintDate
                     )
                 }
+                R.id.ed_final_cost -> {
+                    isNotNegative(
+                        Formatter.getRawValue(binding.edFinalCost).toLong(),
+                        binding.edlFinalCost,
+                        binding.edFinalCost
+                    )
+                }
 
 
             }
@@ -405,6 +417,26 @@ class BookInTrxPrintFragment : Fragment() {
             }
         }
         return true
+    }
+
+    private fun isNotNegative(
+        value: Long,
+        textInputLayout: TextInputLayout,
+        editText: EditText
+    ): Boolean {
+        when {
+            value <= 0 -> {
+                textInputLayout.error = "Harga Akhir tidak boleh ≤ 0"
+                editText.requestFocus()
+                return false
+            }
+
+            else -> {
+                textInputLayout.isErrorEnabled = false
+            }
+        }
+        return true
+
     }
 
     private fun setupListeners() {

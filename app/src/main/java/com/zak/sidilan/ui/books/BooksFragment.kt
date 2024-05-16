@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.zak.sidilan.MainActivity
 import com.zak.sidilan.databinding.FragmentBooksBinding
 import com.zak.sidilan.ui.bookdetail.BookDetailActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -20,9 +21,7 @@ val booksFragmentModule = module {
 }
 
 class BooksFragment : Fragment() {
-
-    private var _binding: FragmentBooksBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding : FragmentBooksBinding
     private val viewModel: BooksViewModel by viewModel()
 
     private lateinit var adapter: BooksAdapter
@@ -32,16 +31,19 @@ class BooksFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentBooksBinding.inflate(inflater, container, false)
+        binding = FragmentBooksBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.shimmerView.startShimmer()
 
         Handler(Looper.getMainLooper()).postDelayed({
             setupRecyclerView()
-            setupViewModel() }, 300)
-
-        return binding.root
+            setupViewModel()
+            setupAction()}, 300)
     }
-
     private fun setupRecyclerView() {
         adapter = BooksAdapter(requireContext()) { bookDetail ->
             val intent = Intent(requireActivity(), BookDetailActivity::class.java)
@@ -57,17 +59,23 @@ class BooksFragment : Fragment() {
         viewModel.getBooks()
         viewModel.bookList.observe(viewLifecycleOwner) { books ->
             adapter.submitList(books)
-            Handler(Looper.getMainLooper()).postDelayed({
-                binding.shimmerView.stopShimmer()
-                binding.shimmerView.visibility = View.GONE }, 1000)
         }
         viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
 
         }
     }
+    private fun setupAction() {
+        binding.searchBar.setNavigationOnClickListener {
+            (requireActivity() as MainActivity).binding.drawerLayout.open()
+        }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        Handler(Looper.getMainLooper()).postDelayed({
+            binding.shimmerView.stopShimmer()
+            binding.shimmerView.visibility = View.GONE
+            binding.rvBooks.visibility = View.VISIBLE
+            (requireActivity() as MainActivity).binding.fab.show() }, 500)
+
+
     }
+
 }

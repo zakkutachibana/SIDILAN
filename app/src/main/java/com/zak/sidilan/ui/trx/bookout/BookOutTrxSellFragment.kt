@@ -337,6 +337,12 @@ class BookOutTrxSellFragment : Fragment() {
             binding.edlTotalPrice,
             binding.edTotalPrice
         )
+                && isNotZeroOrNegative(
+            Formatter.getRawValue(binding.edFinalPrice).toLong(),
+            binding.edlFinalPrice,
+            binding.edFinalPrice
+        )
+
     }
 
     inner class TextFieldValidation(private val view: View) : TextWatcher {
@@ -369,6 +375,13 @@ class BookOutTrxSellFragment : Fragment() {
                         binding.edTotalPrice
                     )
                 }
+                R.id.ed_final_price -> {
+                    isNotZeroOrNegative(
+                        Formatter.getRawValue(binding.edFinalPrice).toLong(),
+                        binding.edlFinalPrice,
+                        binding.edFinalPrice
+                    )
+                }
             }
         }
     }
@@ -390,6 +403,26 @@ class BookOutTrxSellFragment : Fragment() {
             }
         }
         return true
+    }
+
+    private fun isNotZeroOrNegative(
+        value: Long,
+        textInputLayout: TextInputLayout,
+        editText: EditText
+    ): Boolean {
+        when {
+            value <= 0 -> {
+                textInputLayout.error = "Harga Akhir tidak boleh ≤ 0"
+                editText.requestFocus()
+                return false
+            }
+
+            else -> {
+                textInputLayout.isErrorEnabled = false
+            }
+        }
+        return true
+
     }
 
     private fun setupListeners() {

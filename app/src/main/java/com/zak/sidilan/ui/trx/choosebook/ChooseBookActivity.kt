@@ -62,9 +62,29 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
     }
 
     private fun showBottomSheet(book: BookDetail) {
-        val modalBottomSheetView = ModalBottomSheetView(3, null, book)
-        modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
-        modalBottomSheetView.setBottomSheetListener(this)
+        when (type) {
+            1->{
+                val modalBottomSheetView = ModalBottomSheetView(3, null, book)
+                modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
+                modalBottomSheetView.setBottomSheetListener(this)
+            }
+            2->{
+                val modalBottomSheetView = ModalBottomSheetView(3, null, book)
+                modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
+                modalBottomSheetView.setBottomSheetListener(this)
+            }
+            3->{
+                val modalBottomSheetView = ModalBottomSheetView(4, null, book)
+                modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
+                modalBottomSheetView.setBottomSheetListener(this)
+            }
+            4->{
+                val modalBottomSheetView = ModalBottomSheetView(4, null, book)
+                modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
+                modalBottomSheetView.setBottomSheetListener(this)
+            }
+        }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
