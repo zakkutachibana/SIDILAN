@@ -57,8 +57,7 @@
 
                 <com.google.android.material.appbar.AppBarLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_behavior="@string/searchbar_scrolling_view_behavior">
+                    android:layout_height="wrap_content">
 
                     <com.google.android.material.search.SearchBar
                         android:id="@+id/search_bar"
@@ -68,15 +67,13 @@
                 </com.google.android.material.appbar.AppBarLayout>
 
                 <com.google.android.material.search.SearchView
+                    android:id="@+id/search_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="Cari Buku"
-                    app:layout_anchor="@id/search_bar"
-                    app:useDrawerArrowDrawable="true">
-                    <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
+                    app:layout_anchor="@id/search_bar">
                 </com.google.android.material.search.SearchView>
             </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/shimmer_view"
                 android:layout_width="match_parent"
@@ -111,6 +108,42 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/coordinatorLayout2"
                 tools:listitem="@layout/layout_book_card" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/book_empty"
+                android:layout_width="match_parent"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/coordinatorLayout2">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie_book_empty"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/book" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tidak ada buku yang dapat ditampilkan."
+                    android:layout_marginTop="-16dp"
+                    android:textStyle="bold"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:textAlignment="center"
+                    app:layout_constraintEnd_toEndOf="@+id/lottie_book_empty"
+                    app:layout_constraintStart_toStartOf="@+id/lottie_book_empty"
+                    app:layout_constraintTop_toBottomOf="@id/lottie_book_empty" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

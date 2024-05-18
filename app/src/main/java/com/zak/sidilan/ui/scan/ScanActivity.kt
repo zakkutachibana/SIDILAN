@@ -103,7 +103,8 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         val options = BarcodeScannerOptions.Builder()
             .setBarcodeFormats(
                 Barcode.FORMAT_UPC_A,
-                Barcode.FORMAT_EAN_13)
+                Barcode.FORMAT_EAN_13
+            )
             .build()
         val scanner = BarcodeScanning.getClient(options)
         val analysisBarcode = ImageAnalysis.Builder()
@@ -114,6 +115,7 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         ) { imageProxy ->
             processImageProxy(scanner, imageProxy)
         }
+
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder()
@@ -124,17 +126,20 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             try {
                 cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, analysisBarcode)
 
-            } catch(exc: Exception) {
+                // Set up flash mode
+                val camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, analysisBarcode)
+                val cameraControl = camera.cameraControl
+                binding.toggleFlashButton.setOnCheckedChangeListener { _, isChecked ->
+                    cameraControl.enableTorch(isChecked)
+                }
+            } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
 
         }, ContextCompat.getMainExecutor(this))
-
-
     }
+
 
     private fun processImageProxy(barcodeScanner: BarcodeScanner, imageProxy: ImageProxy) {
 

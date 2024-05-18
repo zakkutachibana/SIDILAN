@@ -4,15 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.repositories.BookRepository
-import com.zak.sidilan.ui.addbook.AddBookViewModel
 import org.koin.dsl.module
 
 
@@ -32,6 +25,20 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
         repository.getAllBooks().observeForever { bookList ->
             _bookList.value = bookList
         }
+    }
+    fun filterBooks(query: String) {
+        repository.getAllBooks().observeForever { allBooks ->
+            val filteredBooks = if (query.isNotEmpty()) {
+                allBooks.filter {
+                    it.book?.title?.contains(query, ignoreCase = true) == true ||
+                            it.book?.authors?.any { author -> author.contains(query, ignoreCase = true) } == true
+                }
+            } else {
+                allBooks
+            }
+            _bookList.postValue(ArrayList(filteredBooks))
+        }
+
     }
 }
 
