@@ -248,9 +248,11 @@ class BookInTrxPrintFragment : Fragment() {
                 viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
                     val bookItems = books.map { eachBook ->
                         BookSubtotal(
-                            bookId = eachBook.book.id,
-                            qty = eachBook.bookQty,
-                            subtotalPrice = eachBook.bookPrice
+                            eachBook.book.id,
+                            eachBook.book.title,
+                            eachBook.bookQty,
+                            eachBook.book.printPrice,
+                            eachBook.bookPrice
                         )
                     }
 
@@ -322,7 +324,6 @@ class BookInTrxPrintFragment : Fragment() {
         val discountAmount = Formatter.getRawValue(binding.edDiscountAmount).toDouble()
         val finalCost = totalCost - discountAmount
         binding.edFinalCost.setText(finalCost.toLong().toString())
-        Log.d("YAM", "tp: $totalCost, da: $discountAmount, fp: $finalCost")
     }
 
 

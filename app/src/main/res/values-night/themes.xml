@@ -19,6 +19,7 @@
         <item name="m3RippleColor">@color/smoke_black</item>
         <item name="m3SurfaceColor">@color/black_surface</item>
         <item name="m3ErrorColor">@color/red_dark</item>
+        <item name="receiptColor">#1E1E1E</item>
 
 
         <!--        <item name="android:fontFamily">@font/poppins_regular</item>-->

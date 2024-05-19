@@ -6,6 +6,7 @@
     <attr name="m3SurfaceColor" format="color" />
     <attr name="reverseOnPrimary" format="color"/>
     <attr name="m3ErrorColor" format="color"/>
+    <attr name="receiptColor" format="color"/>
     <!-- Add more custom attributes as needed -->
 
 </resources>

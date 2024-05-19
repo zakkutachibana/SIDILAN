@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -73,8 +74,13 @@ class BooksFragment : Fragment() {
         }
     }
     private fun setupAction() {
-        binding.searchBar.setNavigationOnClickListener {
+        binding.drawerIcon.setOnClickListener {
             (requireActivity() as MainActivity).binding.drawerLayout.open()
+        }
+        binding.searchView.addTransitionListener { _, _, newState ->
+            if (newState == SearchView.TransitionState.HIDING) {
+                viewModel.filterBooks("")
+            }
         }
         
         binding.searchBar.setOnClickListener {
@@ -99,6 +105,15 @@ class BooksFragment : Fragment() {
         binding.searchView.editText.doOnTextChanged { text, _, _, _ ->
             val query = text.toString()
             viewModel.filterBooks(query)
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            if (binding.searchView.isShowing) {
+                binding.searchView.hide()
+            } else {
+                isEnabled = false
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
         }
 
         Handler(Looper.getMainLooper()).postDelayed({

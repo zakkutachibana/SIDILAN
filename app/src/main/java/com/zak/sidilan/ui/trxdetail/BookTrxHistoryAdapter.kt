@@ -15,12 +15,12 @@ import com.zak.sidilan.util.Formatter
 
 class BookTrxHistoryAdapter(
     private val context: Context,
-    private val viewModel: BookDetailViewModel,
     private val type: Int,
 ) : ListAdapter<BookSubtotal, BookTrxHistoryAdapter.UsersViewHolder>(UserDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UsersViewHolder {
-        val binding = LayoutTrxHistoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding =
+            LayoutTrxHistoryItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return UsersViewHolder(binding)
     }
 
@@ -29,37 +29,32 @@ class BookTrxHistoryAdapter(
         holder.bind(bookSubtotal)
     }
 
-    inner class UsersViewHolder(private val adapterBinding: LayoutTrxHistoryItemBinding) : RecyclerView.ViewHolder(adapterBinding.root) {
+    inner class UsersViewHolder(private val adapterBinding: LayoutTrxHistoryItemBinding) :
+        RecyclerView.ViewHolder(adapterBinding.root) {
         fun bind(bookSubtotal: BookSubtotal) {
-            viewModel.getBookDetailByIdCallback(bookSubtotal.bookId) { book ->
-                adapterBinding.tvBookTitleTrx.text = book?.title
-                adapterBinding.tvBookQty.text = bookSubtotal.qty.toString()
-                adapterBinding.tvBookSubtotal.text = Formatter.addThousandSeparatorTextView(bookSubtotal.subtotalPrice)
-                when (type) {
-                    //Type 1 : Print Price
-                    1 -> {
-                        adapterBinding.tvBookPrice.text = context.getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(book?.printPrice))
-                    }
-                    //Type 2 : Sell Price
-                    2 -> {
-                        adapterBinding.tvBookPrice.text = context.getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(book?.sellPrice))
-                    }
-                    else -> {
-                        adapterBinding.tvBookSubtotal.textAlignment = View.TEXT_ALIGNMENT_CENTER
-                        adapterBinding.tvBookPrice.text = "-"
-                        adapterBinding.tvBookSubtotal.text = "-"
-                        adapterBinding.tvBookSubtotalRp.visibility = View.GONE
-
-                    }
+            adapterBinding.tvBookTitleTrx.text = bookSubtotal.bookTitle
+            adapterBinding.tvBookQty.text = bookSubtotal.qty.toString()
+            adapterBinding.tvBookSubtotal.text = Formatter.addThousandSeparatorTextView(bookSubtotal.subtotal)
+            when (type) {
+                1 -> {
+                    adapterBinding.tvBookPrice.text = context.getString(
+                        R.string.rp_price,
+                        Formatter.addThousandSeparatorTextView(bookSubtotal.unitPrice)
+                    )
+                }
+                else -> {
+                    adapterBinding.tvBookSubtotal.textAlignment = View.TEXT_ALIGNMENT_CENTER
+                    adapterBinding.tvBookPrice.text = "-"
+                    adapterBinding.tvBookSubtotal.text = "-"
+                    adapterBinding.tvBookSubtotalRp.visibility = View.GONE
                 }
             }
-
         }
     }
 
     class UserDiffCallback : DiffUtil.ItemCallback<BookSubtotal>() {
         override fun areItemsTheSame(oldItem: BookSubtotal, newItem: BookSubtotal): Boolean {
-            return oldItem.bookId== newItem.bookId
+            return oldItem.bookId == newItem.bookId
         }
 
         override fun areContentsTheSame(oldItem: BookSubtotal, newItem: BookSubtotal): Boolean {

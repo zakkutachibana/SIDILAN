@@ -33,7 +33,6 @@ import java.io.IOException
 class TrxDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrxDetailBinding
     private val viewModel: TrxDetailViewModel by viewModel()
-    private val bookViewModel: BookDetailViewModel by viewModel()
     private lateinit var adapter : BookTrxHistoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,7 +149,7 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.tvNumberAsWords.visibility = View.GONE
                 }
                 is BookOutSellingTrx -> {
-                    setupRecyclerView(2)
+                    setupRecyclerView(1)
                     adapter.submitList(bookTrx.books)
                     binding.header.tvBookPrice.text = "Harga Jual"
 
@@ -232,22 +231,70 @@ class TrxDetailActivity : AppCompatActivity() {
 
     private fun generatePdfInvoice(context: Context, invId: String?): Uri? {
 
-            val pdfDocument = PdfDocument()
+        val pdfDocument = PdfDocument()
 
-            val pageInfo = PdfDocument.PageInfo.Builder(612, 792, 1)
-                .create() // US Letter size: 612 x 792 points
+        // Define the page size and layout
+        val pageInfo = PdfDocument.PageInfo.Builder(612, 792, 1).create() // US Letter size: 612 x 792 points
+        val page = pdfDocument.startPage(pageInfo)
+        val canvas = page.canvas
 
-            // Start a new page
-            val page = pdfDocument.startPage(pageInfo)
+        // Define paint styles
+        val titlePaint = Paint()
+        titlePaint.textSize = 20f
+        titlePaint.isFakeBoldText = true
 
-            // Get the Canvas object to draw on the page
-            val canvas = page.canvas
+        val bodyPaint = Paint()
+        bodyPaint.textSize = 12f
 
-            // Add content to the page
-            // For example, draw text
-            val paint = Paint()
-            paint.textSize = 12f
-            canvas.drawText("Invoice", 100f, 100f, paint)
+        // Draw title
+        canvas.drawText("Invoice", 50f, 50f, titlePaint)
+
+        // Draw Invoice ID
+        canvas.drawText("Invoice ID: ${invId ?: "N/A"}", 50f, 80f, bodyPaint)
+
+        // Draw Date
+        canvas.drawText("Date: ${java.util.Date()}", 50f, 100f, bodyPaint)
+
+        // Draw a separator line
+        canvas.drawLine(50f, 120f, 562f, 120f, bodyPaint)
+
+        // Draw Table Headers
+        var startX = 50f
+        var startY = 150f
+        canvas.drawText("Item", startX, startY, bodyPaint)
+        canvas.drawText("Quantity", startX + 200f, startY, bodyPaint)
+        canvas.drawText("Price", startX + 300f, startY, bodyPaint)
+        canvas.drawText("Total", startX + 400f, startY, bodyPaint)
+
+        // Draw a separator line
+        startY += 10f
+        canvas.drawLine(50f, startY, 562f, startY, bodyPaint)
+
+        // Example items - replace with your actual data
+        val items = listOf(
+            Triple("Item 1", 2, 20.0),
+            Triple("Item 2", 1, 15.0),
+            Triple("Item 3", 3, 10.0)
+        )
+
+        // Draw Table Rows
+        startY += 30f
+        for ((item, quantity, price) in items) {
+            canvas.drawText(item, startX, startY, bodyPaint)
+            canvas.drawText(quantity.toString(), startX + 200f, startY, bodyPaint)
+            canvas.drawText("$%.2f".format(price), startX + 300f, startY, bodyPaint)
+            canvas.drawText("$%.2f".format(quantity * price), startX + 400f, startY, bodyPaint)
+            startY += 20f
+        }
+
+        // Draw a separator line
+        startY += 10f
+        canvas.drawLine(50f, startY, 562f, startY, bodyPaint)
+
+        // Draw Total
+        startY += 30f
+        val total = items.sumOf { it.second * it.third }
+        canvas.drawText("Total: $%.2f".format(total), startX + 400f, startY, bodyPaint)
 
             // Finish the page
             pdfDocument.finishPage(page)
@@ -283,7 +330,7 @@ class TrxDetailActivity : AppCompatActivity() {
 
     }
     private fun setupRecyclerView(type: Int) {
-        adapter = BookTrxHistoryAdapter(this, bookViewModel, type)
+        adapter = BookTrxHistoryAdapter(this, type)
         binding.rvTrxHistory.layoutManager = LinearLayoutManager(this)
         binding.rvTrxHistory.adapter = adapter
         binding.rvTrxHistory.itemAnimator = DefaultItemAnimator()

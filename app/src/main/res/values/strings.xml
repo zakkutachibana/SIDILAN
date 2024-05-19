@@ -30,6 +30,7 @@
     <string name="title_book_in_print">Cetak Buku</string>
     <string name="title_book_in_trx">Riwayat Transaksi Buku</string>
     <string name="title_book_trx_history">Riwayat Transaksi Buku</string>
+    <string name="title_stock_opname_history">Riwayat Stock Opname</string>
     <string name="title_book_out">Buku Keluar</string>
     <string name="title_book_out_selling">Penjualan Buku via %1$s</string>
     <string name="title_book_out_other">Buku Keluar (Lainnya)</string>
@@ -75,5 +76,7 @@
     <string name="add_whitelist">Tambah Whitelist</string>
     <string name="update_whitelist">Ubah Whitelist</string>
     <string name="rupiah">%1$s rupiah</string>
+    <string name="printing_shop_name">Nama Percetakan<font color='#FF0000'>*</font></string>
+    <string name="date_print_book">Tanggal Cetak Buku<font color='#FF0000'>*</font></string>
 
 </resources>

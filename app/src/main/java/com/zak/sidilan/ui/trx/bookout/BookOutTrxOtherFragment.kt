@@ -148,9 +148,11 @@ class BookOutTrxOtherFragment : Fragment() {
                 viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
                     val bookItems = books.map { eachBook ->
                         BookSubtotal(
-                            bookId = eachBook.book.id,
-                            qty = eachBook.bookQty,
-                            subtotalPrice = eachBook.bookPrice
+                            eachBook.book.id,
+                            eachBook.book.title,
+                            eachBook.bookQty,
+                            eachBook.book.sellPrice,
+                            eachBook.bookPrice
                         )
                     }
 

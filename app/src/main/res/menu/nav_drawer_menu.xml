@@ -34,7 +34,7 @@
             <item
                 android:id="@+id/stock_opname_history_item"
                 android:icon="@drawable/ic_stock_opname_trx"
-                android:title="@string/title_stock_opname_trx" />
+                android:title="@string/title_stock_opname_history" />
         </menu>
     </item>
     <item
@@ -49,6 +49,16 @@
                 android:id="@+id/user_management"
                 android:icon="@drawable/ic_user_management"
                 android:title="@string/title_user_management" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/about_item"
+        android:title="Penerbit Peneleh">
+        <menu>
+            <item
+                android:id="@+id/about"
+                android:icon="@drawable/ic_logo"
+                android:title="Tentang Penerbit Peneleh" />
         </menu>
     </item>
 
