@@ -131,6 +131,9 @@ dependencies {
     //Lottie
     implementation("com.airbnb.android:lottie:6.4.0")
 
+    //Invoice Generator
+    implementation("com.github.kariot:pdf-invoice-generator:1.0.0")
+
 
 }
 

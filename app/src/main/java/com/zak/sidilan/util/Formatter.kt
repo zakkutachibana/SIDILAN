@@ -12,6 +12,7 @@ import java.util.Locale
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
+import com.itextpdf.kernel.colors.DeviceRgb
 
 object Formatter {
 
@@ -116,6 +117,13 @@ object Formatter {
         return "62$cleanedPhoneNumber"
     }
 
+    fun hexToRgb(hex: String): DeviceRgb {
+        val color = Integer.parseInt(hex.substring(1), 16)
+        val r = (color shr 16) and 0xFF
+        val g = (color shr 8) and 0xFF
+        val b = color and 0xFF
+        return DeviceRgb(r, g, b)
+    }
     fun convertNumberToWords(nominal: Long): String {
         val satuBelasDuaPuluh = arrayOf("", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas")
 

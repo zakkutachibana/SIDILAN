@@ -1,39 +1,41 @@
 package com.zak.sidilan.ui.trxdetail
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Typeface
-import android.graphics.pdf.PdfDocument
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
+import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.colors.ColorConstants
+import com.itextpdf.kernel.geom.PageSize
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.layout.Document
+import com.itextpdf.layout.element.*
+import com.itextpdf.layout.property.TextAlignment
+import com.itextpdf.layout.property.UnitValue
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookInPrintingTrx
 import com.zak.sidilan.data.entities.BookOutDonationTrx
 import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.databinding.ActivityTrxDetailBinding
-import com.zak.sidilan.ui.bookdetail.BookDetailViewModel
 import com.zak.sidilan.util.Formatter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.nio.ByteBuffer
 
 class TrxDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrxDetailBinding
     private val viewModel: TrxDetailViewModel by viewModel()
-    private lateinit var adapter : BookTrxHistoryAdapter
+    private lateinit var adapter: BookTrxHistoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +52,7 @@ class TrxDetailActivity : AppCompatActivity() {
 
         setContentView(binding.root)
     }
+
     private fun setupView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -82,37 +85,58 @@ class TrxDetailActivity : AppCompatActivity() {
         binding.footer.tvBookPrice.text = ""
     }
 
-    private fun setupViewModel () {
+    private fun setupViewModel() {
         viewModel.trxDetail.observe(this) { trxDetail ->
             when (val bookTrx = trxDetail?.bookTrx) {
                 is BookInPrintingTrx -> {
                     setupRecyclerView(1)
                     adapter.submitList(bookTrx.books)
                     binding.header.tvBookPrice.text = "Biaya Cetak"
-
+                    binding.tvTrxTypeValue.text = "Cetak Buku"
+                    binding.tvParticipantAddress.text = bookTrx.address
                     binding.tvTrxIdValue.text = bookTrx.id
                     binding.tvTrxDateValue.text = bookTrx.bookInDate
                     binding.tvParticipantValue.text = bookTrx.printingShopName
-                    binding.tvTotalBookValue.text = getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
-                    binding.tvTotalKindValue.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
-                    binding.tvTotalMoneyValue.text = getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(bookTrx.finalCost))
+                    binding.tvTotalBookValue.text =
+                        getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
+                    binding.tvTotalKindValue.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvTotalMoneyValue.text = getString(
+                        R.string.rp_price,
+                        Formatter.addThousandSeparatorTextView(bookTrx.finalCost)
+                    )
 
-                    binding.footer.tvBookSubtotal.text = Formatter.addThousandSeparatorTextView(bookTrx.totalCost)
+                    binding.footer.tvBookSubtotal.text =
+                        Formatter.addThousandSeparatorTextView(bookTrx.totalCost)
                     binding.footer.tvBookQty.text = bookTrx.totalBookQty.toString()
-                    binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
-                    binding.tvNumberAsWords.text = getString(R.string.rupiah, Formatter.convertNumberToWords(bookTrx.finalCost))
+                    binding.footer.tvBookTitleTrx.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvNumberAsWords.text = getString(
+                        R.string.rupiah,
+                        Formatter.convertNumberToWords(bookTrx.finalCost)
+                    )
 
                     when (bookTrx.discountType) {
                         "percent" -> {
-                            binding.footer.tvBookSubtotal.paintFlags = binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                            binding.tvDiscountAmount.text = Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
-                            binding.tvTitleDiscount.text = getString(R.string.discount_percent_view, bookTrx.discountPercent.toString())
-                            binding.tvFinalMoney.text = Formatter.addThousandSeparatorTextView(bookTrx.finalCost)
+                            binding.footer.tvBookSubtotal.paintFlags =
+                                binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            binding.tvDiscountAmount.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
+                            binding.tvTitleDiscount.text = getString(
+                                R.string.discount_percent_view,
+                                bookTrx.discountPercent.toString()
+                            )
+                            binding.tvFinalMoney.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.finalCost)
                         }
+
                         "flat" -> {
-                            binding.footer.tvBookSubtotal.paintFlags = binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                            binding.tvDiscountAmount.text = Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
-                            binding.tvFinalMoney.text = Formatter.addThousandSeparatorTextView(bookTrx.finalCost)
+                            binding.footer.tvBookSubtotal.paintFlags =
+                                binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            binding.tvDiscountAmount.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
+                            binding.tvFinalMoney.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.finalCost)
                         }
 
                         else -> {
@@ -122,10 +146,13 @@ class TrxDetailActivity : AppCompatActivity() {
                     }
 
                 }
+
                 is BookInDonationTrx -> {
                     setupRecyclerView(0)
                     adapter.submitList(bookTrx.books)
                     binding.header.tvBookPrice.text = "Biaya Cetak"
+                    binding.tvTrxTypeValue.text = "Buku Masuk"
+                    binding.tvParticipantAddress.text = bookTrx.address
 
                     binding.header.guideline.visibility = View.GONE
                     binding.header.guideline3.visibility = View.GONE
@@ -133,8 +160,10 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.tvTrxIdValue.text = bookTrx.id
                     binding.tvTrxDateValue.text = bookTrx.bookInDate
                     binding.tvParticipantValue.text = bookTrx.donorName
-                    binding.tvTotalBookValue.text = getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
-                    binding.tvTotalKindValue.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvTotalBookValue.text =
+                        getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
+                    binding.tvTotalKindValue.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
                     binding.tvTotalMoneyValue.visibility = View.GONE
                     binding.tvTotalMoney.visibility = View.GONE
                     binding.footer.materialDivider.visibility = View.GONE
@@ -143,40 +172,65 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.footer.tvBookSubtotal.text = "-"
                     binding.footer.tvBookSubtotalRp.visibility = View.GONE
                     binding.footer.tvBookQty.text = bookTrx.totalBookQty.toString()
-                    binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.footer.tvBookTitleTrx.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
 
                     binding.layoutDiscount.visibility = View.GONE
                     binding.tvNumberAsWords.visibility = View.GONE
                 }
+
                 is BookOutSellingTrx -> {
                     setupRecyclerView(1)
                     adapter.submitList(bookTrx.books)
                     binding.header.tvBookPrice.text = "Harga Jual"
+                    binding.tvTrxTypeValue.text = "Jual Buku"
+                    binding.tvParticipantAddress.text = bookTrx.address
 
                     binding.tvTrxIdValue.text = bookTrx.id
                     binding.tvTrxDateValue.text = bookTrx.bookOutDate
                     binding.tvParticipantValue.text = bookTrx.buyerName
-                    binding.tvTotalBookValue.text = getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
-                    binding.tvTotalKindValue.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
-                    binding.tvTotalMoneyValue.text = getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(bookTrx.finalPrice))
+                    binding.tvTotalBookValue.text =
+                        getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
+                    binding.tvTotalKindValue.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvTotalMoneyValue.text = getString(
+                        R.string.rp_price,
+                        Formatter.addThousandSeparatorTextView(bookTrx.finalPrice)
+                    )
 
-                    binding.footer.tvBookSubtotal.text = Formatter.addThousandSeparatorTextView(bookTrx.totalPrice)
+                    binding.footer.tvBookSubtotal.text =
+                        Formatter.addThousandSeparatorTextView(bookTrx.totalPrice)
                     binding.footer.tvBookQty.text = bookTrx.totalBookQty.toString()
-                    binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
-                    binding.tvNumberAsWords.text = getString(R.string.rupiah, Formatter.convertNumberToWords(bookTrx.finalPrice))
+                    binding.footer.tvBookTitleTrx.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvNumberAsWords.text = getString(
+                        R.string.rupiah,
+                        Formatter.convertNumberToWords(bookTrx.finalPrice)
+                    )
 
                     when (bookTrx.discountType) {
                         "percent" -> {
-                            binding.footer.tvBookSubtotal.paintFlags = binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                            binding.tvDiscountAmount.text = Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
-                            binding.tvTitleDiscount.text = getString(R.string.discount_percent_view, bookTrx.discountPercent.toString())
-                            binding.tvFinalMoney.text = Formatter.addThousandSeparatorTextView(bookTrx.finalPrice)
+                            binding.footer.tvBookSubtotal.paintFlags =
+                                binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            binding.tvDiscountAmount.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
+                            binding.tvTitleDiscount.text = getString(
+                                R.string.discount_percent_view,
+                                bookTrx.discountPercent.toString()
+                            )
+                            binding.tvFinalMoney.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.finalPrice)
                         }
+
                         "flat" -> {
-                            binding.footer.tvBookSubtotal.paintFlags = binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                            binding.tvDiscountAmount.text = Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
-                            binding.tvFinalMoney.text = Formatter.addThousandSeparatorTextView(bookTrx.finalPrice)
+                            binding.footer.tvBookSubtotal.paintFlags =
+                                binding.footer.tvBookSubtotal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                            binding.tvDiscountAmount.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.discountAmount)
+                            binding.tvFinalMoney.text =
+                                Formatter.addThousandSeparatorTextView(bookTrx.finalPrice)
                         }
+
                         else -> {
                             binding.layoutDiscount.visibility = View.GONE
                             binding.footer.materialDivider.visibility = View.GONE
@@ -184,16 +238,21 @@ class TrxDetailActivity : AppCompatActivity() {
                     }
 
                 }
+
                 is BookOutDonationTrx -> {
                     setupRecyclerView(0)
                     adapter.submitList(bookTrx.books)
                     binding.header.tvBookPrice.text = "Harga Jual"
+                    binding.tvTrxTypeValue.text = "Buku Keluar"
+                    binding.tvParticipantAddress.text = bookTrx.address
 
                     binding.tvTrxIdValue.text = bookTrx.id
                     binding.tvTrxDateValue.text = bookTrx.bookOutDate
                     binding.tvParticipantValue.text = bookTrx.doneeName
-                    binding.tvTotalBookValue.text = getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
-                    binding.tvTotalKindValue.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.tvTotalBookValue.text =
+                        getString(R.string.total_stock_qty, bookTrx.totalBookQty.toString())
+                    binding.tvTotalKindValue.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
                     binding.tvTotalMoneyValue.visibility = View.GONE
                     binding.tvTotalMoney.visibility = View.GONE
 
@@ -201,25 +260,32 @@ class TrxDetailActivity : AppCompatActivity() {
                     binding.footer.tvBookSubtotal.text = "-"
                     binding.footer.tvBookSubtotalRp.visibility = View.GONE
                     binding.footer.tvBookQty.text = bookTrx.totalBookQty.toString()
-                    binding.footer.tvBookTitleTrx.text = getString(R.string.book_count, bookTrx.totalBookKind.toString())
+                    binding.footer.tvBookTitleTrx.text =
+                        getString(R.string.book_count, bookTrx.totalBookKind.toString())
                     binding.footer.materialDivider.visibility = View.GONE
 
                     binding.layoutDiscount.visibility = View.GONE
                     binding.tvNumberAsWords.visibility = View.GONE
                 }
+
                 else -> {
                     finish()
                 }
             }
             viewModel.getUserById(trxDetail?.logs?.createdBy.toString())
             viewModel.user.observe(this) { user ->
-                binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, user?.role, Formatter.convertEpochToLocal(trxDetail?.logs?.createdAt))
+                binding.userCard.tvUserName.text = getString(
+                    R.string.by_at,
+                    user?.displayName,
+                    user?.role,
+                    Formatter.convertEpochToLocal(trxDetail?.logs?.createdAt)
+                )
                 binding.userCard.ivProfilePicture.load(user?.photoUrl)
             }
         }
     }
 
-    private fun setupAction () {
+    private fun setupAction() {
         binding.btnInvoice.setOnClickListener {
             viewModel.trxDetail.observe(this) { trxDetail ->
                 val invId = trxDetail?.bookTrx?.id
@@ -229,106 +295,107 @@ class TrxDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun generatePdfInvoice(context: Context, invId: String?): Uri? {
+    private fun generatePdfInvoice(context: Context, invId: String?) {
+        viewModel.trxDetail.observe(this) {
+            if (it?.bookTrx is BookOutSellingTrx) {
+                val file = File(context.getExternalFilesDir(null), "Invoice.pdf")
+                val pdfWriter = PdfWriter(file.absolutePath)
+                val pdfDocument = PdfDocument(pdfWriter)
+                val document = Document(pdfDocument, PageSize.A4)
 
-        val pdfDocument = PdfDocument()
+                // Add header with color
+                val header = Paragraph("INVOICE NO:\n")
+                    .add(binding.tvTrxIdValue.text.toString())
+                    .setFontSize(16f)
+                    .setFontColor(ColorConstants.WHITE)
+                    .setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    .setTextAlignment(TextAlignment.LEFT)
+                    .setMargin(10f)
+                    .setPadding(40f)
 
-        // Define the page size and layout
-        val pageInfo = PdfDocument.PageInfo.Builder(612, 792, 1).create() // US Letter size: 612 x 792 points
-        val page = pdfDocument.startPage(pageInfo)
-        val canvas = page.canvas
+//        // Add company logo
+//        val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ic_logo)
+//        val logoByteArray = bitmapToByteArray(logoBitmap)
+//        val logoImageData = ImageDataFactory.create(logoByteArray)
+//        val logo = Image(logoImageData).scaleToFit(logoBitmap.width.toFloat(), logoBitmap.height.toFloat()).setFixedPosition(30f, 750f)
 
-        // Define paint styles
-        val titlePaint = Paint()
-        titlePaint.textSize = 20f
-        titlePaint.isFakeBoldText = true
 
-        val bodyPaint = Paint()
-        bodyPaint.textSize = 12f
+                // Add company details
+                val companyDetails = Paragraph()
+                    .add("Penerbit Peneleh\n")
+                    .add("Permata Land A49, Malang\n")
+                    .add("Jawa Timur, Indonesia\n")
+                    .add("penerbitpeneleh@gmail.com")
+                    .setFontSize(12f)
+                    .setFontColor(ColorConstants.WHITE)
+                    .setMargin(0f)
+                    .setPadding(10f)
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setFixedPosition(325f, 695f, 200f)
 
-        // Draw title
-        canvas.drawText("Invoice", 50f, 50f, titlePaint)
+                // Add header to document
+                document.add(header)
+//        document.add(logo)
+                document.add(companyDetails)
+                // Add invoice details
+                val invoiceDetails = Paragraph()
+                    .add("Billed To:\n${it.bookTrx.buyerName}\n${it.bookTrx.address}\n\n")
+                    .add("Invoice Number: ${it.bookTrx.id}\nDate Of Issue: ${it.bookTrx.bookOutDate}\n\n")
+                    .setFontSize(12f)
+                    .setMargin(20f)
 
-        // Draw Invoice ID
-        canvas.drawText("Invoice ID: ${invId ?: "N/A"}", 50f, 80f, bodyPaint)
+                document.add(invoiceDetails)
 
-        // Draw Date
-        canvas.drawText("Date: ${java.util.Date()}", 50f, 100f, bodyPaint)
+                // Add table
+                val table = Table(UnitValue.createPercentArray(floatArrayOf(4f, 2f, 1f, 2f))).apply {
+                    width = UnitValue.createPercentValue(100f)
+                }
+                table.addHeaderCell(Cell().add(Paragraph("Judul Buku").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                table.addHeaderCell(Cell().add(Paragraph("Harga Satuan").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                table.addHeaderCell(Cell().add(Paragraph("Quantity").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                table.addHeaderCell(Cell().add(Paragraph("Subtotal").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
 
-        // Draw a separator line
-        canvas.drawLine(50f, 120f, 562f, 120f, bodyPaint)
+                for (book in it.bookTrx.books) {
+                    table.addCell(book.bookTitle)
+                    table.addCell(Cell().add(Paragraph(getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(book.unitPrice))).setTextAlignment(TextAlignment.CENTER)))
+                    table.addCell(Cell().add(Paragraph(book.qty.toString())).setTextAlignment(TextAlignment.CENTER))
+                    table.addCell(Cell().add(Paragraph(getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(book.subtotal))).setTextAlignment(TextAlignment.RIGHT)))
+                }
 
-        // Draw Table Headers
-        var startX = 50f
-        var startY = 150f
-        canvas.drawText("Item", startX, startY, bodyPaint)
-        canvas.drawText("Quantity", startX + 200f, startY, bodyPaint)
-        canvas.drawText("Price", startX + 300f, startY, bodyPaint)
-        canvas.drawText("Total", startX + 400f, startY, bodyPaint)
+                table.addFooterCell(Cell().add(Paragraph(getString(R.string.book_count, it.bookTrx.totalBookKind.toString())).setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                table.addFooterCell(Cell().add(Paragraph("-").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                table.addFooterCell(Cell().add(Paragraph(getString(R.string.total_stock_qty, it.bookTrx.totalBookQty.toString())).setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                table.addFooterCell(Cell().add(Paragraph(getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(it.bookTrx.totalPrice) )).setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.RIGHT)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
 
-        // Draw a separator line
-        startY += 10f
-        canvas.drawLine(50f, startY, 562f, startY, bodyPaint)
+                document.add(table)
 
-        // Example items - replace with your actual data
-        val items = listOf(
-            Triple("Item 1", 2, 20.0),
-            Triple("Item 2", 1, 15.0),
-            Triple("Item 3", 3, 10.0)
-        )
+                // Add totals
+                val totals = Paragraph()
+                    .add("\nDiscount: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.discountAmount)}\n")
+                    .add("Total: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.finalPrice)}\n")
+                    .setFontSize(12f)
+                    .setTextAlignment(TextAlignment.RIGHT)
 
-        // Draw Table Rows
-        startY += 30f
-        for ((item, quantity, price) in items) {
-            canvas.drawText(item, startX, startY, bodyPaint)
-            canvas.drawText(quantity.toString(), startX + 200f, startY, bodyPaint)
-            canvas.drawText("$%.2f".format(price), startX + 300f, startY, bodyPaint)
-            canvas.drawText("$%.2f".format(quantity * price), startX + 400f, startY, bodyPaint)
-            startY += 20f
-        }
+                document.add(totals)
 
-        // Draw a separator line
-        startY += 10f
-        canvas.drawLine(50f, startY, 562f, startY, bodyPaint)
+                val wordedNumber = Paragraph()
+                    .add(getString(
+                        R.string.rupiah,
+                        Formatter.convertNumberToWords(it.bookTrx.finalPrice)))
+                    .setFontSize(12f)
+                    .setTextAlignment(TextAlignment.CENTER)
 
-        // Draw Total
-        startY += 30f
-        val total = items.sumOf { it.second * it.third }
-        canvas.drawText("Total: $%.2f".format(total), startX + 400f, startY, bodyPaint)
+                document.add(wordedNumber)
 
-            // Finish the page
-            pdfDocument.finishPage(page)
+                document.close()
 
-            // Define the file path where the PDF file will be saved locally
-            val fileName = "${invId}.pdf"
-            val file = File(context.cacheDir, fileName)
-
-            try {
-                // Create a FileOutputStream to write to the file
-                val fileOutputStream = FileOutputStream(file)
-
-                // Write the PDF document to the FileOutputStream
-                pdfDocument.writeTo(fileOutputStream)
-
-                // Close the FileOutputStream
-                fileOutputStream.close()
-
-                // Close the PdfDocument
-                pdfDocument.close()
-
-                Log.d("PDF", "PDF invoice created locally: ${file.absolutePath}")
-
-                // Upload the PDF file to Firebase Storage
                 viewModel.saveInvoicePDF(file)
-
-                // Return the Uri of the local PDF file
-                return Uri.fromFile(file)
-            } catch (e: IOException) {
-                e.printStackTrace()
-                return null
             }
 
+        }
+
     }
+
     private fun setupRecyclerView(type: Int) {
         adapter = BookTrxHistoryAdapter(this, type)
         binding.rvTrxHistory.layoutManager = LinearLayoutManager(this)
