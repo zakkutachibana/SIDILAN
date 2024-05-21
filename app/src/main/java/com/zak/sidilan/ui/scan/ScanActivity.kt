@@ -79,6 +79,7 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
     override fun onDismissed() {
         startCamera()
     }
+
     private val activityResultLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions())
@@ -161,6 +162,10 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
                             1 -> {
                                 getBookByIsbn(value)
                             }
+                            //type 2:
+                            2 -> {
+                                getSelectedBook(value)
+                            }
 
                         }
                     }
@@ -204,12 +209,16 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
         }
         viewModel.toastMessage.observe(this) {
             if (it == "Book not found on Google Books!") {
-                val isbnBook = Book("", isbn.toLong(), "", listOf(), "", "", "", 0, 0, false, "", "")
+                val isbnBook = Book(isbn.toLong(), "", listOf(), "", "", "", 0, 0, false, "", "")
                 val modalBottomSheetView = ModalBottomSheetView(2, null, BookDetail(isbnBook, null, null))
                 modalBottomSheetView.show(supportFragmentManager, ModalBottomSheetView.TAG)
                 modalBottomSheetView.setBottomSheetListener(this)
             }
         }
+    }
+
+    private fun getSelectedBook(isbn: String) {
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

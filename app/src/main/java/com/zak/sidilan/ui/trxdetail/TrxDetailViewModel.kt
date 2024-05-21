@@ -30,7 +30,14 @@ class TrxDetailViewModel(private val repository: TrxRepository, private val user
         }
     }
 
-    fun saveInvoicePDF(file : File) {
-        repository.saveInvoicePDF(file)
+    fun saveInvoicePDF(file : File, callback: (Boolean?) -> Unit) {
+        repository.saveInvoicePDF(file) {
+            callback(it)
+        }
+    }
+    fun getInvoiceDownloadUrl(invoiceId: String, callback: (String?) -> Unit) {
+        repository.getInvoiceDownloadUrl(invoiceId) {
+            callback(it)
+        }
     }
 }

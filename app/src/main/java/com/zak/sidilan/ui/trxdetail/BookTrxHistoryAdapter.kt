@@ -54,7 +54,7 @@ class BookTrxHistoryAdapter(
 
     class UserDiffCallback : DiffUtil.ItemCallback<BookSubtotal>() {
         override fun areItemsTheSame(oldItem: BookSubtotal, newItem: BookSubtotal): Boolean {
-            return oldItem.bookId == newItem.bookId
+            return oldItem.isbn == newItem.isbn
         }
 
         override fun areContentsTheSame(oldItem: BookSubtotal, newItem: BookSubtotal): Boolean {

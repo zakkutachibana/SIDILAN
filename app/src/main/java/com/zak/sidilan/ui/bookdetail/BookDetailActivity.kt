@@ -2,6 +2,7 @@ package com.zak.sidilan.ui.bookdetail
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import coil.load
@@ -28,9 +29,10 @@ class BookDetailActivity : AppCompatActivity() {
         binding = ActivityBookDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val bookId = intent.getStringExtra("bookId")
-        if (bookId != null) {
-            viewModel.getBookDetailById(bookId)
+        val isbn = intent.getStringExtra("isbn")
+        if (isbn != null) {
+            viewModel.getBookDetailById(isbn)
+            Log.d("ISBN", isbn)
         }
         setupView()
         setupViewModel()

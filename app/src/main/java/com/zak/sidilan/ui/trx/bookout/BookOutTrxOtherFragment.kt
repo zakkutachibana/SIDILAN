@@ -1,6 +1,7 @@
 package com.zak.sidilan.ui.trx.bookout
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
@@ -61,26 +62,44 @@ class BookOutTrxOtherFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = SelectedBooksAdapter(4, requireContext(), viewModel) { bookPrice ->
-            val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
-            val edStock = layout.findViewById<EditText>(R.id.ed_stock)
-            layout.findViewById<TextView>(R.id.tv_title_book_stock).text = bookPrice.book.title
-            layout.findViewById<TextView>(R.id.tv_author_book_stock).text = bookPrice.book.authors.joinToString(", ")
-            layout.findViewById<ImageView>(R.id.iv_book_cover_stock).load(bookPrice.book.coverUrl)
-            edStock.setText(bookPrice.bookQty.toString())
-            MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                .setTitle(resources.getString(R.string.title_update_stock))
-                .setView(layout)
-                .setIcon(R.drawable.ic_update)
-                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
+            viewModel.getCurrentStock(bookPrice.book.isbn.toString()) { it ->
+                val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
+                val edStock = layout.findViewById<EditText>(R.id.ed_stock)
+                val edlStock = layout.findViewById<TextInputLayout>(R.id.edl_stock)
+                layout.findViewById<TextView>(R.id.tv_title_book_stock).text = bookPrice.book.title
+                layout.findViewById<TextView>(R.id.tv_author_book_stock).text = bookPrice.book.authors.joinToString(", ")
+                layout.findViewById<TextView>(R.id.tv_current_book_stock).text = it.toString()
+                layout.findViewById<ImageView>(R.id.iv_book_cover_stock).load(bookPrice.book.coverUrl)
+                edStock.setText(bookPrice.bookQty.toString())
+                val dialog = MaterialAlertDialogBuilder(
+                    requireActivity(),
+                    com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+                )
+                    .setTitle(resources.getString(R.string.title_update_stock))
+                    .setView(layout)
+                    .setIcon(R.drawable.ic_update)
+                    .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Ya", null)
+                    .show()
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    viewModel.getCurrentStock(bookPrice.book.isbn.toString()) { currentStock ->
+
+                        if (edStock.text?.isNotEmpty() == true && edStock.text.toString().toLong() <= currentStock!! && edStock.text.toString().toLong() != 0L
+                        ) {
+                            val newQty = edStock.text.toString().toLong()
+                            val newCost = newQty * bookPrice.book.printPrice
+                            val newBookQtyCost = BookQtyPrice(bookPrice.book, newQty, newCost)
+                            viewModel.updateQty(newBookQtyCost)
+                            dialog.dismiss()
+                        } else {
+                            edlStock.error =
+                                "${edlStock.hint} tidak boleh kosong atau melebihi stok saat ini"
+                        }
+                    }
                 }
-                .setPositiveButton("Ya") { dialog, which ->
-                    val newQty = edStock.text.toString().toLong()
-                    val newPrice = newQty * bookPrice.book.printPrice
-                    val newBookQtyPrice = BookQtyPrice(bookPrice.book, newQty, newPrice)
-                    viewModel.updateQty(newBookQtyPrice)
-                }
-                .show()
+            }
         }
         binding.rvBookOutOther.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvBookOutOther.adapter = adapter
@@ -148,7 +167,7 @@ class BookOutTrxOtherFragment : Fragment() {
                 viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
                     val bookItems = books.map { eachBook ->
                         BookSubtotal(
-                            eachBook.book.id,
+                            eachBook.book.isbn,
                             eachBook.book.title,
                             eachBook.bookQty,
                             eachBook.book.sellPrice,
@@ -174,7 +193,7 @@ class BookOutTrxOtherFragment : Fragment() {
                         if (success) {
                             for (bookItem in bookItems) {
                                 viewModel.updateStock(
-                                    bookItem.bookId,
+                                    bookItem.isbn.toString(),
                                     transaction.type,
                                     bookItem.qty
                                 )

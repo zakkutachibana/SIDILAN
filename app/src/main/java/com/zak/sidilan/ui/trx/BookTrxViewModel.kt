@@ -12,12 +12,13 @@ import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookOutDonationTrx
 import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.data.entities.Logs
+import com.zak.sidilan.data.repositories.BookRepository
 
 
 val bookTrxViewModelModule = module {
-    factory { BookTrxViewModel(get()) }
+    factory { BookTrxViewModel(get(), get()) }
 }
-class BookTrxViewModel(private val repository: TrxRepository) : ViewModel() {
+class BookTrxViewModel(private val repository: TrxRepository, private val bookRepository: BookRepository) : ViewModel() {
     private val _selectedBooksList = MutableLiveData<List<BookQtyPrice>>()
     val selectedBooksList: LiveData<List<BookQtyPrice>> = _selectedBooksList
 
@@ -57,8 +58,13 @@ class BookTrxViewModel(private val repository: TrxRepository) : ViewModel() {
             _selectedBooksList.value = currentBooks
         }
     }
-    fun updateStock(bookId: String, transactionType: String, quantity: Long) {
-        repository.updateBookStock(bookId, transactionType, quantity)
+    fun getCurrentStock(isbn: String, callback : (Long?) -> Unit) {
+        bookRepository.getBookCurrentStock(isbn) {
+            callback(it)
+        }
+    }
+    fun updateStock(isbn: String, transactionType: String, quantity: Long) {
+        repository.updateBookStock(isbn, transactionType, quantity)
     }
     fun addTrxPrint(trx: BookInPrintingTrx, logs: Logs, callback : (String, Boolean) -> Unit) {
         repository.addBookInPrintTrx(trx, logs) { status, bool ->

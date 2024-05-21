@@ -7,7 +7,6 @@ import kotlinx.parcelize.RawValue
 
 @Parcelize
 data class Book(
-    var id: String,
     val isbn: Long,
     val title: String,
     val authors: List<String>,
@@ -28,7 +27,7 @@ data class Book(
     val endContractDate: String? = "",
 
     ) : Parcelable {
-    constructor() : this("", 0, "", listOf(), "", "", "", 0, 0, false, "", "")
+    constructor() : this(0, "", listOf(), "", "", "", 0, 0, false, "", "")
 }
 
 

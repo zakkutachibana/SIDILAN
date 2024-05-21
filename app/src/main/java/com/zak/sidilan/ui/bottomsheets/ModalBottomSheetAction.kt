@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,9 +25,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
 
-val modalBottomSheetActionModule = module {
-    factory { ModalBottomSheetAction(get(), get(), get()) }
-}
 class ModalBottomSheetAction(private val type: Number, private val bookDetail: BookDetail?, private val attachedActivity: Activity) : BottomSheetDialogFragment() {
 
     private lateinit var binding: LayoutBottomSheetActionBinding
@@ -74,7 +72,8 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                 binding.item1.setOnClickListener {
                     val intent = Intent(context, AddBookActivity::class.java)
                     intent.putExtra("is_update_mode", true) // Set the update mode flag to true
-                    intent.putExtra("book_id", bookDetail?.book?.id) // Pass the ID of the book to be updated
+                    intent.putExtra("isbn", bookDetail?.book?.isbn.toString()) // Pass the ID of the book to be updated
+                    Log.d("BOTTOM SHEET", bookDetail?.book?.isbn.toString())
                     startActivity(intent)
                     dismiss()
                 }
@@ -95,21 +94,20 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                         val userInput = editText.text.toString()
                         if (userInput == bookDetail?.book?.title) {
-                            bookDetailViewModel.deleteBookById(bookDetail.book.id) { isSuccess, message ->
+                            bookDetailViewModel.deleteBookById(bookDetail.book.isbn.toString()) { isSuccess, message ->
                                 if (isSuccess) {
                                     Toast.makeText(requireContext(), "Book deleted successfully", Toast.LENGTH_SHORT).show()
+                                    attachedActivity.finish()
                                 } else {
                                     Toast.makeText(requireContext(), "Failed to delete book: $message", Toast.LENGTH_SHORT).show()
                                 }
                             }
-                            attachedActivity.finish()
                         } else {
                             editTextLayout.error = "Judul buku tidak sesuai!"
                         }
                     }
                 }
             }
-
         }
 
     }

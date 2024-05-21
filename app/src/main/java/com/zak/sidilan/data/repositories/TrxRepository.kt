@@ -10,6 +10,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.database
 import com.google.firebase.storage.storage
 import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookInPrintingTrx
@@ -163,8 +164,8 @@ class TrxRepository {
             }
     }
 
-    fun updateBookStock(bookId: String, transactionType: String, quantity: Long) {
-        val stockRef = database.reference.child("books").child(bookId).child("stock")
+    fun updateBookStock(isbn: String, transactionType: String, quantity: Long) {
+        val stockRef = database.reference.child("books").child(isbn).child("stock")
 
         stockRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -219,11 +220,46 @@ class TrxRepository {
         })
     }
 
-    fun saveInvoicePDF(file: File) {
+    fun saveInvoicePDF(file: File, callback: (Boolean?) -> Unit) {
         val storageRef = Firebase.storage.reference.child("invoices/${file.name}")
+        val databaseRef = Firebase.database.reference.child("invoices")
+
         storageRef.putFile(Uri.fromFile(file))
             .addOnSuccessListener {
-                Log.d("PDF", "PDF invoice uploaded to Firebase Storage.")
+                // Get the download URL of the uploaded file
+                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                    val downloadUrl = uri.toString()
+
+                    // Create a map to store the download URL
+                    val invoiceData = mapOf(
+                        "file_name" to file.name,
+                        "download_url" to downloadUrl
+                    )
+                    val childNode = file.name.substringBeforeLast(".")
+                    // Save the download URL in the Realtime Database
+                    databaseRef.child(childNode).setValue(invoiceData)
+                        .addOnSuccessListener {
+                            Log.d("Database", "PDF invoice link saved to Realtime Database.")
+                            callback(true)
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e(
+                                "Database",
+                                "Failed to save PDF invoice link: ${exception.message}",
+                                exception
+                            )
+                            callback(false)
+                        }
+
+                    Log.d("PDF", "PDF invoice uploaded to Firebase Storage.")
+                }.addOnFailureListener { exception ->
+                    Log.e(
+                        "PDF",
+                        "Failed to get download URL: ${exception.message}",
+                        exception
+                    )
+                    callback(false)
+                }
             }
             .addOnFailureListener { exception ->
                 Log.e(
@@ -231,9 +267,25 @@ class TrxRepository {
                     "Failed to upload PDF invoice: ${exception.message}",
                     exception
                 )
+                callback(false)
             }
     }
 
+    fun getInvoiceDownloadUrl(invoiceId: String, callback: (String?) -> Unit) {
+        val databaseRef = Firebase.database.reference.child("invoices").child(invoiceId)
+        databaseRef.get().addOnSuccessListener { dataSnapshot ->
+            if (dataSnapshot.exists()) {
+                val downloadUrl = dataSnapshot.child("download_url").getValue(String::class.java)
+                callback(downloadUrl)
+            } else {
+                Log.e("Database", "Invoice ID not found in the database.")
+                callback(null)
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("Database", "Failed to retrieve download URL: ${exception.message}", exception)
+            callback(null)
+        }
+    }
 
     private fun generateInvoiceId(transactionType: String): String {
         val prefix = when (transactionType) {

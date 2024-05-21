@@ -44,7 +44,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
     private lateinit var binding: ActivityAddBookBinding
     private val viewModel: AddBookViewModel by viewModel()
     private var isUpdateMode = false
-    private var bookId: String = ""
+    private var isbn: String = ""
     private lateinit var hawkManager : HawkManager
     private var currentImageUri: Uri? = null
 
@@ -56,7 +56,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         setContentView(binding.root)
 
         isUpdateMode = intent.getBooleanExtra("is_update_mode", false)
-        bookId = intent.getStringExtra("book_id").toString()
+        isbn = intent.getStringExtra("isbn").toString()
         hawkManager = HawkManager(this)
 
         setView()
@@ -65,7 +65,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         setupListeners()
 
         if (isUpdateMode) {
-            loadBookData(bookId)
+            loadBookData(isbn)
         }
 
         val volumeInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -209,7 +209,10 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
 
         binding.btnAddBook.setOnClickListener {
             if (isValid()) {
-//                binding.loading.visibility = View.VISIBLE
+                binding.loading.root.visibility = View.VISIBLE
+                binding.edlIsbn.clearFocus()
+                supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                supportActionBar?.setDisplayShowHomeEnabled(false)
                 binding.btnAddBook.isEnabled = false
 
                 val isbn = binding.edIsbn.text.toString().toLong()
@@ -227,19 +230,26 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 val endContractDate = binding.edEndContractDate.text.toString().ifEmpty { null }
                 val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
 
-                val book = Book(id= "", isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
+                val book = Book(isbn, title, authors, coverImage, genre, publishedDate, printPrice, sellPrice, isPerpetual, startContractDate, endContractDate)
 
                 if (isUpdateMode) {
                     viewModel.bookDetail.observe(this) { bookDetail ->
                         val oldCover = bookDetail?.book?.coverUrl
-                        book.id = bookId
                         updateBook(book, oldCover as String)
-//                        binding.loading.visibility = View.GONE
                     }
-
                 } else {
-                    saveBook(book, createdBy)
-//                    binding.loading.visibility = View.GONE
+                    viewModel.validateIsbn(isbn.toString()) {
+                        if (!it) {
+                            saveBook(book, createdBy)
+                        } else {
+                            binding.edlIsbn.error = "Buku dengan ISBN: $isbn sudah ada!"
+                            binding.edlIsbn.requestFocus()
+                            binding.btnAddBook.isEnabled = true
+                            binding.loading.root.visibility = View.GONE
+                            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                            supportActionBar?.setDisplayShowHomeEnabled(true)
+                        }
+                    }
                 }
             }
         }
@@ -306,6 +316,9 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 finish()
             } else {
                 Toast.makeText(this, "Failed to add book: $message", Toast.LENGTH_SHORT).show()
+                binding.loading.root.visibility = View.GONE
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar?.setDisplayShowHomeEnabled(true)
             }
         }
     }
@@ -318,6 +331,9 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
             } else {
                 Toast.makeText(this, "Failed to update book: $message", Toast.LENGTH_SHORT).show()
                 Log.d("FAILED", "Gagal: $message")
+                binding.loading.root.visibility = View.GONE
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                supportActionBar?.setDisplayShowHomeEnabled(true)
             }
         }
     }

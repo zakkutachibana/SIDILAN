@@ -54,7 +54,7 @@ class BooksAdapter(
 
     class BookDiffCallback : DiffUtil.ItemCallback<BookDetail>() {
         override fun areItemsTheSame(oldItem: BookDetail, newItem: BookDetail): Boolean {
-            return oldItem.book?.id == newItem.book?.id
+            return oldItem.book?.isbn == newItem.book?.isbn
         }
 
         override fun areContentsTheSame(oldItem: BookDetail, newItem: BookDetail): Boolean {

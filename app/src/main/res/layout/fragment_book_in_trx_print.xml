@@ -108,6 +108,7 @@
                 android:text="0" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_add_item"
             style="@style/Widget.Material3.Button.TonalButton.Icon"
@@ -119,6 +120,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edl_total_cost" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_scan"
+            style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:icon="@drawable/ic_scan_barcode"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_add_item"
+            app:layout_constraintStart_toEndOf="@+id/btn_add_item"
+            app:layout_constraintTop_toTopOf="@+id/btn_add_item" />
 
 
         <androidx.constraintlayout.widget.Guideline

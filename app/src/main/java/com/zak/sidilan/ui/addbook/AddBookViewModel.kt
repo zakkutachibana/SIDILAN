@@ -47,6 +47,12 @@ class AddBookViewModel(private val repository: BookRepository) : ViewModel() {
         }
     }
 
+    fun validateIsbn(isbn: String, callback: (Boolean) -> Unit) {
+        repository.validateBookId(isbn) {
+            callback(it)
+        }
+    }
+
 
     fun getBookDetailById(bookId: String) {
         _bookDetail.value = null

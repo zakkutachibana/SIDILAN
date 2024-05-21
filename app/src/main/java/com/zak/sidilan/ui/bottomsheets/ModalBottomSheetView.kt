@@ -85,7 +85,7 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
                 binding.ivBookCoverView.load(createdBook?.book?.coverUrl)
 
                 binding.btnAddView.setOnClickListener {
-                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString() > "0") {
+                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString().toLong() > 0) {
                         val bookQty = binding.edBookQty.text.toString().toLong()
                         listener?.onButtonClicked(null, createdBook?.book, bookQty)
                         dismiss()
@@ -107,9 +107,9 @@ class ModalBottomSheetView(private val type: Number, private val googleBook: Goo
                 binding.ivBookCoverView.load(createdBook?.book?.coverUrl)
 
                 binding.btnAddView.setOnClickListener {
-                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString().toLong() <= createdBook?.stock?.stockQty!!) {
+                    if (binding.edBookQty.text?.isNotEmpty() == true && binding.edBookQty.text.toString().toLong() <= createdBook?.stock?.stockQty!! && binding.edBookQty.text.toString().toLong() > 0) {
                         val bookQty = binding.edBookQty.text.toString().toLong()
-                        listener?.onButtonClicked(null, createdBook?.book, bookQty)
+                        listener?.onButtonClicked(null, createdBook.book, bookQty)
                         dismiss()
                     } else {
                         binding.edlBookQty.error = "${binding.edlBookQty.hint} tidak boleh kosong atau melebihi stok saat ini"

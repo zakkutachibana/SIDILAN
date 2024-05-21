@@ -23,7 +23,7 @@
             android:id="@+id/tv_trx_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kode Transaksi"
+            tools:text="Kode Transaksi"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/iv_trx_logo" />
 
@@ -31,7 +31,7 @@
             android:id="@+id/tv_trx_id_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="INVx-xxxxxxxx"
+            tools:text="INVx-xxxxxxxx"
             android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +59,7 @@
                     android:id="@+id/tv_participant_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Diterima oleh"
+                    tools:text="Diterima oleh"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,7 +68,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="xxxxxxx \n yyyyyyyyyyyyyyyyyy"
+                    tools:text="xxxxxxx \n yyyyyyyyyyyyyyyyyy"
                     android:textAlignment="textEnd"
                     android:maxLines="2"
                     android:ellipsize="end"
@@ -379,6 +379,7 @@
             android:layout_height="65dp"
             app:icon="@drawable/ic_invoice"
             app:iconSize="40dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"

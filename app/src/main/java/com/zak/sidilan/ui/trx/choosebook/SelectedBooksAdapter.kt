@@ -76,7 +76,6 @@ class SelectedBooksAdapter(
                 }
                 3 -> {
                     adapterBinding.tvBookPrice.text = context.getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(subtotal))
-
                 }
             }
         }

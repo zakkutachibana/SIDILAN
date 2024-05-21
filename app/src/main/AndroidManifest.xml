@@ -13,6 +13,8 @@
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
     <application
         android:name=".util.MyApplication"
         android:allowBackup="true"
@@ -30,9 +32,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.trxhistory.TrxHistoryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.invoice.InvoiceActivity"
             android:exported="false" />
         <activity
             android:name=".ui.trx.choosebook.ChooseBookActivity"

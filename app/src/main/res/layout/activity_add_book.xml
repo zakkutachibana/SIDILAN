@@ -1,274 +1,296 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.addbook.AddBookActivity">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
-        <Button
-            android:id="@+id/btn_change_book_pic"
-            style="?attr/materialIconButtonFilledTonalStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="-16dp"
-            android:layout_marginBottom="-16dp"
-            android:elevation="3dp"
-            app:icon="@drawable/ic_add"
-            app:layout_constraintBottom_toBottomOf="@+id/cardView"
-            app:layout_constraintEnd_toEndOf="@+id/cardView" />
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
-            android:layout_width="128dp"
-            android:layout_height="182dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/iv_book_cover_add"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/book_cover"
-                android:scaleType="centerCrop"
-                android:src="@drawable/book_placeholder" />
-
-        </androidx.cardview.widget.CardView>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_isbn"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="ISBN"
-            app:endIconDrawable="@drawable/ic_search"
-            app:endIconMode="custom"
-            app:layout_constraintTop_toBottomOf="@+id/btn_change_book_pic"
-            app:startIconDrawable="@drawable/ic_number"
-            tools:layout_editor_absoluteX="16dp">
+            android:layout_height="match_parent"
+            android:padding="16dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_isbn"
+            <Button
+                android:id="@+id/btn_change_book_pic"
+                style="?attr/materialIconButtonFilledTonalStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="-16dp"
+                android:layout_marginBottom="-16dp"
+                android:elevation="3dp"
+                app:icon="@drawable/ic_add"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView"
+                app:layout_constraintEnd_toEndOf="@+id/cardView" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="128dp"
+                android:layout_height="182dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/iv_book_cover_add"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/book_cover"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/book_placeholder" />
+
+            </androidx.cardview.widget.CardView>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_isbn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="13"
-                android:maxLines="1" />
+                android:layout_marginTop="16dp"
+                android:hint="ISBN"
+                app:endIconDrawable="@drawable/ic_search"
+                app:endIconMode="custom"
+                app:layout_constraintTop_toBottomOf="@+id/btn_change_book_pic"
+                app:startIconDrawable="@drawable/ic_number"
+                tools:layout_editor_absoluteX="16dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_isbn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="13"
+                    android:maxLines="1" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_book_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Judul Buku"
-            app:layout_constraintTop_toBottomOf="@+id/edl_isbn"
-            app:startIconDrawable="@drawable/ic_title"
-            tools:layout_editor_absoluteX="16dp">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_book_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_authors"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Penulis"
-            app:helperText="Pisahkan nama penulis dengan membuat baris baru (Enter)"
-            app:helperTextEnabled="true"
-            app:layout_constraintTop_toBottomOf="@+id/edl_book_title"
-            app:startIconDrawable="@drawable/ic_author"
-            tools:layout_editor_absoluteX="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_authors"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_genre"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Genre"
-            app:layout_constraintTop_toBottomOf="@+id/edl_authors"
-            app:startIconDrawable="@drawable/ic_genre"
-            tools:layout_editor_absoluteX="16dp">
-
-            <AutoCompleteTextView
-                android:id="@+id/ed_genre"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_book_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
-                app:simpleItems="@array/genres" />
+                android:layout_marginTop="8dp"
+                android:hint="Judul Buku"
+                app:layout_constraintTop_toBottomOf="@+id/edl_isbn"
+                app:startIconDrawable="@drawable/ic_title"
+                tools:layout_editor_absoluteX="16dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_book_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_published_date"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Tanggal Terbit Buku"
-            app:layout_constraintTop_toBottomOf="@+id/edl_genre"
-            app:startIconDrawable="@drawable/ic_date"
-            tools:layout_editor_absoluteX="16dp">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_published_date"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_authors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false" />
+                android:layout_marginTop="8dp"
+                android:hint="Penulis"
+                app:helperText="Pisahkan nama penulis dengan membuat baris baru (Enter)"
+                app:helperTextEnabled="true"
+                app:layout_constraintTop_toBottomOf="@+id/edl_book_title"
+                app:startIconDrawable="@drawable/ic_author"
+                tools:layout_editor_absoluteX="16dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_authors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.5" />
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_print_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            android:hint="Harga Cetak"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edl_published_date"
-            app:startIconDrawable="@drawable/ic_rupiah">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_print_price"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_genre"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="9" />
+                android:layout_marginTop="8dp"
+                android:hint="Genre"
+                app:layout_constraintTop_toBottomOf="@+id/edl_authors"
+                app:startIconDrawable="@drawable/ic_genre"
+                tools:layout_editor_absoluteX="16dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <AutoCompleteTextView
+                    android:id="@+id/ed_genre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    app:simpleItems="@array/genres" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_sell_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:hint="Harga Jual"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/edl_published_date"
-            app:startIconDrawable="@drawable/ic_rupiah">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_sell_price"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_published_date"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:maxLength="9" />
+                android:layout_marginTop="8dp"
+                android:hint="Tanggal Terbit Buku"
+                app:layout_constraintTop_toBottomOf="@+id/edl_genre"
+                app:startIconDrawable="@drawable/ic_date"
+                tools:layout_editor_absoluteX="16dp">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_published_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_start_contract_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="4dp"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edl_print_price"
-            app:startIconDrawable="@drawable/ic_date_range">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_start_contract_date"
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_print_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                android:hint="Harga Cetak"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edl_published_date"
+                app:startIconDrawable="@drawable/ic_rupiah">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_print_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="9" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_sell_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                android:hint="Harga Jual"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/edl_published_date"
+                app:startIconDrawable="@drawable/ic_rupiah">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_sell_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="9" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_start_contract_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="4dp"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edl_print_price"
+                app:startIconDrawable="@drawable/ic_date_range">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_start_contract_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:hint="Mulai PKS" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edl_end_contract_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/edl_sell_price"
+                app:startIconDrawable="@drawable/ic_date_range">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ed_end_contract_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:hint="Selesai PKS" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/cb_forever"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:hint="Mulai PKS" />
+                android:text="Perjanjian Kerjasama berlaku selamanya"
+                app:layout_constraintTop_toBottomOf="@+id/edl_start_contract_date"
+                tools:layout_editor_absoluteX="16dp" />
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/edl_end_contract_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/edl_sell_price"
-            app:startIconDrawable="@drawable/ic_date_range">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ed_end_contract_date"
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/divider"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:hint="Selesai PKS" />
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cb_forever" />
 
-        </com.google.android.material.textfield.TextInputLayout>
+            <include
+                android:id="@+id/user_card"
+                layout="@layout/layout_user_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/divider" />
 
-        <CheckBox
-            android:id="@+id/cb_forever"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Perjanjian Kerjasama berlaku selamanya"
-            app:layout_constraintTop_toBottomOf="@+id/edl_start_contract_date"
-            tools:layout_editor_absoluteX="16dp" />
+            <Button
+                android:id="@+id/btn_add_book"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Tambahkan Buku"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/user_card" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cb_forever" />
 
-        <include
-            android:id="@+id/user_card"
-            layout="@layout/layout_user_card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/divider" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:id="@+id/btn_add_book"
-            style="@style/Widget.Material3.Button.TonalButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Tambahkan Buku"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/user_card" />
+    </ScrollView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+    <include
+        android:id="@+id/loading"
+        android:visibility="gone"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        layout="@layout/layout_loading"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

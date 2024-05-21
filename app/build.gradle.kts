@@ -134,6 +134,9 @@ dependencies {
     //Invoice Generator
     implementation("com.github.kariot:pdf-invoice-generator:1.0.0")
 
+    //Motion Toast
+    implementation("com.github.Spikeysanju:MotionToast:1.4")
+
 
 }
 

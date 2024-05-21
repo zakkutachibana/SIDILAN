@@ -47,19 +47,35 @@
         app:layout_constraintStart_toEndOf="@+id/iv_book_cover_stock"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_book_stock" />
 
+    <TextView
+        android:id="@+id/tv_current_book_stock"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="24dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Stok: x buku"
+        android:textStyle="italic"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_book_cover_stock"
+        app:layout_constraintTop_toBottomOf="@+id/tv_author_book_stock" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edl_stock"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Stok Buku"
         android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/tv_author_book_stock"
-        app:layout_constraintStart_toStartOf="@+id/tv_author_book_stock"
-        app:layout_constraintTop_toBottomOf="@+id/tv_author_book_stock"
+        app:layout_constraintEnd_toEndOf="@+id/tv_current_book_stock"
+        app:layout_constraintStart_toStartOf="@+id/tv_current_book_stock"
+        app:layout_constraintTop_toBottomOf="@+id/tv_current_book_stock"
         app:startIconDrawable="@drawable/ic_number">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ed_stock"
+            android:inputType="number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

@@ -1,18 +1,21 @@
 package com.zak.sidilan.ui.trxdetail
 
+import android.R.id.message
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import com.itextpdf.io.image.ImageDataFactory
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -30,7 +33,7 @@ import com.zak.sidilan.databinding.ActivityTrxDetailBinding
 import com.zak.sidilan.util.Formatter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
-import java.nio.ByteBuffer
+
 
 class TrxDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrxDetailBinding
@@ -180,6 +183,7 @@ class TrxDetailActivity : AppCompatActivity() {
                 }
 
                 is BookOutSellingTrx -> {
+                    binding.btnInvoice.visibility = View.VISIBLE
                     setupRecyclerView(1)
                     adapter.submitList(bookTrx.books)
                     binding.header.tvBookPrice.text = "Harga Jual"
@@ -289,16 +293,35 @@ class TrxDetailActivity : AppCompatActivity() {
         binding.btnInvoice.setOnClickListener {
             viewModel.trxDetail.observe(this) { trxDetail ->
                 val invId = trxDetail?.bookTrx?.id
-                generatePdfInvoice(this, invId)
-            }
+                if (invId != null) {
+                    viewModel.getInvoiceDownloadUrl(invId) {
+                        Log.d("LINK", it.toString())
 
+                        if (it != null) {
+                            openURLInBrowser(this, it)
+                            Log.d("LINK", it)
+                        } else {
+                            generatePdfInvoice(this, invId)
+                        }
+                    }
+                }
+            }
         }
     }
-
+    private fun openURLInBrowser(context: Context, url: String) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(url)
+        }
+        if (intent.resolveActivity(context.packageManager) != null) {
+            context.startActivity(intent)
+        } else {
+            Log.e("Intent", "No activity found to handle the intent")
+        }
+    }
     private fun generatePdfInvoice(context: Context, invId: String?) {
         viewModel.trxDetail.observe(this) {
             if (it?.bookTrx is BookOutSellingTrx) {
-                val file = File(context.getExternalFilesDir(null), "Invoice.pdf")
+                val file = File(context.getExternalFilesDir(null), "${invId}.pdf")
                 val pdfWriter = PdfWriter(file.absolutePath)
                 val pdfDocument = PdfDocument(pdfWriter)
                 val document = Document(pdfDocument, PageSize.A4)
@@ -312,13 +335,6 @@ class TrxDetailActivity : AppCompatActivity() {
                     .setTextAlignment(TextAlignment.LEFT)
                     .setMargin(10f)
                     .setPadding(40f)
-
-//        // Add company logo
-//        val logoBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ic_logo)
-//        val logoByteArray = bitmapToByteArray(logoBitmap)
-//        val logoImageData = ImageDataFactory.create(logoByteArray)
-//        val logo = Image(logoImageData).scaleToFit(logoBitmap.width.toFloat(), logoBitmap.height.toFloat()).setFixedPosition(30f, 750f)
-
 
                 // Add company details
                 val companyDetails = Paragraph()
@@ -335,7 +351,6 @@ class TrxDetailActivity : AppCompatActivity() {
 
                 // Add header to document
                 document.add(header)
-//        document.add(logo)
                 document.add(companyDetails)
                 // Add invoice details
                 val invoiceDetails = Paragraph()
@@ -389,7 +404,17 @@ class TrxDetailActivity : AppCompatActivity() {
 
                 document.close()
 
-                viewModel.saveInvoicePDF(file)
+                viewModel.saveInvoicePDF(file) { success ->
+                    if (success == true) {
+                        if (invId != null) {
+                            viewModel.getInvoiceDownloadUrl(invId) {url ->
+                                if (url != null) {
+                                    openURLInBrowser(this, url)
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
         }

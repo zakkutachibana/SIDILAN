@@ -8,7 +8,7 @@ sealed class BookTrx {
 }
 data class BookSubtotal(
     @JvmField @PropertyName("book_id")
-    val bookId: String,
+    val isbn: Long,
     @JvmField @PropertyName("book_title")
     val bookTitle: String,
     val qty: Long,
@@ -17,7 +17,7 @@ data class BookSubtotal(
     @JvmField @PropertyName("subtotal")
     val subtotal: Long
 ) {
-    constructor() : this("", "", 0L, 0L, 0L)
+    constructor() : this(0L, "", 0L, 0L, 0L)
 }
 
 data class BookTrxDetail(

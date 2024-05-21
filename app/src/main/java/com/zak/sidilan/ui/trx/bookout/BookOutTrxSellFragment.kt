@@ -1,6 +1,7 @@
 package com.zak.sidilan.ui.trx.bookout
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
@@ -42,13 +43,14 @@ import java.util.Calendar
 val bookOutTrxSellFragmentModule = module {
     factory { BookOutTrxSellFragment() }
 }
+
 class BookOutTrxSellFragment : Fragment() {
 
     private var _binding: FragmentBookOutTrxSellBinding? = null
     private val binding get() = _binding!!
     private val viewModel: BookTrxViewModel by viewModel()
     private lateinit var adapter: SelectedBooksAdapter
-    private lateinit var hawkManager : HawkManager
+    private lateinit var hawkManager: HawkManager
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,27 +68,48 @@ class BookOutTrxSellFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = SelectedBooksAdapter(3, requireContext(), viewModel) { bookCost ->
-            val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
-            val edStock = layout.findViewById<EditText>(R.id.ed_stock)
-            layout.findViewById<TextView>(R.id.tv_title_book_stock).text = bookCost.book.title
-            layout.findViewById<TextView>(R.id.tv_author_book_stock).text = bookCost.book.authors.joinToString(", ")
-            layout.findViewById<ImageView>(R.id.iv_book_cover_stock).load(bookCost.book.coverUrl)
-            edStock.setText(bookCost.bookQty.toString())
-            MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                .setTitle(resources.getString(R.string.title_update_stock))
-                .setView(layout)
-                .setIcon(R.drawable.ic_update)
-                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
+        adapter = SelectedBooksAdapter(3, requireContext(), viewModel) { bookPrice ->
+            viewModel.getCurrentStock(bookPrice.book.isbn.toString()) { it ->
+                val layout =
+                    LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
+                val edStock = layout.findViewById<EditText>(R.id.ed_stock)
+                val edlStock = layout.findViewById<TextInputLayout>(R.id.edl_stock)
+                layout.findViewById<TextView>(R.id.tv_title_book_stock).text = bookPrice.book.title
+                layout.findViewById<TextView>(R.id.tv_author_book_stock).text =
+                    bookPrice.book.authors.joinToString(", ")
+                layout.findViewById<TextView>(R.id.tv_current_book_stock).text = it.toString()
+                layout.findViewById<ImageView>(R.id.iv_book_cover_stock)
+                    .load(bookPrice.book.coverUrl)
+                edStock.setText(bookPrice.bookQty.toString())
+                val dialog = MaterialAlertDialogBuilder(
+                    requireActivity(),
+                    com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+                )
+                    .setTitle(resources.getString(R.string.title_update_stock))
+                    .setView(layout)
+                    .setIcon(R.drawable.ic_update)
+                    .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Ya", null)
+                    .show()
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    viewModel.getCurrentStock(bookPrice.book.isbn.toString()) { currentStock ->
+                        if (edStock.text?.isNotEmpty() == true && edStock.text.toString()
+                                .toLong() <= currentStock!! && edStock.text.toString().toLong() != 0L
+                        ) {
+                            val newQty = edStock.text.toString().toLong()
+                            val newCost = newQty * bookPrice.book.printPrice
+                            val newBookQtyCost = BookQtyPrice(bookPrice.book, newQty, newCost)
+                            viewModel.updateQty(newBookQtyCost)
+                            dialog.dismiss()
+                        } else {
+                            edlStock.error =
+                                "${edlStock.hint} tidak boleh kosong atau melebihi stok saat ini"
+                        }
+                    }
                 }
-                .setPositiveButton("Ya") { dialog, which ->
-                    val newQty = edStock.text.toString().toLong()
-                    val newCost = newQty * bookCost.book.printPrice
-                    val newBookQtyCost = BookQtyPrice(bookCost.book, newQty, newCost)
-                    viewModel.updateQty(newBookQtyCost)
-                }
-                .show()
+            }
         }
         binding.rvBookInPrint.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -107,13 +130,17 @@ class BookOutTrxSellFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    data?.getParcelableExtra(BookInTrxPrintFragment.EXTRA_BOOK, BookQtyPrice::class.java)?.let { book ->
+                    data?.getParcelableExtra(
+                        BookInTrxPrintFragment.EXTRA_BOOK,
+                        BookQtyPrice::class.java
+                    )?.let { book ->
                         viewModel.addBook(book)
                     }
                 } else {
-                    data?.getParcelableExtra<BookQtyPrice>(BookInTrxPrintFragment.EXTRA_BOOK)?.let { book ->
-                        viewModel.addBook(book)
-                    }
+                    data?.getParcelableExtra<BookQtyPrice>(BookInTrxPrintFragment.EXTRA_BOOK)
+                        ?.let { book ->
+                            viewModel.addBook(book)
+                        }
                 }
             }
         }
@@ -164,6 +191,7 @@ class BookOutTrxSellFragment : Fragment() {
                     binding.edDiscountAmount.setText("0")
                     binding.edFinalPrice.text = binding.edTotalPrice.text
                 }
+
                 R.id.rb_percent -> {
                     binding.edDiscountAmount.removeTextChangedListener(discountAmountWatcher)
                     binding.edDiscount.addTextChangedListener(discountWatcher)
@@ -176,6 +204,7 @@ class BookOutTrxSellFragment : Fragment() {
                     binding.edDiscount.setText("0")
                     binding.edFinalPrice.text = binding.edTotalPrice.text
                 }
+
                 R.id.rb_flat -> {
                     binding.edDiscount.removeTextChangedListener(discountWatcher)
                     binding.edDiscountAmount.addTextChangedListener(discountAmountWatcher)
@@ -242,7 +271,7 @@ class BookOutTrxSellFragment : Fragment() {
                 viewModel.selectedBooksList.observe(viewLifecycleOwner) { books ->
                     val bookItems = books.map { eachBook ->
                         BookSubtotal(
-                            eachBook.book.id,
+                            eachBook.book.isbn,
                             eachBook.book.title,
                             eachBook.bookQty,
                             eachBook.book.sellPrice,
@@ -274,7 +303,7 @@ class BookOutTrxSellFragment : Fragment() {
                         if (success) {
                             for (bookItem in bookItems) {
                                 viewModel.updateStock(
-                                    bookItem.bookId,
+                                    bookItem.isbn.toString(),
                                     transaction.type,
                                     bookItem.qty
                                 )
@@ -377,6 +406,7 @@ class BookOutTrxSellFragment : Fragment() {
                         binding.edTotalPrice
                     )
                 }
+
                 R.id.ed_final_price -> {
                     isNotZeroOrNegative(
                         Formatter.getRawValue(binding.edFinalPrice).toLong(),
@@ -433,6 +463,7 @@ class BookOutTrxSellFragment : Fragment() {
         binding.edDiscount.addTextChangedListener(TextFieldValidation(binding.edDiscount))
         binding.edDiscountAmount.addTextChangedListener(TextFieldValidation(binding.edDiscountAmount))
     }
+
     private fun showDatePicker(dateEditText: TextView, title: String) {
         val currentDate = Calendar.getInstance()
         val year = currentDate.get(Calendar.YEAR)

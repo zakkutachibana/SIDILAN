@@ -54,12 +54,12 @@ object Formatter {
     }
 
     fun convertDateFirebaseToDisplay(inputDate: String?): String? {
-        return if (inputDate != null) {
+        return if (inputDate != null && inputDate.matches(Regex("\\d{2}-\\d{2}-\\d{4}"))) {
             val inputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
             val outputFormat = SimpleDateFormat("dd MMMM yyyy", Locale("id", "ID"))
             val date = inputDate.let { inputFormat.parse(it) }
             date?.let { outputFormat.format(it) }
-        } else ""
+        } else inputDate
     }
 
     fun convertDateAPIToDisplay(inputDate: String?): String? {
@@ -70,11 +70,9 @@ object Formatter {
                 val date = inputFormat.parse(inputDate)
                 date?.let { outputFormat.format(it) }
             } catch (e: ParseException) {
-                // Handle the parse exception, e.g., log it or return a default value
                 inputDate
             }
         } else {
-            // Handle the case where the input date is not in the expected format
             inputDate
         }
     }

@@ -32,7 +32,6 @@ class BookRepository {
     private val storage = FirebaseStorage.getInstance()
     private val reference = database.reference.child("books")
 
-
     fun getAllBooks(): MutableLiveData<ArrayList<BookDetail>> {
         val bookList = MutableLiveData<ArrayList<BookDetail>>()
 
@@ -69,7 +68,6 @@ class BookRepository {
             }.addOnSuccessListener { uri ->
                 // Image uploaded successfully, get the download URL
                 val coverUrl = uri.toString()
-                val book = book
                 book.coverUrl = coverUrl
 
                 // Save the book details to the Realtime Database
@@ -83,7 +81,6 @@ class BookRepository {
 
             storageReference.downloadUrl.addOnSuccessListener { uri ->
                 val placeholderUrl = uri.toString()
-                val book = book
                 book.coverUrl = placeholderUrl
                 saveBookDetailsToDatabase(book, createdBy, callback)
             }.addOnFailureListener { exception ->
@@ -93,9 +90,6 @@ class BookRepository {
     }
 
     private fun saveBookDetailsToDatabase(book: Book, createdBy: String, callback: (Boolean, String?) -> Unit) {
-        val id = reference.push().key ?: return
-        book.id = id
-
         val initialStock = Stock(0)
         val createdAt = ServerValue.TIMESTAMP
         val logs = Logs(createdBy, createdAt)
@@ -105,7 +99,7 @@ class BookRepository {
         bookMap["logs"] = logs
         bookMap["stock"] = initialStock
 
-        reference.child(id).setValue(bookMap).addOnCompleteListener { dbTask ->
+        reference.child(book.isbn.toString()).setValue(bookMap).addOnCompleteListener { dbTask ->
             if (dbTask.isSuccessful) {
                 callback(true, null)
             } else {
@@ -141,7 +135,7 @@ class BookRepository {
                 val bookMap = mutableMapOf<String, Any>()
                 bookMap["book"] = book
 
-                reference.child(book.id).updateChildren(bookMap).addOnCompleteListener { task ->
+                reference.child(book.isbn.toString()).updateChildren(bookMap).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         callback(true, null)
                     } else {
@@ -156,7 +150,18 @@ class BookRepository {
             // Handle the scenario when the book doesn't have a cover URL
             callback(false, "Book cover URL is null.")
         }
+    }
 
+    fun validateBookId(isbn: String, callback: (Boolean) -> Unit) {
+        reference.child(isbn).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val bookExists = dataSnapshot.exists()
+                callback(bookExists)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                callback(false)
+            }
+        })
     }
 
     fun searchBookByISBN(isbn: String, callback: (GoogleBooksResponse) -> Unit) {
@@ -181,10 +186,10 @@ class BookRepository {
         })
     }
 
-    fun getBookDetailById(bookId: String): LiveData<BookDetail?> {
+    fun getBookDetailById(isbn: String): LiveData<BookDetail?> {
         val bookDetailLiveData = MutableLiveData<BookDetail?>()
 
-        val bookReference = reference.child(bookId)
+        val bookReference = reference.child(isbn)
         bookReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val book = snapshot.child("book").getValue(Book::class.java)
@@ -193,6 +198,7 @@ class BookRepository {
 
                 val bookDetail = BookDetail(book, logs, stock)
                 bookDetailLiveData.value = bookDetail
+                Log.d("DATA BUKU", bookDetail.toString())
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -202,14 +208,13 @@ class BookRepository {
 
         return bookDetailLiveData
     }
-
-    fun getBookDetailByIdCallback(bookId: String, callback : (Book?) -> Unit){
-        val bookReference = reference.child(bookId)
+    fun getBookCurrentStock(isbn: String, callback : (Long?) -> Unit){
+        val bookReference = reference.child(isbn)
         bookReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val book = snapshot.child("book").getValue(Book::class.java)
+                val stock = snapshot.child("stock").getValue(Stock::class.java)
 
-                callback(book)
+                callback(stock?.stockQty)
 
             }
 
@@ -218,14 +223,14 @@ class BookRepository {
             }
         })
     }
-    fun deleteBookById(bookId: String, callback: (Boolean, String?) -> Unit) {
-        reference.child(bookId).addValueEventListener(object : ValueEventListener {
+    fun deleteBookById(isbn: String, callback: (Boolean, String?) -> Unit) {
+        reference.child(isbn).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val coverUrl = snapshot.child("book").child("cover_url").getValue(String::class.java)
                 val previousImageRef = coverUrl?.let { storage.getReferenceFromUrl(it) }
                 previousImageRef?.delete()
 
-                reference.child(bookId).removeValue().addOnCompleteListener { task ->
+                reference.child(isbn).removeValue().addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         callback(true, null)
                     } else {
