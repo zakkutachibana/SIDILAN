@@ -3,10 +3,15 @@ package com.zak.sidilan.ui.trx.choosebook
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.MenuItem
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.search.SearchView
 import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.BookQtyPrice
@@ -33,6 +38,7 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
 
         type = intent.getIntExtra("type", 0)
         setupView()
+        setupAction()
         setupRecyclerView()
         setupViewModel()
 
@@ -43,6 +49,25 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = "Pilih Buku"
+    }
+    private fun setupAction() {
+        binding.searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No action needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Handle search text change
+                s?.let {
+                    viewModel.filterBooks(s.toString())
+
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // No action needed
+            }
+        })
     }
 
     private fun setupRecyclerView() {

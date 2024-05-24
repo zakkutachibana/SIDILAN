@@ -74,8 +74,6 @@ class UserDetailActivity : AppCompatActivity() {
             binding.itemPhoneNumber.tvItemValue.text = user?.phoneNumber
             binding.itemJoinTime.tvItemValue.text = Formatter.convertEpochToLocal(user?.joinedAt)
         }
-
-
     }
 
     private fun intentEmail(email: String) {

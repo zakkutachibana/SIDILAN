@@ -87,7 +87,6 @@ class BooksFragment : Fragment() {
             binding.searchView.show()
         }
 
-        // Handle search query submissions and text changes
         binding.searchView.addTransitionListener { _, previousState, newState ->
             if (previousState == SearchView.TransitionState.HIDDEN && newState == SearchView.TransitionState.SHOWN) {
                 binding.searchView.editText.requestFocus()
