@@ -30,7 +30,6 @@ data class Book(
     constructor() : this(0, "", listOf(), "", "", "", 0, 0, false, "", "")
 }
 
-
 @Parcelize
 data class BookDetail(
     val book: Book?,

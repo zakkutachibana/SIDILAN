@@ -76,6 +76,7 @@
     <string name="add_whitelist">Tambah Whitelist</string>
     <string name="update_whitelist">Ubah Whitelist</string>
     <string name="rupiah">%1$s rupiah</string>
+    <string name="discrepancy">%1$s ⮕ %2$s</string>
     <string name="printing_shop_name">Nama Percetakan<font color='#FF0000'>*</font></string>
     <string name="date_print_book">Tanggal Cetak Buku<font color='#FF0000'>*</font></string>
 

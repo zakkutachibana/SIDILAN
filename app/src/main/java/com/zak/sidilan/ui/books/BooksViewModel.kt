@@ -38,7 +38,6 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
             }
             _bookList.postValue(ArrayList(filteredBooks))
         }
-
     }
 }
 

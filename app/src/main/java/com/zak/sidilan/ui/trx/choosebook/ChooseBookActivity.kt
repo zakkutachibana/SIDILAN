@@ -109,7 +109,6 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
                 modalBottomSheetView.setBottomSheetListener(this)
             }
         }
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

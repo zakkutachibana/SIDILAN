@@ -27,6 +27,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.stockopname.CheckingActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.stockopname.StockOpnameActivity"
             android:exported="false" />
         <activity
