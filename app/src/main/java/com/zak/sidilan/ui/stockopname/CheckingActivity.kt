@@ -56,11 +56,6 @@ class CheckingActivity : AppCompatActivity() {
             binding.bottomSheetLayout.tvItems.text = books.size.toString()
             adapter.submitList(books)
         }
-        val adapter = CheckingBookAdapter(this)
-// Assuming you have set up your RecyclerView with this adapter and populated it with data
-
-        val checkedItemCount = adapter.countCheckedItems()
-        println("Number of checked items: $checkedItemCount")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

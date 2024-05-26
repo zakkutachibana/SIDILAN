@@ -155,21 +155,7 @@ class CheckingBookAdapter(
             }
         }
 
-        fun transformBookDetails(bookDetails: List<BookDetail>): List<BookOpname> {
-            return bookDetails.map { bookDetail ->
-                BookOpname(
-                    bookDetail.book?.isbn,
-                    bookDetail.book?.title,
-                    when (adapterBinding.cbStatus.checkedState) {
-                        MaterialCheckBox.STATE_UNCHECKED -> false
-                        MaterialCheckBox.STATE_CHECKED -> true
-                        MaterialCheckBox.STATE_INDETERMINATE -> false
-                        else -> false
-                    },
-                    discrepancy = adapterBinding.chipStockQty.text.toString().toInt()
-                )
-            }
-        }
+
     }
 
     class BookDiffCallback : DiffUtil.ItemCallback<BookDetail>() {
