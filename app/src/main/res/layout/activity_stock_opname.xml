@@ -22,11 +22,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tv_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Tahun 2024"
+            android:text="Tahun"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +40,7 @@
             android:layout_marginTop="8dp"
             android:hint="Periode Stock Opname"
             android:enabled="false"
-            app:layout_constraintTop_toBottomOf="@+id/textView5"
+            app:layout_constraintTop_toBottomOf="@+id/tv_year"
             app:startIconDrawable="@drawable/ic_month"
             tools:layout_editor_absoluteX="16dp">
 
@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Tanggal Stock Opname"
+            android:hint="Tanggal Periksa"
             android:enabled="false"
             app:layout_constraintTop_toBottomOf="@+id/edl_opname_period"
             app:startIconDrawable="@drawable/ic_date"

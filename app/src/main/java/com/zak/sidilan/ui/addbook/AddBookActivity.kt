@@ -132,7 +132,6 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                 binding.edIsbn.setText(isbnBook.isbn.toString())
             }
         }
-
     }
 
 

@@ -39,8 +39,9 @@ class CheckingActivity : AppCompatActivity() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.standardBottomSheet)
         bottomSheetBehavior.isHideable = false
         bottomSheetBehavior.isDraggable = true
-        bottomSheetBehavior.peekHeight = 150
+        bottomSheetBehavior.peekHeight = 130
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        binding.bottomSheetLayout.tvChecked
     }
     private fun setupRecyclerView() {
         adapter = CheckingBookAdapter(this)
@@ -52,8 +53,14 @@ class CheckingActivity : AppCompatActivity() {
     private fun setupViewModel() {
         viewModel.getBooks()
         viewModel.bookList.observe(this) { books ->
+            binding.bottomSheetLayout.tvItems.text = books.size.toString()
             adapter.submitList(books)
         }
+        val adapter = CheckingBookAdapter(this)
+// Assuming you have set up your RecyclerView with this adapter and populated it with data
+
+        val checkedItemCount = adapter.countCheckedItems()
+        println("Number of checked items: $checkedItemCount")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

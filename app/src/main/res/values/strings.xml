@@ -43,6 +43,10 @@
     <string name="title_manager">Manajer</string>
     <string name="title_other">Lainnya</string>
     <string name="yes">Ya</string>
+    <string name="no">Tidak</string>
+    <string name="appropriate">Sesuai</string>
+    <string name="adjust">Sesuaikan</string>
+    <string name="inappropriate">Tidak Sesuai</string>
     <string name="title_profile">Profile</string>
     <string name="title_scan_isbn">Scan Barcode ISBN</string>
     <string name="title_staff">Staf</string>

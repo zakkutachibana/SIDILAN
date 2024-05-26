@@ -43,31 +43,55 @@
         app:layout_constraintStart_toStartOf="@+id/tv_book_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_book_title" />
 
-    <TextView
-        android:id="@+id/tv_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="Status: "
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-        app:layout_constraintBottom_toBottomOf="@+id/chip_stock_qty"
-        app:layout_constraintStart_toStartOf="@+id/tv_isbn"
-        app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty" />
-
-    <TextView
-        android:id="@+id/tv_status_value"
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="Belum Diperiksa"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-        android:textStyle="bold"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/chip_stock_qty"
-        app:layout_constraintEnd_toStartOf="@+id/chip_stock_qty"
-        app:layout_constraintStart_toEndOf="@+id/tv_status"
-        app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty" />
+        app:layout_constraintEnd_toStartOf="@+id/chip_stock_false"
+        app:layout_constraintStart_toStartOf="@+id/tv_isbn"
+        app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/chip_stock_qty"
+            app:layout_constraintEnd_toStartOf="@+id/chip_stock_qty"
+            app:layout_constraintStart_toStartOf="@+id/tv_isbn"
+            app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty">
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Status: "
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <TextView
+                android:id="@+id/tv_status_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Belum Diperiksa"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="@color/safe_red"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Alasan"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_stock_qty"
@@ -86,17 +110,41 @@
         style="@style/Widget.Material3.Chip.Assist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="31 ⮕ 35"
+        android:text="75"
         app:ensureMinTouchTargetSize="true"
         app:layout_constraintBottom_toBottomOf="@+id/iv_book_cover"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_stock_false"
+        style="@style/Widget.Material3.Chip.Assist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="75"
+        android:textColor="@color/safe_red"
+        android:visibility="gone"
+        android:layout_marginEnd="2dp"
+        app:ensureMinTouchTargetSize="true"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_book_cover"
+        app:layout_constraintEnd_toStartOf="@+id/tv_arrow"/>
+
+    <TextView
+        android:id="@+id/tv_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⮕"
+        android:visibility="gone"
+        android:layout_marginEnd="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/chip_stock_qty"
+        app:layout_constraintEnd_toStartOf="@+id/chip_stock_qty"
+        app:layout_constraintTop_toTopOf="@+id/chip_stock_qty" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/cb_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        android:checked="false"
+        android:clickable="false"
         app:checkboxStyle="@style/Widget.Material3.CompoundButton.CheckBox"
         app:layout_constraintTop_toTopOf="@+id/iv_book_cover" />
 
@@ -105,6 +153,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/iv_book_cover" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

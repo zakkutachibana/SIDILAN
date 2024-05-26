@@ -19,6 +19,7 @@
     <color name="red_dark">#8C1D18</color>
     <color name="safe_green">#4CAF50</color>
     <color name="safe_red">#E53935</color>
+    <color name="safe_yellow">#FFD700</color>
 
 
     <color name="button_color">#1E573B</color>
