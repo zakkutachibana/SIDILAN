@@ -38,6 +38,8 @@ class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         hawkManager = HawkManager(this)
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -49,8 +51,6 @@ class AuthActivity : AppCompatActivity() {
 
         setupView()
         setupAction()
-
-        setContentView(binding.root)
     }
 
     private fun setupView() {

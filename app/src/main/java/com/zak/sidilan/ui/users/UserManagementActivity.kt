@@ -27,8 +27,15 @@ class UserManagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserManagementBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         adapter = UserManagementPagerAdapter(supportFragmentManager, lifecycle)
+
+        setupView()
+        setupAction()
+    }
+
+    private fun setupView() {
         binding.viewPager.adapter = adapter
         binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -56,15 +63,6 @@ class UserManagementActivity : AppCompatActivity() {
                 }
             }
         })
-
-        setupView()
-        setupAction()
-        setContentView(binding.root)
-
-
-    }
-
-    private fun setupView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = "Manajemen Pengguna"

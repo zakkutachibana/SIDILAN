@@ -139,12 +139,13 @@
         app:layout_constraintEnd_toStartOf="@+id/chip_stock_qty"
         app:layout_constraintTop_toTopOf="@+id/chip_stock_qty" />
 
-    <com.google.android.material.checkbox.MaterialCheckBox
+    <com.zak.sidilan.util.CustomTriStateCheckBox
         android:id="@+id/cb_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         android:clickable="false"
+        app:useMaterialThemeColors="true"
         app:checkboxStyle="@style/Widget.Material3.CompoundButton.CheckBox"
         app:layout_constraintTop_toTopOf="@+id/iv_book_cover" />
 

@@ -35,6 +35,7 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChooseBookBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         type = intent.getIntExtra("type", 0)
         setupView()
@@ -42,7 +43,6 @@ class ChooseBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheet
         setupRecyclerView()
         setupViewModel()
 
-        setContentView(binding.root)
     }
 
     private fun setupView() {

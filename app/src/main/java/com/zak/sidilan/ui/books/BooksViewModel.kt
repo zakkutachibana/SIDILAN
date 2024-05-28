@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.map
 import com.zak.sidilan.data.entities.BookDetail
+import com.zak.sidilan.data.entities.BookOpname
 import com.zak.sidilan.data.repositories.BookRepository
 import org.koin.dsl.module
 
@@ -21,6 +22,7 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
     val isBookListEmpty: LiveData<Boolean> = bookList.map { books ->
         books.isEmpty()
     }
+
     fun getBooks() {
         repository.getAllBooks().observeForever { bookList ->
             _bookList.value = bookList
@@ -39,5 +41,6 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
             _bookList.postValue(ArrayList(filteredBooks))
         }
     }
+
 }
 

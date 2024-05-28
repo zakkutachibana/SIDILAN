@@ -58,6 +58,7 @@ class BookTrxViewModel(private val repository: TrxRepository, private val bookRe
             _selectedBooksList.value = currentBooks
         }
     }
+
     fun getCurrentStock(isbn: String, callback : (Long?) -> Unit) {
         bookRepository.getBookCurrentStock(isbn) {
             callback(it)

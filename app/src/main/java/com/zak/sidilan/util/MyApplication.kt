@@ -17,6 +17,7 @@ import com.zak.sidilan.ui.dashboard.dashboardFragmentModule
 import com.zak.sidilan.ui.dashboard.dashboardViewModelModule
 import com.zak.sidilan.ui.scan.scanActivityModule
 import com.zak.sidilan.ui.scan.scanViewModelModule
+import com.zak.sidilan.ui.stockopname.stockOpnameViewModelModule
 import com.zak.sidilan.ui.trx.bookin.bookInTrxActivityModule
 import com.zak.sidilan.ui.trx.bookin.bookInTrxPrintFragmentModule
 import com.zak.sidilan.ui.trx.bookTrxViewModelModule
@@ -65,7 +66,8 @@ class MyApplication : Application() {
                 userDetailActivityModule,
                 userDetailViewModelModule,
                 bookInTrxPrintFragmentModule,
-                bookTrxViewModelModule
+                bookTrxViewModelModule,
+                stockOpnameViewModelModule
                 )
         }
     }

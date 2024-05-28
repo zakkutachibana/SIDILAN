@@ -20,6 +20,7 @@ import com.google.firebase.auth.auth
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.entities.Whitelist
 import com.zak.sidilan.databinding.ActivityMainBinding
+import com.zak.sidilan.ui.about.AboutActivity
 import com.zak.sidilan.ui.auth.AuthActivity
 import com.zak.sidilan.ui.auth.AuthViewModel
 import com.zak.sidilan.ui.executivemenus.ExecutiveMenusActivity
@@ -46,9 +47,9 @@ class MainActivity : AppCompatActivity() {
         setTheme(R.style.Theme_SIDILAN)
         supportActionBar?.hide()
         binding = ActivityMainBinding.inflate(layoutInflater)
-        hawkManager = HawkManager(this)
         setContentView(binding.root)
 
+        hawkManager = HawkManager(this)
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         val appBarConfiguration = AppBarConfiguration(
             setOf(
@@ -113,6 +114,10 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, UserManagementActivity::class.java)
                     startActivity(intent)
                 }
+                R.id.about -> {
+                    val intent = Intent(this, AboutActivity::class.java)
+                    startActivity(intent)
+                }
             }
             Handler(Looper.getMainLooper()).postDelayed({
                 binding.drawerLayout.close()
@@ -137,7 +142,6 @@ class MainActivity : AppCompatActivity() {
                 binding.navigationView.menu.findItem(R.id.manager_item).isVisible = false
                 binding.navigationView.menu.findItem(R.id.director_item).isVisible = false
             }
-
             else -> {}
         }
     }

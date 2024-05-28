@@ -60,21 +60,15 @@ class BookInTrxOtherFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = SelectedBooksAdapter(2, requireContext(), viewModel) { bookCost ->
             viewModel.getCurrentStock(bookCost.book.isbn.toString()) {
-                val layout =
-                    LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
+                val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
                 val edStock = layout.findViewById<EditText>(R.id.ed_stock)
                 val edlStock = layout.findViewById<TextInputLayout>(R.id.edl_stock)
                 layout.findViewById<TextView>(R.id.tv_title_book_stock).text = bookCost.book.title
-                layout.findViewById<TextView>(R.id.tv_author_book_stock).text =
-                    bookCost.book.authors.joinToString(", ")
+                layout.findViewById<TextView>(R.id.tv_author_book_stock).text = bookCost.book.authors.joinToString(", ")
                 layout.findViewById<TextView>(R.id.tv_current_book_stock).text = it.toString()
-                layout.findViewById<ImageView>(R.id.iv_book_cover_stock)
-                    .load(bookCost.book.coverUrl)
+                layout.findViewById<ImageView>(R.id.iv_book_cover_stock).load(bookCost.book.coverUrl)
                 edStock.setText(bookCost.bookQty.toString())
-                val dialog = MaterialAlertDialogBuilder(
-                    requireActivity(),
-                    com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-                )
+                val dialog = MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
                     .setTitle(resources.getString(R.string.title_update_stock))
                     .setView(layout)
                     .setIcon(R.drawable.ic_update)
@@ -84,9 +78,7 @@ class BookInTrxOtherFragment : Fragment() {
                     .setPositiveButton("Ya", null)
                     .show()
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                    if (edStock.text?.isNotEmpty() == true && edStock.text.toString()
-                            .toLong() > 0
-                    ) {
+                    if (edStock.text?.isNotEmpty() == true && edStock.text.toString().toLong() > 0) {
                         val newQty = edStock.text.toString().toLong()
                         val newCost = newQty * bookCost.book.printPrice
                         val newBookQtyCost = BookQtyPrice(bookCost.book, newQty, newCost)
@@ -96,8 +88,7 @@ class BookInTrxOtherFragment : Fragment() {
                     }
                 }
             }
-                binding.rvBookInOther.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                binding.rvBookInOther.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                 binding.rvBookInOther.adapter = adapter
                 binding.rvBookInOther.itemAnimator = DefaultItemAnimator()
 

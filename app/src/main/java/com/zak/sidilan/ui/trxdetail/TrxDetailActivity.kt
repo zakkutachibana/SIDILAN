@@ -43,7 +43,7 @@ class TrxDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTrxDetailBinding.inflate(layoutInflater)
-
+        setContentView(binding.root)
 
         val trxId = intent.getStringExtra("trxId")
         if (trxId != null) {
@@ -53,7 +53,6 @@ class TrxDetailActivity : AppCompatActivity() {
         setupViewModel()
         setupAction()
 
-        setContentView(binding.root)
     }
 
     private fun setupView() {

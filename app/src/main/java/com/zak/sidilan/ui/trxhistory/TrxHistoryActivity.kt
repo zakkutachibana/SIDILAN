@@ -21,11 +21,11 @@ class TrxHistoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTrxHistoryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupView()
         setupViewModel()
         setupRecyclerView()
-        setContentView(binding.root)
     }
 
     private fun setupView() {

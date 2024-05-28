@@ -50,8 +50,8 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityScanBinding.inflate(layoutInflater)
-        setupView()
         setContentView(binding.root)
+        setupView()
 
         if (allPermissionsGranted()) {
             startCamera()

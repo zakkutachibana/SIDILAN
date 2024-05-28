@@ -172,8 +172,8 @@ class TrxRepository {
                 val stock = dataSnapshot.getValue(Stock::class.java) ?: Stock()
 
                 val updatedStockQty = when (transactionType) {
-                    "book_in_printing", "book_in_donation" -> stock.stockQty + quantity
-                    "book_out_selling", "book_out_donation" -> stock.stockQty - quantity
+                    "book_in_printing", "book_in_donation", "discrepancy_plus" -> stock.stockQty + quantity
+                    "book_out_selling", "book_out_donation", "discrepancy_minus" -> stock.stockQty - quantity
                     else -> stock.stockQty
                 }
 
