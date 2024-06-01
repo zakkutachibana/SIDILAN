@@ -28,7 +28,6 @@ val booksFragmentModule = module {
 class BooksFragment : Fragment() {
     private lateinit var binding : FragmentBooksBinding
     private val viewModel: BooksViewModel by viewModel()
-
     private lateinit var adapter: BooksAdapter
 
     override fun onCreateView(
@@ -121,9 +120,5 @@ class BooksFragment : Fragment() {
             binding.rvBooks.visibility = View.VISIBLE
             (requireActivity() as MainActivity).binding.fab.show() }, 500)
     }
-
-
-
-
-    }
+}
 

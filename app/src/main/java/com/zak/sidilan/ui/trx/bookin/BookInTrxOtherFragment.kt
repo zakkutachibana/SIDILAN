@@ -283,7 +283,9 @@ class BookInTrxOtherFragment : Fragment() {
             val datePickerDialog = DatePickerDialog(
                 requireContext(),
                 { _, selectedYear, selectedMonth, selectedDay ->
-                    val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                    val formattedDay = String.format("%02d", selectedDay)
+                    val formattedMonth = String.format("%02d", selectedMonth + 1)
+                    val selectedDate = "$formattedDay/$formattedMonth/$selectedYear"
                     dateEditText.text = selectedDate
                 },
                 year,

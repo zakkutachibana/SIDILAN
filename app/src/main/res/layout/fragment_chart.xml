@@ -7,80 +7,77 @@
     android:paddingVertical="16dp"
     tools:context=".ui.executivemenus.ChartFragment">
 
-    <TextView
-        android:id="@+id/idTVHead"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:gravity="center"
-        android:padding="4dp"
-        android:text="Pie Chart"
-        android:textAlignment="center"
-        android:textColor="@color/purple_200"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <!--Ui component for our pie chart-->
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pieChart"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@id/idTVHead"
+        android:layout_height="350dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/idTVHead" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/pieChart"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        android:weightSum="3"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pieChart">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
             android:layout_weight="1"
             android:gravity="center"
             android:padding="4dp"
-            android:text="Android"
-            android:textAlignment="center"
-            app:drawableLeftCompat="@drawable/ic_store"
-            app:drawableTint="@color/purple_200" />
+            android:text="Shopee"
+            android:drawablePadding="8dp"
+            app:drawableLeftCompat="@drawable/ic_shopee"
+            app:drawableTint="@color/shopee_color" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
             android:layout_weight="1"
             android:gravity="center"
             android:padding="4dp"
-            android:text="Apple"
+            android:drawablePadding="8dp"
+            android:text="Tokopedia"
             android:textAlignment="center"
-            app:drawableLeftCompat="@drawable/ic_store"
-            app:drawableTint="@color/yellow" />
+            app:drawableLeftCompat="@drawable/ic_tokopedia"
+            app:drawableTint="@color/tokopedia_color" />
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
             android:layout_weight="1"
             android:gravity="center"
             android:padding="4dp"
-            android:text="Microsoft"
+            android:text="Yayasan"
+            android:drawablePadding="8dp"
             android:textAlignment="center"
-            app:drawableLeftCompat="@drawable/ic_store"
-            app:drawableTint="@color/red" />
+            app:drawableLeftCompat="@drawable/ic_pp"
+            app:drawableTint="@color/peneleh_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="Lainnya"
+            android:drawablePadding="8dp"
+            android:textAlignment="center"
+            app:drawableLeftCompat="@drawable/ic_other"
+            app:drawableTint="@color/other_color" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

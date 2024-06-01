@@ -63,6 +63,13 @@
         <item>Lainnya</item>
     </string-array>
 
+    <string-array name="year">
+        <item>2024</item>
+        <item>2023</item>
+        <item>2022</item>
+        <item>2021</item>
+    </string-array>
+
     <string-array name="roles">
         <item>Staf</item>
         <item>Manajer</item>

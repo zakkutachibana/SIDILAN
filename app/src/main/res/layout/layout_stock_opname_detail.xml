@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_item_opname"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_book_cover"
+        android:layout_width="80dp"
+        android:layout_height="111dp"
+        android:contentDescription="@string/book_cover"
+        android:scaleType="centerCrop"
+        android:src="@drawable/book_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_book_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Judul Buku yang amat sangat panjang"
+        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+        app:layout_constraintEnd_toStartOf="@+id/cb_status"
+        app:layout_constraintStart_toEndOf="@+id/iv_book_cover"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_isbn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="12345678910121"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="@+id/tv_book_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_book_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_book_title" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/chip_stock_qty"
+        app:layout_constraintEnd_toStartOf="@+id/chip_stock_false"
+        app:layout_constraintStart_toStartOf="@+id/tv_isbn"
+        app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/chip_stock_qty"
+            app:layout_constraintEnd_toStartOf="@+id/chip_stock_qty"
+            app:layout_constraintStart_toStartOf="@+id/tv_isbn"
+            app:layout_constraintTop_toBottomOf="@+id/tv_stock_qty">
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Status: "
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <TextView
+                android:id="@+id/tv_status_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Stok Sesuai"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                android:textColor="@color/safe_red"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Alasan"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_stock_qty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="-8dp"
+        android:text="Stok"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toTopOf="@+id/chip_stock_qty"
+        app:layout_constraintEnd_toEndOf="@+id/chip_stock_qty"
+        app:layout_constraintStart_toStartOf="@+id/chip_stock_qty" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_stock_qty"
+        style="@style/Widget.Material3.Chip.Assist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="75"
+        app:ensureMinTouchTargetSize="true"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_book_cover"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/chip_stock_false"
+        style="@style/Widget.Material3.Chip.Assist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="75"
+        android:textColor="@color/safe_red"
+        android:visibility="gone"
+        android:layout_marginEnd="2dp"
+        app:ensureMinTouchTargetSize="true"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_book_cover"
+        app:layout_constraintEnd_toStartOf="@+id/tv_arrow"/>
+
+    <TextView
+        android:id="@+id/tv_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⮕"
+        android:visibility="gone"
+        android:layout_marginEnd="2dp"
+        app:layout_constraintBottom_toBottomOf="@+id/chip_stock_qty"
+        app:layout_constraintEnd_toStartOf="@+id/chip_stock_qty"
+        app:layout_constraintTop_toTopOf="@+id/chip_stock_qty" />
+
+    <com.zak.sidilan.util.CustomTriStateCheckBox
+        android:id="@+id/cb_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:clickable="false"
+        app:useMaterialThemeColors="true"
+        app:checkboxStyle="@style/Widget.Material3.CompoundButton.CheckBox"
+        app:layout_constraintTop_toTopOf="@+id/iv_book_cover" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/materialDivider2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/iv_book_cover" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

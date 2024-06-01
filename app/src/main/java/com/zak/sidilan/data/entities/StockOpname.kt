@@ -6,13 +6,15 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class StockOpname (
-
-    val books: List<BookOpname>?,
+    val id: String,
+    val books: Map<String, BookOpname?>,
     val date: String?,
+    @JvmField @PropertyName("overall_appropriate")
+    val overallAppropriate: Boolean?,
     val logs: Logs?
 
     ) : Parcelable {
-    constructor() : this(null,"",null)
+    constructor() : this("",mapOf(),"",null, null)
 }
 
 @Parcelize

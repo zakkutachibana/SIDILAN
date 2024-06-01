@@ -32,7 +32,6 @@ class BookDetailActivity : AppCompatActivity() {
         val isbn = intent.getStringExtra("isbn")
         if (isbn != null) {
             viewModel.getBookDetailById(isbn)
-            Log.d("ISBN", isbn)
         }
         setupView()
         setupViewModel()

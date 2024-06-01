@@ -141,6 +141,7 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         if (isUpdateMode) {
             supportActionBar?.title = getString(R.string.title_update_book)
             binding.btnAddBook.text = getString(R.string.title_update_book)
+            binding.edlIsbn.isEnabled = false
         } else {
             supportActionBar?.title = getString(R.string.title_add_book)
         }
@@ -550,7 +551,9 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         val datePickerDialog = DatePickerDialog(
             this,
             { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                val formattedDay = String.format("%02d", selectedDay)
+                val formattedMonth = String.format("%02d", selectedMonth + 1)
+                val selectedDate = "$formattedDay/$formattedMonth/$selectedYear"
                 dateEditText.text = selectedDate
             },
             year,

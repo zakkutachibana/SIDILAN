@@ -68,6 +68,8 @@
     <string name="two_lines">%1$s \n%2$s</string>
     <string name="book_count">%1$s judul</string>
     <string name="total_stock_qty">%1$s buku</string>
+    <string name="total_book_sold_qty">Terjual %1$s buku</string>
+    <string name="total_sold_qty">Total Terjual:\n%1$s buku</string>
     <string name="plus_qty">+ %1$s buku</string>
     <string name="minus_qty">- %1$s buku</string>
     <string name="discount_percent_view">Diskon (%1$s%%)</string>

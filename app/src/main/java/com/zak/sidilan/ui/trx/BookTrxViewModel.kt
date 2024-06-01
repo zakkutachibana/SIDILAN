@@ -65,7 +65,7 @@ class BookTrxViewModel(private val repository: TrxRepository, private val bookRe
         }
     }
     fun updateStock(isbn: String, transactionType: String, quantity: Long) {
-        repository.updateBookStock(isbn, transactionType, quantity)
+        bookRepository.updateBookStock(isbn, transactionType, quantity)
     }
     fun addTrxPrint(trx: BookInPrintingTrx, logs: Logs, callback : (String, Boolean) -> Unit) {
         repository.addBookInPrintTrx(trx, logs) { status, bool ->

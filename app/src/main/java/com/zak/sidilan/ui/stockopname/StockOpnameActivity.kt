@@ -5,24 +5,16 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import coil.load
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookOpname
-import com.zak.sidilan.data.entities.BookQtyPrice
-import com.zak.sidilan.data.entities.Logs
-import com.zak.sidilan.data.entities.StockOpname
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityStockOpnameBinding
-import com.zak.sidilan.ui.books.BooksViewModel
-import com.zak.sidilan.ui.trx.BookTrxViewModel
-import com.zak.sidilan.ui.trx.bookin.BookInTrxPrintFragment
 import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.LocalDate
@@ -33,6 +25,7 @@ class StockOpnameActivity : AppCompatActivity() {
     private lateinit var binding : ActivityStockOpnameBinding
     private lateinit var hawkManager : HawkManager
     private lateinit var bookOpnameList: List<BookOpname>
+    private val viewModel: StockOpnameViewModel by viewModel()
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,21 +40,14 @@ class StockOpnameActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupView() {
-        // Get current month name
         val currentDate = LocalDate.now()
-        val monthFormat = DateTimeFormatter.ofPattern("MMMM", Locale.getDefault())
-        val monthYearFormat = DateTimeFormatter.ofPattern("MM/yyyy", Locale.getDefault())
-        val fullFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
-        val yearFormat = DateTimeFormatter.ofPattern("yyyy", Locale.getDefault())
+        val monthFormat = DateTimeFormatter.ofPattern("MMMM yyyy", Locale("id", "ID"))
+        val fullFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale("id", "ID"))
         val monthName = currentDate.format(monthFormat)
-        val monthYearName = currentDate.format(monthYearFormat)
-        val yearName = currentDate.format(yearFormat)
         val fullDate = currentDate.format(fullFormat)
 
-        // Set month name to EditText
         binding.edOpnamePeriod.setText(monthName)
         binding.edOpnameDate.setText(fullDate)
-        binding.tvYear.text = "Tahun $yearName"
 
         val currentUser = hawkManager.retrieveData<User>("user")
 
@@ -95,20 +81,26 @@ class StockOpnameActivity : AppCompatActivity() {
         binding.btnDone.isEnabled = true
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupAction() {
+        val currentDate = LocalDate.now()
+        val monthYearFormat = DateTimeFormatter.ofPattern("yyyy/MM", Locale.getDefault())
+        val monthYearName = currentDate.format(monthYearFormat)
+
         binding.cardCheckStock.setOnClickListener {
             val intent = Intent(this, CheckingActivity::class.java)
             getResult.launch(intent)
         }
         binding.btnDone.setOnClickListener {
             val createdBy = hawkManager.retrieveData<User>("user")?.id.toString()
-            val stockOpname = StockOpname(
-                books = bookOpnameList,
-                date = binding.edOpnameDate.text.toString(),
-                logs = Logs(createdBy, null)
-            )
-            Toast.makeText(this, "$stockOpname", Toast.LENGTH_LONG).show()
-            Log.d("StockOpname", "$stockOpname")
+            val date = binding.edOpnameDate.text.toString()
+            val books = bookOpnameList
+            val overallAppropriate = books.all { it.isAppropriate == true }
+
+            viewModel.saveStockOpname(date, books, monthYearName, createdBy, overallAppropriate) {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            }
+
         }
     }
 
@@ -132,7 +124,7 @@ class StockOpnameActivity : AppCompatActivity() {
             }
         }
     companion object {
-        val OPNAME_LIST = "opname_list"
+        const val OPNAME_LIST = "opname_list"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

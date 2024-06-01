@@ -19,12 +19,17 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
     private val _bookList = MutableLiveData<ArrayList<BookDetail>>()
     val bookList: MutableLiveData<ArrayList<BookDetail>> get() = _bookList
 
+    private val _sortedBySold = MutableLiveData<ArrayList<BookDetail>>()
+    val sortedBySold: MutableLiveData<ArrayList<BookDetail>> get() = _sortedBySold
+
     val isBookListEmpty: LiveData<Boolean> = bookList.map { books ->
         books.isEmpty()
     }
 
     fun getBooks() {
         repository.getAllBooks().observeForever { bookList ->
+            val sortedBooks = bookList.sortedByDescending { it.stock?.soldQty ?: 0 }
+            _sortedBySold.value = ArrayList(sortedBooks.take(10))
             _bookList.value = bookList
         }
     }
@@ -41,6 +46,7 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
             _bookList.postValue(ArrayList(filteredBooks))
         }
     }
+
 
 }
 

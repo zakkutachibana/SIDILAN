@@ -10,37 +10,15 @@
         android:padding="16dp"
         tools:context=".ui.stockopname.StockOpnameActivity">
 
-        <TextView
-            android:id="@+id/tv_stock_opname_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Stock Opname"
-            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Tahun"
-            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_stock_opname_title" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edl_opname_period"
             style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:hint="Periode Stock Opname"
             android:enabled="false"
-            app:layout_constraintTop_toBottomOf="@+id/tv_year"
+            android:hint="Periode Stock Opname"
+            app:layout_constraintTop_toTopOf="parent"
             app:startIconDrawable="@drawable/ic_month"
             tools:layout_editor_absoluteX="16dp">
 

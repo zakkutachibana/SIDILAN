@@ -3,6 +3,7 @@ package com.zak.sidilan.util
 import android.app.Application
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.zak.sidilan.data.repositories.bookRepositoryModule
+import com.zak.sidilan.data.repositories.stockOpnameRepositoryModule
 import com.zak.sidilan.data.repositories.trxRepositoryModule
 import com.zak.sidilan.data.repositories.userRepositoryModule
 import com.zak.sidilan.ui.addbook.addBookActivityModule
@@ -67,7 +68,8 @@ class MyApplication : Application() {
                 userDetailViewModelModule,
                 bookInTrxPrintFragmentModule,
                 bookTrxViewModelModule,
-                stockOpnameViewModelModule
+                stockOpnameViewModelModule,
+                stockOpnameRepositoryModule
                 )
         }
     }

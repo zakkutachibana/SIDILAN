@@ -266,7 +266,7 @@ class BookInTrxPrintFragment : Fragment() {
                         createdBy = createdBy,
                         createdAt = ""
                     )
-                    // Create a BookInPrintingTransaction instance
+
                     val transaction = BookInPrintingTrx(
                         printingShopName = shopName,
                         bookInDate = printDate,
@@ -463,7 +463,9 @@ class BookInTrxPrintFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                val formattedDay = String.format("%02d", selectedDay)
+                val formattedMonth = String.format("%02d", selectedMonth + 1)
+                val selectedDate = "$formattedDay/$formattedMonth/$selectedYear"
                 dateEditText.text = selectedDate
             },
             year,

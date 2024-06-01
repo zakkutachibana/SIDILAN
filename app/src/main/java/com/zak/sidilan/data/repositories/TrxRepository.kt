@@ -164,61 +164,6 @@ class TrxRepository {
             }
     }
 
-    fun updateBookStock(isbn: String, transactionType: String, quantity: Long) {
-        val stockRef = database.reference.child("books").child(isbn).child("stock")
-
-        stockRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val stock = dataSnapshot.getValue(Stock::class.java) ?: Stock()
-
-                val updatedStockQty = when (transactionType) {
-                    "book_in_printing", "book_in_donation", "discrepancy_plus" -> stock.stockQty + quantity
-                    "book_out_selling", "book_out_donation", "discrepancy_minus" -> stock.stockQty - quantity
-                    else -> stock.stockQty
-                }
-
-                val updatedSoldQty = when (transactionType) {
-                    "book_out_selling" -> stock.soldQty + quantity
-                    else -> stock.soldQty
-                }
-
-                val updatedPrintedQty = when (transactionType) {
-                    "book_in_printing" -> stock.printedQty + quantity
-                    else -> stock.printedQty
-                }
-
-                val updatedOtherInQty = when (transactionType) {
-                    "book_in_donation" -> stock.otherInQty + quantity
-                    else -> stock.otherInQty
-                }
-
-                val updatedOtherOutQty = when (transactionType) {
-                    "book_out_donation" -> stock.otherOutQty + quantity
-                    else -> stock.otherOutQty
-                }
-
-                // Create a map of updates to apply
-                val updates = mapOf(
-                    "stock_qty" to updatedStockQty,
-                    "sold_qty" to updatedSoldQty,
-                    "printed_qty" to updatedPrintedQty,
-                    "other_in_qty" to updatedOtherInQty,
-                    "other_out_qty" to updatedOtherOutQty
-                )
-
-                // Update the stock quantities in the database
-                stockRef.updateChildren(updates).addOnSuccessListener {
-                    // Stock quantities updated successfully
-                }.addOnFailureListener { e ->
-                    // Handle failure
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle onCancelled
-            }
-        })
-    }
 
     fun saveInvoicePDF(file: File, callback: (Boolean?) -> Unit) {
         val storageRef = Firebase.storage.reference.child("invoices/${file.name}")

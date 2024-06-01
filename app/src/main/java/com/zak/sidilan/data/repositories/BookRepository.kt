@@ -139,12 +139,12 @@ class BookRepository {
                     if (task.isSuccessful) {
                         callback(true, null)
                     } else {
-                        callback(false, task.exception?.message)
+                        callback(false, "update children error ${task.exception?.message}")
                     }
                 }
             }.addOnFailureListener { exception ->
                 // Handle any errors during image upload
-                callback(false, exception.message)
+                callback(false, "update children error ${exception.message}")
             }
         } else {
             // Handle the scenario when the book doesn't have a cover URL
@@ -246,6 +246,62 @@ class BookRepository {
     }
 
     // STOCK STUFF
+
+    fun updateBookStock(isbn: String, transactionType: String, quantity: Long) {
+        val stockRef = reference.child(isbn).child("stock")
+
+        stockRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val stock = dataSnapshot.getValue(Stock::class.java) ?: Stock()
+
+                val updatedStockQty = when (transactionType) {
+                    "book_in_printing", "book_in_donation", "discrepancy_plus" -> stock.stockQty + quantity
+                    "book_out_selling", "book_out_donation", "discrepancy_minus" -> stock.stockQty - quantity
+                    else -> stock.stockQty
+                }
+
+                val updatedSoldQty = when (transactionType) {
+                    "book_out_selling" -> stock.soldQty + quantity
+                    else -> stock.soldQty
+                }
+
+                val updatedPrintedQty = when (transactionType) {
+                    "book_in_printing" -> stock.printedQty + quantity
+                    else -> stock.printedQty
+                }
+
+                val updatedOtherInQty = when (transactionType) {
+                    "book_in_donation" -> stock.otherInQty + quantity
+                    else -> stock.otherInQty
+                }
+
+                val updatedOtherOutQty = when (transactionType) {
+                    "book_out_donation" -> stock.otherOutQty + quantity
+                    else -> stock.otherOutQty
+                }
+
+                // Create a map of updates to apply
+                val updates = mapOf(
+                    "stock_qty" to updatedStockQty,
+                    "sold_qty" to updatedSoldQty,
+                    "printed_qty" to updatedPrintedQty,
+                    "other_in_qty" to updatedOtherInQty,
+                    "other_out_qty" to updatedOtherOutQty
+                )
+
+                // Update the stock quantities in the database
+                stockRef.updateChildren(updates).addOnSuccessListener {
+                    // Stock quantities updated successfully
+                }.addOnFailureListener { e ->
+                    // Handle failure
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
 
     fun getBookCount(): MutableLiveData<Long?> {
         val bookCount = MutableLiveData<Long?>()

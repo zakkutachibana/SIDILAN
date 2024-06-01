@@ -56,7 +56,6 @@ class CheckingActivity : AppCompatActivity() {
                 .setMessage("Apakah benar buku \"${bookOpname.bookTitle}\" memiliki stok sebanyak \"${bookOpname.stockExpected} buku\" ?")
                 .setPositiveButton(getString(R.string.appropriate)) { dialog, _ ->
                     bookOpname.isAppropriate = true
-                    bookOpname.stockActual = null
                     bookOpname.reason = null
                     bookOpname.discrepancy = null
                     viewModel.updateBookOpname(bookOpname)
