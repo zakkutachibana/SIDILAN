@@ -11,18 +11,25 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityUserManagementBinding
+import com.zak.sidilan.util.HawkManager
+import com.zak.sidilan.util.HelperFunction
+import com.zak.sidilan.util.HelperFunction.parseUserRole
+import com.zak.sidilan.util.UserRole
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
 val userListActivityModule = module {
     factory { UserManagementActivity() }
 }
+
 class UserManagementActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserManagementBinding
 
     private lateinit var adapter: UserManagementPagerAdapter
     private val viewModel: UserManagementViewModel by viewModel()
+    private lateinit var hawkManager: HawkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,14 +37,27 @@ class UserManagementActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         adapter = UserManagementPagerAdapter(supportFragmentManager, lifecycle)
+        hawkManager = HawkManager(this)
+        val role = hawkManager.retrieveData<User>("user")?.role.toString()
 
+
+        checkRole(parseUserRole(role))
         setupView()
         setupAction()
     }
 
+    private fun checkRole(role: UserRole?) {
+        when (role) {
+            UserRole.ADMIN -> { }
+            UserRole.DIRECTOR -> { }
+            else -> { finish() }
+        }
+
+    }
+
     private fun setupView() {
         binding.viewPager.adapter = adapter
-        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+        binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
                     if (tab.position == 0) {
@@ -48,11 +68,12 @@ class UserManagementActivity : AppCompatActivity() {
                     binding.viewPager.currentItem = tab.position
                 }
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
 
         })
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 binding.tabs.selectTab(binding.tabs.getTabAt(position))
@@ -78,7 +99,10 @@ class UserManagementActivity : AppCompatActivity() {
             val edlPhone = layout.findViewById<TextInputLayout>(R.id.edl_phone_number)
             val edRole = layout.findViewById<EditText>(R.id.ed_role)
             val edlRole = layout.findViewById<TextInputLayout>(R.id.edl_role)
-            val dialog = MaterialAlertDialogBuilder(this, com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+            val dialog = MaterialAlertDialogBuilder(
+                this,
+                com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+            )
                 .setTitle(R.string.add_whitelist)
                 .setView(layout)
                 .setIcon(R.drawable.ic_delete)
@@ -97,8 +121,15 @@ class UserManagementActivity : AppCompatActivity() {
                         val email = edEmail.text.toString()
                         val role = edRole.text.toString()
                         val phoneNumber = edPhone.text.toString()
-                        viewModel.addWhitelist(email, role, phoneNumber)
-                        dialog.dismiss()
+                        viewModel.validateWhitelist(email) { whitelistExist ->
+                            if (!whitelistExist) {
+                                viewModel.addWhitelist(email, role, phoneNumber)
+                                dialog.dismiss()
+                            }
+                            else {
+                                edlEmail.error = "Whitelist sudah ada"
+                            }
+                        }
                     }
                 }
             }

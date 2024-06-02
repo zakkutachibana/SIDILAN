@@ -78,7 +78,7 @@
     <string name="forever_contract">Perjanjian Berlaku Selamanya</string>
     <string name="default_web_client_id" />
     <string name="add_whitelist_action">Masukkan informasi pengguna yang akan ditambahkan.</string>
-    <string name="update_whitelist_action">Perbarui informasi pengguna yang akan ditambahkan.</string>
+    <string name="update_whitelist_action">Ubah informasi pengguna yang akan diperbarui.</string>
     <string name="add_whitelist">Tambah Whitelist</string>
     <string name="update_whitelist">Ubah Whitelist</string>
     <string name="rupiah">%1$s rupiah</string>

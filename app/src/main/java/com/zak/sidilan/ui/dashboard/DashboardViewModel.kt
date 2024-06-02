@@ -17,6 +17,15 @@ class DashboardViewModel(private val repository: BookRepository) : ViewModel() {
     private val _totalStockQty = MutableLiveData<Long?>()
     val totalStockQty: LiveData<Long?> get() = _totalStockQty
 
+    private val _totalValue = MutableLiveData<Long?>()
+    val totalValue: LiveData<Long?> get() = _totalValue
+
+    private val _totalSalesQty = MutableLiveData<Long?>()
+    val totalSalesQty: LiveData<Long?> get() = _totalSalesQty
+
+    private val _totalSales = MutableLiveData<Long?>()
+    val totalSales: LiveData<Long?> get() = _totalSales
+
     fun getBookCount() {
         _bookCount.value = null
         repository.getBookCount().observeForever { bookCount ->
@@ -26,8 +35,29 @@ class DashboardViewModel(private val repository: BookRepository) : ViewModel() {
 
     fun getTotalStockQty() {
         _totalStockQty.value = null
-        repository.getTotalStockQuantity().observeForever { bookCount ->
-            _totalStockQty.value = bookCount
+        repository.getTotalStockQuantity().observeForever { totalStockQty ->
+            _totalStockQty.value = totalStockQty
+        }
+    }
+
+    fun getTotalValue() {
+        _totalValue.value = null
+        repository.getTotalValue().observeForever { totalValue ->
+            _totalValue.value = totalValue
+        }
+    }
+
+    fun getTotalSalesQty() {
+        _totalSalesQty.value = null
+        repository.getTotalSalesQuantity().observeForever { totalSalesQty ->
+            _totalSalesQty.value = totalSalesQty
+        }
+    }
+
+    fun getTotalSales() {
+        _totalSales.value = null
+        repository.getTotalSales().observeForever { totalSales ->
+            _totalSales.value = totalSales
         }
     }
 

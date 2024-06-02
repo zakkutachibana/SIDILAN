@@ -37,7 +37,7 @@ class WhitelistFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = WhitelistAdapter(requireContext()) {
+        adapter = WhitelistAdapter(requireContext()) { whitelist ->
             val layout = LayoutInflater.from(requireContext()).inflate(R.layout.layout_add_whitelist, null)
             val edEmail = layout.findViewById<EditText>(R.id.ed_email)
             val edlEmail = layout.findViewById<TextInputLayout>(R.id.edl_email)
@@ -45,7 +45,14 @@ class WhitelistFragment : Fragment() {
             val edlPhone = layout.findViewById<TextInputLayout>(R.id.edl_phone_number)
             val edRole = layout.findViewById<EditText>(R.id.ed_role)
             val edlRole = layout.findViewById<TextInputLayout>(R.id.edl_role)
-            val dialog = MaterialAlertDialogBuilder(requireContext(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+            edlEmail.isEnabled = false
+            edEmail.setText(whitelist.email)
+            edPhone.setText(whitelist.phoneNumber)
+            edRole.setText(whitelist.role)
+            val dialog = MaterialAlertDialogBuilder(
+                requireContext(),
+                com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+            )
                 .setTitle(R.string.update_whitelist)
                 .setView(layout)
                 .setIcon(R.drawable.ic_delete)
@@ -54,20 +61,25 @@ class WhitelistFragment : Fragment() {
                     dialog.dismiss()
                 }
                 .setPositiveButton("Ya", null)
+                .setNeutralButton("Hapus", null)
                 .show()
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 when {
-                    edEmail.text.isEmpty() -> edlEmail.error = "Email tidak boleh kosong!"
                     edPhone.text.isEmpty() -> edlPhone.error = "Nomor Telepon tidak boleh kosong!"
                     edRole.text.isEmpty() -> edlRole.error = "Role tidak boleh kosong!"
                     else -> {
                         val email = edEmail.text.toString()
                         val role = edRole.text.toString()
                         val phoneNumber = edPhone.text.toString()
-                        viewModel.addWhitelist(email, role, phoneNumber)
-                        dialog.dismiss()
+                        viewModel.updateWhitelist(email, role, phoneNumber) {
+                            dialog.dismiss()
+                        }
                     }
                 }
+            }
+            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                dialog.dismiss()
+                showConfirmDialog(whitelist.email.toString())
             }
 
         }
@@ -87,5 +99,20 @@ class WhitelistFragment : Fragment() {
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showConfirmDialog(email: String) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(resources.getString(R.string.title_log_out))
+            .setMessage("Whitelist akan dihapus. Konfirmasi hapus?")
+            .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+                viewModel.deleteWhitelist(email) { message ->
+                    Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                }
+            }
+            .show()
     }
 }

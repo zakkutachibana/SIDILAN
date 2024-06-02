@@ -8,6 +8,7 @@ import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.entities.Whitelist
+import com.zak.sidilan.util.HelperFunction.parseUserRole
 import com.zak.sidilan.util.UserRole
 import org.koin.dsl.module
 
@@ -41,47 +42,6 @@ class UserRepository {
         return userList
     }
 
-    fun getAllWhitelist(): MutableLiveData<ArrayList<Whitelist>> {
-        val whitelist = MutableLiveData<ArrayList<Whitelist>>()
-
-        whitelistReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val users = ArrayList<Whitelist>()
-                for (eachUser in snapshot.children) {
-                    val user = eachUser.getValue(Whitelist::class.java)
-                    user?.let { users.add(it) }
-                }
-                whitelist.value = users
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Handle error
-            }
-        })
-        return whitelist
-    }
-
-    fun isEmailWhitelisted(email: String, callback: (Boolean, Whitelist?) -> Unit) {
-        val whitelistReference = database.reference.child("whitelist")
-        whitelistReference.orderByChild("email").equalTo(email)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        val entry = dataSnapshot.children.first().getValue(Whitelist::class.java)
-                        callback(true, entry)
-
-                    } else {
-                        callback(false, null)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    //something
-                }
-
-            })
-    }
-
     fun getUserRole(userId: String, callback: (UserRole?, Exception?) -> Unit) {
         val userRef = usersReference.child(userId)
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -101,16 +61,6 @@ class UserRepository {
                 callback(null, databaseError.toException())
             }
         })
-    }
-
-    private fun parseUserRole(role: String?): UserRole? {
-        return when (role) {
-            "Admin" -> UserRole.ADMIN
-            "Direktur" -> UserRole.DIRECTOR
-            "Manajer" -> UserRole.MANAGER
-            "Staf" -> UserRole.STAFF
-            else -> null
-        }
     }
 
     fun saveUserToFirebase(
@@ -179,22 +129,44 @@ class UserRepository {
         return userDetailLiveData
     }
 
-    fun getWhitelistById(whitelistId: String): MutableLiveData<Whitelist?> {
-        val whitelistDetailLiveData = MutableLiveData<Whitelist?>()
+    fun getAllWhitelist(): MutableLiveData<ArrayList<Whitelist>> {
+        val whitelist = MutableLiveData<ArrayList<Whitelist>>()
 
-        val whitelistReference = whitelistReference.child(whitelistId)
         whitelistReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val whitelist = snapshot.getValue(Whitelist::class.java)
-
-                whitelistDetailLiveData.value = whitelist
+                val users = ArrayList<Whitelist>()
+                for (eachUser in snapshot.children) {
+                    val user = eachUser.getValue(Whitelist::class.java)
+                    user?.let { users.add(it) }
+                }
+                whitelist.value = users
             }
 
             override fun onCancelled(error: DatabaseError) {
                 // Handle error
             }
         })
-        return whitelistDetailLiveData
+        return whitelist
+    }
+
+    fun isEmailWhitelisted(email: String, callback: (Boolean, Whitelist?) -> Unit) {
+        whitelistReference.orderByChild("email").equalTo(email)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        val entry = dataSnapshot.children.first().getValue(Whitelist::class.java)
+                        callback(true, entry)
+
+                    } else {
+                        callback(false, null)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    //something
+                }
+
+            })
     }
 
     fun addWhitelist(email: String, role: String, phone: String): MutableLiveData<String?> {
@@ -213,5 +185,71 @@ class UserRepository {
                 status.value = "Error adding user to whitelist: $e"
             }
         return status
+    }
+
+    fun deleteWhitelist(email: String, callback: (String) -> Unit) {
+        val query = whitelistReference.orderByChild("email").equalTo(email)
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (childSnapshot in snapshot.children) {
+                        childSnapshot.ref.removeValue().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                callback("Success Delete")
+                            } else {
+                                callback("Failed to delete")
+                            }
+                        }
+                    }
+                } else {
+                    callback("Email not found")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback("Error: ${error.message}")
+            }
+        })
+    }
+
+    fun updateWhitelist(email: String, role: String, phone: String?, callback: (String) -> Unit) {
+        val updatedWhitelist = mapOf(
+            "email" to email,
+            "role" to role,
+            "phone_number" to phone,
+        )
+        val query = whitelistReference.orderByChild("email").equalTo(email)
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (childSnapshot in snapshot.children) {
+                        childSnapshot.ref.updateChildren(updatedWhitelist).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                callback("Success Update")
+                            } else {
+                                callback("Failed to update")
+                            }
+                        }
+                    }
+                } else {
+                    callback("Email not found")
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                callback("Error: ${error.message}")
+            }
+        })
+    }
+
+    fun validateWhitelist(email: String, callback: (Boolean) -> Unit) {
+        whitelistReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val bookExists = dataSnapshot.exists()
+                callback(bookExists)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                callback(false)
+            }
+        })
     }
 }

@@ -44,9 +44,28 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
             _whitelist.value = whitelist
         }
     }
+
     fun addWhitelist(email: String, role: String, phoneNumber: String) {
         repository.addWhitelist(email, role, phoneNumber).observeForever { status ->
             _toastMessage.value = status
+        }
+    }
+
+    fun updateWhitelist(email: String, role: String, phoneNumber: String, callback: (String) -> Unit) {
+        repository.updateWhitelist(email, role, phoneNumber) { status ->
+            callback(status)
+        }
+    }
+
+    fun deleteWhitelist(email: String, callback: (String) -> Unit) {
+        repository.deleteWhitelist(email) { status ->
+            callback(status)
+        }
+    }
+
+    fun validateWhitelist(email: String, callback: (Boolean) -> Unit) {
+        repository.validateWhitelist(email) {
+            callback(it)
         }
     }
 }

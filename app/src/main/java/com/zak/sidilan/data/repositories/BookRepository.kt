@@ -336,4 +336,66 @@ class BookRepository {
         })
         return totalStockQty
     }
+
+    fun getTotalValue(): MutableLiveData<Long?> {
+        val totalValue = MutableLiveData<Long?>()
+
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var sumValue: Long = 0
+                for (childSnapshot in dataSnapshot.children) {
+                    val stockQty = childSnapshot.child("stock").child("stock_qty").getValue(Long::class.java)
+                    val sellPrice = childSnapshot.child("book").child("sell_price").getValue(Long::class.java)
+                    stockQty?.let { sumValue += (it * sellPrice!!) }
+                }
+                totalValue.postValue(sumValue)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+        return totalValue
+    }
+
+    fun getTotalSalesQuantity(): MutableLiveData<Long?> {
+        val totalSalesQty = MutableLiveData<Long?>()
+
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var sumSalesQty: Long = 0
+                for (childSnapshot in dataSnapshot.children) {
+                    val salesQty = childSnapshot.child("stock").child("sold_qty").getValue(Long::class.java)
+                    salesQty?.let { sumSalesQty += it }
+                }
+                totalSalesQty.postValue(sumSalesQty)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+        return totalSalesQty
+    }
+
+    fun getTotalSales(): MutableLiveData<Long?> {
+        val totalSales = MutableLiveData<Long?>()
+
+        reference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var sumValue: Long = 0
+                for (childSnapshot in dataSnapshot.children) {
+                    val soldQty = childSnapshot.child("stock").child("sold_qty").getValue(Long::class.java)
+                    val sellPrice = childSnapshot.child("book").child("sell_price").getValue(Long::class.java)
+                    soldQty?.let { sumValue += (it * sellPrice!!) }
+                }
+                totalSales.postValue(sumValue)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle error
+            }
+        })
+        return totalSales
+    }
 }

@@ -238,8 +238,8 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                         updateBook(book, oldCover as String)
                     }
                 } else {
-                    viewModel.validateIsbn(isbn.toString()) {
-                        if (!it) {
+                    viewModel.validateIsbn(isbn.toString()) { isbnExist ->
+                        if (!isbnExist) {
                             saveBook(book, createdBy)
                         } else {
                             binding.edlIsbn.error = "Buku dengan ISBN: $isbn sudah ada!"

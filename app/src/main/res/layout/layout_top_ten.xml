@@ -21,8 +21,8 @@
 
             <ImageView
                 android:id="@+id/iv_book_cover"
-                android:layout_width="78dp"
-                android:layout_height="121dp"
+                android:layout_width="68dp"
+                android:layout_height="101dp"
                 android:contentDescription="@string/book_cover"
                 android:scaleType="centerCrop"
                 android:src="@drawable/book_placeholder"
@@ -49,7 +49,7 @@
                     android:ellipsize="end"
                     android:maxLines="2"
                     android:text="Judul Buku yang amat sangat panjang buanget sekali pol lah pokoke panjang banget sampe ga muat"
-                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -61,7 +61,7 @@
                     android:ellipsize="end"
                     android:maxLines="3"
                     android:text="Terjual 30 buku"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     app:layout_constraintBottom_toBottomOf="parent" />
             </LinearLayout>
 
@@ -71,7 +71,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="16dp"
                 android:text="1"
-                android:textAppearance="@style/TextAppearance.Material3.DisplayLarge"
+                android:textAppearance="@style/TextAppearance.Material3.DisplayMedium"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

@@ -25,7 +25,7 @@ class TopTenAdapter(
 
     override fun onBindViewHolder(holder: BooksViewHolder, position: Int) {
         val book = getItem(position)
-        holder.bind(book, position + 1) // Pass rank as position + 1
+        holder.bind(book, position + 1)
     }
 
     inner class BooksViewHolder(private val adapterBinding: LayoutTopTenBinding) : RecyclerView.ViewHolder(adapterBinding.root) {

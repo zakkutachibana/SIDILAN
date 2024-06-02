@@ -16,6 +16,7 @@ import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentDashboardBinding
 import com.zak.sidilan.ui.addbook.AddBookActivity
 import com.zak.sidilan.ui.users.UserDetailActivity
+import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
@@ -59,11 +60,8 @@ class DashboardFragment : Fragment() {
         binding.itemStock1.tvItemTitle.text = "Item Buku"
         binding.itemStock2.tvItemTitle.text = "Total Stok"
         binding.itemStock3.tvItemTitle.text = "Total Value"
-        binding.itemStock3.tvItemValue.text = "30.000.000"
         binding.itemSales1.tvItemTitle.text = "Buku Terjual"
-        binding.itemSales1.tvItemValue.text = "379 buku"
-        binding.itemSales2.tvItemTitle.text = "Pendapatan"
-        binding.itemSales2.tvItemValue.text = "10.000.000"
+        binding.itemSales2.tvItemTitle.text = "Total Penjualan"
 
         binding.itemStock1.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_bookshelf, null)
         binding.itemStock2.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_warehouse, null)
@@ -76,7 +74,6 @@ class DashboardFragment : Fragment() {
 
     private fun setViewModel() {
 
-
         viewModel.getBookCount()
         viewModel.bookCount.observe(viewLifecycleOwner) { bookCount ->
             binding.itemStock1.tvItemValue.text = getString(R.string.book_count, bookCount.toString())
@@ -85,6 +82,21 @@ class DashboardFragment : Fragment() {
         viewModel.getTotalStockQty()
         viewModel.totalStockQty.observe(viewLifecycleOwner) { totalStockQty ->
             binding.itemStock2.tvItemValue.text = getString(R.string.total_stock_qty, totalStockQty.toString())
+        }
+
+        viewModel.getTotalValue()
+        viewModel.totalValue.observe(viewLifecycleOwner) { totalValue ->
+            binding.itemStock3.tvItemValue.text = Formatter.addThousandSeparatorTextView(totalValue)
+        }
+
+        viewModel.getTotalSalesQty()
+        viewModel.totalSalesQty.observe(viewLifecycleOwner) { totalSalesQty ->
+            binding.itemSales1.tvItemValue.text = getString(R.string.total_stock_qty, totalSalesQty.toString())
+        }
+
+        viewModel.getTotalSales()
+        viewModel.totalSales.observe(viewLifecycleOwner) { totalSales ->
+            binding.itemSales2.tvItemValue.text = Formatter.addThousandSeparatorTextView(totalSales)
         }
 
         Handler(Looper.getMainLooper()).postDelayed({
