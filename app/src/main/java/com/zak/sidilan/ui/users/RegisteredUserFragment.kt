@@ -35,7 +35,7 @@ class RegisteredUserFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = UsersAdapter(requireContext()) { user ->
+        adapter = UsersAdapter(requireContext(), viewModel) { user ->
             val intent = Intent(requireContext(), UserDetailActivity::class.java)
             intent.putExtra("userId", user.id)
             startActivity(intent)

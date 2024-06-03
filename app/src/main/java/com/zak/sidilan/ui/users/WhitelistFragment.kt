@@ -38,50 +38,58 @@ class WhitelistFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = WhitelistAdapter(requireContext()) { whitelist ->
-            val layout = LayoutInflater.from(requireContext()).inflate(R.layout.layout_add_whitelist, null)
-            val edEmail = layout.findViewById<EditText>(R.id.ed_email)
-            val edlEmail = layout.findViewById<TextInputLayout>(R.id.edl_email)
-            val edPhone = layout.findViewById<EditText>(R.id.ed_phone_number)
-            val edlPhone = layout.findViewById<TextInputLayout>(R.id.edl_phone_number)
-            val edRole = layout.findViewById<EditText>(R.id.ed_role)
-            val edlRole = layout.findViewById<TextInputLayout>(R.id.edl_role)
-            edlEmail.isEnabled = false
-            edEmail.setText(whitelist.email)
-            edPhone.setText(whitelist.phoneNumber)
-            edRole.setText(whitelist.role)
-            val dialog = MaterialAlertDialogBuilder(
-                requireContext(),
-                com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-            )
-                .setTitle(R.string.update_whitelist)
-                .setView(layout)
-                .setIcon(R.drawable.ic_delete)
-                .setMessage(R.string.add_whitelist_action)
-                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton("Ya", null)
-                .setNeutralButton("Hapus", null)
-                .show()
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                when {
-                    edPhone.text.isEmpty() -> edlPhone.error = "Nomor Telepon tidak boleh kosong!"
-                    edRole.text.isEmpty() -> edlRole.error = "Role tidak boleh kosong!"
-                    else -> {
-                        val email = edEmail.text.toString()
-                        val role = edRole.text.toString()
-                        val phoneNumber = edPhone.text.toString()
-                        viewModel.updateWhitelist(email, role, phoneNumber) {
+            viewModel.validateWhitelistRegistered(whitelist.email.toString()) { isRegistered ->
+                if (isRegistered) {
+                    viewModel.getUserByEmail(whitelist.email.toString()) { user ->
+                        val intent = Intent(requireContext(), UserDetailActivity::class.java)
+                        intent.putExtra("userId", user?.id)
+                        startActivity(intent)
+                    }
+                } else {
+                    val layout = LayoutInflater.from(requireContext()).inflate(R.layout.layout_add_whitelist, null)
+                    val edEmail = layout.findViewById<EditText>(R.id.ed_email)
+                    val edlEmail = layout.findViewById<TextInputLayout>(R.id.edl_email)
+                    val edPhone = layout.findViewById<EditText>(R.id.ed_phone_number)
+                    val edlPhone = layout.findViewById<TextInputLayout>(R.id.edl_phone_number)
+                    val edRole = layout.findViewById<EditText>(R.id.ed_role)
+                    val edlRole = layout.findViewById<TextInputLayout>(R.id.edl_role)
+                    edlEmail.isEnabled = false
+                    edEmail.setText(whitelist.email)
+                    edPhone.setText(whitelist.phoneNumber)
+                    val dialog = MaterialAlertDialogBuilder(
+                        requireContext(),
+                        com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+                    )
+                        .setTitle(R.string.update_whitelist)
+                        .setView(layout)
+                        .setIcon(R.drawable.ic_delete)
+                        .setMessage(R.string.add_whitelist_action)
+                        .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                             dialog.dismiss()
                         }
+                        .setPositiveButton("Ya", null)
+                        .setNeutralButton("Hapus", null)
+                        .show()
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                        when {
+                            edPhone.text.isEmpty() -> edlPhone.error = "Nomor Telepon tidak boleh kosong!"
+                            edRole.text.isEmpty() -> edlRole.error = "Role tidak boleh kosong!"
+                            else -> {
+                                val email = edEmail.text.toString()
+                                val role = edRole.text.toString()
+                                val phoneNumber = edPhone.text.toString()
+                                viewModel.updateWhitelist(email, role, phoneNumber) {
+                                    dialog.dismiss()
+                                }
+                            }
+                        }
+                    }
+                    dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
+                        dialog.dismiss()
+                        showConfirmDialog(whitelist.email.toString())
                     }
                 }
             }
-            dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener {
-                dialog.dismiss()
-                showConfirmDialog(whitelist.email.toString())
-            }
-
         }
         val pixel = resources.getDimensionPixelOffset(R.dimen.first_item_margin)
         val decorator = FirstItemMarginDecoration(pixel)
@@ -103,7 +111,7 @@ class WhitelistFragment : Fragment() {
 
     private fun showConfirmDialog(email: String) {
         MaterialAlertDialogBuilder(requireActivity())
-            .setTitle(resources.getString(R.string.title_log_out))
+            .setTitle("Hapus Whitelist")
             .setMessage("Whitelist akan dihapus. Konfirmasi hapus?")
             .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                 dialog.dismiss()

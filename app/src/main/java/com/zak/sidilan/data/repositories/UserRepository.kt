@@ -129,6 +129,25 @@ class UserRepository {
         return userDetailLiveData
     }
 
+    fun getUserByEmail(email: String, callback: (User?) -> Unit) {
+        val query = usersReference.orderByChild("email").equalTo(email)
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (childSnapshot in snapshot.children) {
+                        val user = childSnapshot.getValue(User::class.java)
+                        callback(user)
+                    }
+                } else {
+                    callback(null)
+                }
+            }
+            override fun onCancelled(error: DatabaseError) {
+                callback(null)
+            }
+        })
+    }
+
     fun getAllWhitelist(): MutableLiveData<ArrayList<Whitelist>> {
         val whitelist = MutableLiveData<ArrayList<Whitelist>>()
 
@@ -151,7 +170,7 @@ class UserRepository {
 
     fun isEmailWhitelisted(email: String, callback: (Boolean, Whitelist?) -> Unit) {
         whitelistReference.orderByChild("email").equalTo(email)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         val entry = dataSnapshot.children.first().getValue(Whitelist::class.java)
@@ -242,10 +261,22 @@ class UserRepository {
     }
 
     fun validateWhitelist(email: String, callback: (Boolean) -> Unit) {
-        whitelistReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
+        whitelistReference.orderByChild("email").equalTo(email).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val bookExists = dataSnapshot.exists()
-                callback(bookExists)
+                val whitelistExist = dataSnapshot.exists()
+                callback(whitelistExist)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                callback(false)
+            }
+        })
+    }
+
+    fun validateWhitelistRegistered(email: String, callback: (Boolean) -> Unit) {
+        usersReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userExist = dataSnapshot.exists()
+                callback(userExist)
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 callback(false)

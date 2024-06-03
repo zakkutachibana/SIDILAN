@@ -27,7 +27,6 @@ import com.zak.sidilan.ui.trx.bookout.bookOutTrxSellFragmentModule
 import com.zak.sidilan.ui.trxdetail.trxDetailViewModel
 import com.zak.sidilan.ui.trxhistory.trxHistoryViewModelModule
 import com.zak.sidilan.ui.users.userDetailActivityModule
-import com.zak.sidilan.ui.users.userDetailViewModelModule
 import com.zak.sidilan.ui.users.userListActivityModule
 import com.zak.sidilan.ui.users.userManagementViewModelModule
 import org.koin.android.ext.koin.androidContext
@@ -65,7 +64,6 @@ class MyApplication : Application() {
                 userManagementViewModelModule,
                 userListActivityModule,
                 userDetailActivityModule,
-                userDetailViewModelModule,
                 bookInTrxPrintFragmentModule,
                 bookTrxViewModelModule,
                 stockOpnameViewModelModule,

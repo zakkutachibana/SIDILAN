@@ -1,24 +1,29 @@
 package com.zak.sidilan.ui.stockopnamehistory
 
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MenuItem
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.zak.sidilan.databinding.ActivityStockOpnameHistoryBinding
 import com.zak.sidilan.ui.stockopname.StockOpnameViewModel
 import com.zak.sidilan.ui.stockopnamedetail.StockOpnameDetailActivity
-import com.zak.sidilan.ui.trxdetail.TrxDetailActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class StockOpnameHistoryActivity : AppCompatActivity() {
     private lateinit var binding : ActivityStockOpnameHistoryBinding
     private lateinit var adapter: StockOpnameHistoryAdapter
     private val viewModel: StockOpnameViewModel by viewModel()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityStockOpnameHistoryBinding.inflate(layoutInflater)
@@ -30,6 +35,7 @@ class StockOpnameHistoryActivity : AppCompatActivity() {
         setupAction()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupView() {
         supportActionBar?.title = "Riwayat Stock Opname"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

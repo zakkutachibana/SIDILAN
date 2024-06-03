@@ -25,11 +25,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
 
-class ModalBottomSheetAction(private val type: Number, private val bookDetail: BookDetail?, private val attachedActivity: Activity) : BottomSheetDialogFragment() {
+class ModalBottomSheetAction(private val type: Number, private val bookDetail: BookDetail?, private val attachedActivity: Activity, private val email: String?) : BottomSheetDialogFragment() {
 
     private lateinit var binding: LayoutBottomSheetActionBinding
     private val bookDetailViewModel: BookDetailViewModel by viewModel()
-    private val userListViewModel: UserManagementViewModel by viewModel()
+    private val userManagementViewModel: UserManagementViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -107,6 +107,35 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                             editTextLayout.error = "Judul buku tidak sesuai!"
                         }
                     }
+                }
+            }
+            3 -> {
+                binding.titleBottomSheet.text = getString(R.string.title_action)
+                binding.tvItem1.text = "Ubah Role Pengguna"
+                binding.ivItem1.setImageResource(R.drawable.ic_edit_user)
+                binding.tvItem2.text = "Hapus Akses Pengguna"
+                binding.ivItem2.setImageResource(R.drawable.ic_delete)
+
+                binding.item1.setOnClickListener {
+                    Toast.makeText(requireContext(), "RESERVED", Toast.LENGTH_SHORT).show()
+                }
+                binding.item2.setOnClickListener {
+                    MaterialAlertDialogBuilder(requireActivity())
+                        .setTitle("Hapus Akses")
+                        .setMessage("Akses dari pengguna ini akan dihapus. Konfirmasi hapus?")
+                        .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                            dialog.dismiss()
+                            dismiss()
+                        }
+                        .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+                            userManagementViewModel.deleteWhitelist(email.toString()) {
+                                Toast.makeText(requireActivity(), it, Toast.LENGTH_SHORT).show()
+                                dialog.dismiss()
+                                dismiss()
+                                attachedActivity.finish()
+                            }
+                        }
+                        .show()
                 }
             }
         }

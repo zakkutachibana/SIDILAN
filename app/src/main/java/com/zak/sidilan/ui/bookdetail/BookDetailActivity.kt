@@ -38,30 +38,12 @@ class BookDetailActivity : AppCompatActivity() {
         setupAction()
     }
 
-    private fun setupAction() {
-        binding.btnEditDelete.setOnClickListener { it ->
-            if (it != null) {
-                viewModel.bookDetail.observe(this) {
-                    val modalBottomSheetAction = ModalBottomSheetAction(2, it, this)
-                    modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
-                }
-            }
-        }
-        binding.userCard.cardUser.setOnClickListener {
-            viewModel.user.observe(this) { user ->
-                val intent = Intent(this, UserDetailActivity::class.java)
-                intent.putExtra("userId", user?.id)
-                startActivity(intent)
-            }
-        }
-    }
     private fun setupView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = "Detail Buku"
         binding.userCard.tvUserAction.text = getString(R.string.created_by)
     }
-
     private fun setupViewModel() {
         viewModel.bookDetail.observe(this) { bookDetail ->
             if (bookDetail != null) {
@@ -95,6 +77,24 @@ class BookDetailActivity : AppCompatActivity() {
                     binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, user?.role, Formatter.convertEpochToLocal(bookDetail.logs?.createdAt))
                     binding.userCard.ivProfilePicture.load(user?.photoUrl)
                 }
+            }
+        }
+    }
+
+    private fun setupAction() {
+        binding.btnEditDelete.setOnClickListener { it ->
+            if (it != null) {
+                viewModel.bookDetail.observe(this) {
+                    val modalBottomSheetAction = ModalBottomSheetAction(2, it, this, null)
+                    modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
+                }
+            }
+        }
+        binding.userCard.cardUser.setOnClickListener {
+            viewModel.user.observe(this) { user ->
+                val intent = Intent(this, UserDetailActivity::class.java)
+                intent.putExtra("userId", user?.id)
+                startActivity(intent)
             }
         }
     }

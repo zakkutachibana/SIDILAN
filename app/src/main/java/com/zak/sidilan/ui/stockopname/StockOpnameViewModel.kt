@@ -23,6 +23,7 @@ class StockOpnameViewModel(val bookRepository: BookRepository, val stockOpnameRe
     val stockOpname: MutableLiveData<ArrayList<StockOpname>> get() = _stockOpnames
     private val _user = MutableLiveData<User?>()
     val user: MutableLiveData<User?> get() = _user
+
     fun getBooks() {
         bookRepository.getAllBooks().observeForever { bookList ->
             _bookOpnameList.value = transformAndSortToBookOpname(bookList)
@@ -49,7 +50,7 @@ class StockOpnameViewModel(val bookRepository: BookRepository, val stockOpnameRe
             )
             bookOpnameList.add(bookOpname)
         }
-        return bookOpnameList.sortedBy { it.isAppropriate != null }
+        return bookOpnameList.sortedBy{ it.isAppropriate != false }.sortedBy{ it.isAppropriate != null }
     }
 
     fun updateBookOpname(updatedBook: BookOpname) {
@@ -57,7 +58,7 @@ class StockOpnameViewModel(val bookRepository: BookRepository, val stockOpnameRe
         val index = currentBooks.indexOfFirst { it.isbn == updatedBook.isbn }
         if (index != -1) {
             currentBooks[index] = updatedBook
-            _bookOpnameList.value = currentBooks.sortedBy { it.isAppropriate != null }
+            _bookOpnameList.value = currentBooks.sortedBy{ it.isAppropriate != false }.sortedBy{ it.isAppropriate != null }
         }
     }
     fun saveStockOpname(

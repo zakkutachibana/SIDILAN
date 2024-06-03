@@ -22,9 +22,39 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
 
+    private val _user = MutableLiveData<User?>()
+    val user: MutableLiveData<User?> get() = _user
+
+    private val whitelistedEmails = mutableSetOf<String>()
+
     fun getUsers() {
         repository.getAllUsers().observeForever { userList ->
-            _userList.value = userList
+            userList.forEach { user ->
+                validateWhitelist(user.email.toString()) { isWhitelisted ->
+                    if (isWhitelisted) {
+                        whitelistedEmails.add(user.email.toString())
+                    } else {
+                        whitelistedEmails.remove(user.email)
+                    }
+
+                    val sortedUsers = userList.sortedByDescending { user ->
+                        whitelistedEmails.contains(user.email)
+                    }
+
+                    _userList.postValue(ArrayList(sortedUsers))
+                }
+            }
+        }
+    }
+
+    fun getUserById(userId: String){
+        repository.getUserById(userId).observeForever { user ->
+            _user.value = user
+        }
+    }
+    fun getUserByEmail(userId: String, callback: (User?) -> Unit){
+        repository.getUserByEmail(userId) { user ->
+            callback(user)
         }
     }
 
@@ -65,6 +95,12 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
 
     fun validateWhitelist(email: String, callback: (Boolean) -> Unit) {
         repository.validateWhitelist(email) {
+            callback(it)
+        }
+    }
+
+    fun validateWhitelistRegistered(email: String, callback: (Boolean) -> Unit) {
+        repository.validateWhitelistRegistered(email) {
             callback(it)
         }
     }

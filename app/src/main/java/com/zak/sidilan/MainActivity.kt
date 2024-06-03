@@ -67,9 +67,7 @@ class MainActivity : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
         setAction()
-
     }
-
 
     private fun setAction() {
         val userId = hawkManager.retrieveData<User>("user")?.id.toString()
@@ -77,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             updateUIVisibility(userRole)
         }
         binding.fab.setOnClickListener {
-            val modalBottomSheetAction = ModalBottomSheetAction(1, null, this)
+            val modalBottomSheetAction = ModalBottomSheetAction(1, null, this, null)
             modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
         }
 

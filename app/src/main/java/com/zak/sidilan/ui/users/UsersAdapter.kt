@@ -1,8 +1,10 @@
 package com.zak.sidilan.ui.users
 
 import android.content.Context
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +15,7 @@ import com.zak.sidilan.databinding.LayoutUserCardBinding
 
 class UsersAdapter(
     private val context: Context,
+    private val viewModel: UserManagementViewModel,
     private val onClickListener: (User) -> Unit
 ) : ListAdapter<User, UsersAdapter.UsersViewHolder>(UserDiffCallback()) {
 
@@ -37,9 +40,17 @@ class UsersAdapter(
         }
 
         fun bind(user: User) {
-            adapterBinding.tvUserAction.text = user.displayName
-            adapterBinding.tvUserName.text = context.getString(R.string.two_lines, user.email, user.role)
-            adapterBinding.ivProfilePicture.load(user.photoUrl)
+            viewModel.validateWhitelist(user.email.toString()) { isWhitelisted ->
+                adapterBinding.tvUserAction.text = user.displayName
+                adapterBinding.ivProfilePicture.load(user.photoUrl)
+                if (isWhitelisted) {
+                    adapterBinding.tvUserName.text = context.getString(R.string.two_lines, user.email, user.role)
+                    adapterBinding.cardUser.alpha = 1F
+                } else {
+                    adapterBinding.tvUserName.text = context.getString(R.string.two_lines_variant, user.email, user.role)
+                    adapterBinding.cardUser.alpha = 0.5F
+                }
+            }
         }
     }
 
