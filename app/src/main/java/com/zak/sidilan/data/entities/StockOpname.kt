@@ -11,10 +11,10 @@ data class StockOpname (
     val date: String?,
     @JvmField @PropertyName("overall_appropriate")
     val overallAppropriate: Boolean?,
+    val status: String?,
     val logs: Logs?
-
     ) : Parcelable {
-    constructor() : this("",mapOf(),"",null, null)
+    constructor() : this("",mapOf(),"",null, "", null)
 }
 
 @Parcelize
@@ -33,5 +33,5 @@ data class BookOpname (
     var discrepancy: Int?,
     var reason : String?
     ) : Parcelable {
-    constructor() : this(0L, null, "",0L, 0L,false, 0, "")
+    constructor() : this(0L, null, "",0L, 0L,null, 0, "")
 }

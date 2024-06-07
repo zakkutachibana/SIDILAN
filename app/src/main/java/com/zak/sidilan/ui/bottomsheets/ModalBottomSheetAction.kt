@@ -22,10 +22,14 @@ import com.zak.sidilan.ui.bookdetail.BookDetailViewModel
 import com.zak.sidilan.ui.scan.ScanActivity
 import com.zak.sidilan.ui.users.UserManagementViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.dsl.module
 
 
-class ModalBottomSheetAction(private val type: Number, private val bookDetail: BookDetail?, private val attachedActivity: Activity, private val email: String?) : BottomSheetDialogFragment() {
+class ModalBottomSheetAction(
+    private val type: Number,
+    private val bookDetail: BookDetail?,
+    private val attachedActivity: Activity,
+    private val email: String?
+) : BottomSheetDialogFragment() {
 
     private lateinit var binding: LayoutBottomSheetActionBinding
     private val bookDetailViewModel: BookDetailViewModel by viewModel()
@@ -71,21 +75,31 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
 
                 binding.item1.setOnClickListener {
                     val intent = Intent(context, AddBookActivity::class.java)
-                    intent.putExtra("is_update_mode", true) // Set the update mode flag to true
-                    intent.putExtra("isbn", bookDetail?.book?.isbn.toString()) // Pass the ID of the book to be updated
+                    intent.putExtra("is_update_mode", true)
+                    intent.putExtra("isbn", bookDetail?.book?.isbn.toString())
                     Log.d("BOTTOM SHEET", bookDetail?.book?.isbn.toString())
                     startActivity(intent)
                     dismiss()
                 }
                 binding.item2.setOnClickListener {
-                    val layout = LayoutInflater.from(context).inflate(R.layout.layout_confirm_delete, null)
+                    val layout =
+                        LayoutInflater.from(context).inflate(R.layout.layout_confirm_delete, null)
                     val editText = layout.findViewById<EditText>(R.id.ed_title_confirm)
-                    val editTextLayout = layout.findViewById<TextInputLayout>(R.id.edl_title_confirm)
-                    val dialog = MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                    val editTextLayout =
+                        layout.findViewById<TextInputLayout>(R.id.edl_title_confirm)
+                    val dialog = MaterialAlertDialogBuilder(
+                        requireActivity(),
+                        com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+                    )
                         .setTitle(resources.getString(R.string.title_delete_book))
                         .setView(layout)
                         .setIcon(R.drawable.ic_delete)
-                        .setMessage(resources.getString(R.string.will_be_deleted, "${bookDetail?.book?.title}"))
+                        .setMessage(
+                            resources.getString(
+                                R.string.will_be_deleted,
+                                "${bookDetail?.book?.title}"
+                            )
+                        )
                         .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                             dialog.dismiss()
                         }
@@ -109,6 +123,7 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                     }
                 }
             }
+
             3 -> {
                 binding.titleBottomSheet.text = getString(R.string.title_action)
                 binding.tvItem1.text = "Ubah Role Pengguna"
@@ -117,7 +132,32 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                 binding.ivItem2.setImageResource(R.drawable.ic_delete)
 
                 binding.item1.setOnClickListener {
-                    Toast.makeText(requireContext(), "RESERVED", Toast.LENGTH_SHORT).show()
+                    val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_role, null)
+                    val editText = layout.findViewById<EditText>(R.id.ed_role)
+                    val editTextLayout = layout.findViewById<TextInputLayout>(R.id.edl_role)
+                    MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
+                        .setTitle("Hapus Akses")
+                        .setView(layout)
+                        .setIcon(R.drawable.ic_edit_user)
+                        .setMessage("Akses dari pengguna ini akan dihapus. Konfirmasi hapus?")
+                        .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                            dialog.dismiss()
+                            dismiss()
+                        }
+                        .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+                            if (editText.text.isNotEmpty()) {
+                                val newRole = editText.text.toString()
+                                userManagementViewModel.updateRole(email.toString(), newRole) {
+                                    Toast.makeText(requireActivity(), it, Toast.LENGTH_SHORT).show()
+                                    dialog.dismiss()
+                                    attachedActivity.finish()
+                                }
+                            } else {
+                                editTextLayout.error = "Masukkan Role"
+                            }
+
+                        }
+                        .show()
                 }
                 binding.item2.setOnClickListener {
                     MaterialAlertDialogBuilder(requireActivity())
@@ -134,8 +174,7 @@ class ModalBottomSheetAction(private val type: Number, private val bookDetail: B
                                 dismiss()
                                 attachedActivity.finish()
                             }
-                        }
-                        .show()
+                        }.show()
                 }
             }
         }

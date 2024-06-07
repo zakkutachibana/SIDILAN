@@ -4,6 +4,8 @@ import android.R.id.message
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.net.Uri
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -32,6 +35,7 @@ import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.databinding.ActivityTrxDetailBinding
 import com.zak.sidilan.util.Formatter
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.ByteArrayOutputStream
 import java.io.File
 
 
@@ -294,11 +298,8 @@ class TrxDetailActivity : AppCompatActivity() {
                 val invId = trxDetail?.bookTrx?.id
                 if (invId != null) {
                     viewModel.getInvoiceDownloadUrl(invId) {
-                        Log.d("LINK", it.toString())
-
                         if (it != null) {
                             openURLInBrowser(this, it)
-                            Log.d("LINK", it)
                         } else {
                             generatePdfInvoice(this, invId)
                         }
@@ -317,98 +318,193 @@ class TrxDetailActivity : AppCompatActivity() {
             Log.e("Intent", "No activity found to handle the intent")
         }
     }
+
     private fun generatePdfInvoice(context: Context, invId: String?) {
         viewModel.trxDetail.observe(this) {
             if (it?.bookTrx is BookOutSellingTrx) {
-                val file = File(context.getExternalFilesDir(null), "${invId}.pdf")
-                val pdfWriter = PdfWriter(file.absolutePath)
-                val pdfDocument = PdfDocument(pdfWriter)
-                val document = Document(pdfDocument, PageSize.A4)
+                viewModel.getInvoiceNumber { invoiceNumber ->
 
-                // Add header with color
-                val header = Paragraph("INVOICE NO:\n")
-                    .add(binding.tvTrxIdValue.text.toString())
-                    .setFontSize(16f)
-                    .setFontColor(ColorConstants.WHITE)
-                    .setBackgroundColor(Formatter.hexToRgb("#1B263B"))
-                    .setTextAlignment(TextAlignment.LEFT)
-                    .setMargin(10f)
-                    .setPadding(40f)
+                    val file = File(context.getExternalFilesDir(null), "${invId}.pdf")
+                    val pdfWriter = PdfWriter(file.absolutePath)
+                    val pdfDocument = PdfDocument(pdfWriter)
+                    val document = Document(pdfDocument, PageSize.A4)
+                    val iconBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.icon_only_white)
+                    val stream = ByteArrayOutputStream()
+                    iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+                    val iconData = stream.toByteArray()
+                    val imageData = ImageDataFactory.create(iconData)
+                    val icon = Image(imageData).apply {
+                        setFixedPosition(265f, 705f, 60f) // Position the icon appropriately
+                    }
 
-                // Add company details
-                val companyDetails = Paragraph()
-                    .add("Penerbit Peneleh\n")
-                    .add("Permata Land A49, Malang\n")
-                    .add("Jawa Timur, Indonesia\n")
-                    .add("penerbitpeneleh@gmail.com")
-                    .setFontSize(12f)
-                    .setFontColor(ColorConstants.WHITE)
-                    .setMargin(0f)
-                    .setPadding(10f)
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setFixedPosition(325f, 695f, 200f)
+                    val invoiceNumberFull = Formatter.generateInvoiceNumber(invoiceNumber!! + 1, it.bookTrx.bookOutDate)
+                    val header = Paragraph("INVOICE NO:\n")
+                        .add(invoiceNumberFull)
+                        .setFontSize(16f)
+                        .setFontColor(ColorConstants.WHITE)
+                        .setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                        .setTextAlignment(TextAlignment.LEFT)
+                        .setMargin(10f)
+                        .setPadding(40f)
 
-                // Add header to document
-                document.add(header)
-                document.add(companyDetails)
-                // Add invoice details
-                val invoiceDetails = Paragraph()
-                    .add("Billed To:\n${it.bookTrx.buyerName}\n${it.bookTrx.address}\n\n")
-                    .add("Invoice Number: ${it.bookTrx.id}\nDate Of Issue: ${it.bookTrx.bookOutDate}\n\n")
-                    .setFontSize(12f)
-                    .setMargin(20f)
+                    val companyDetails = Paragraph()
+                        .add("Penerbit Peneleh\n")
+                        .add("Permata Land A49, Malang\n")
+                        .add("Jawa Timur, Indonesia\n")
+                        .add("penerbitpeneleh@gmail.com")
+                        .setFontSize(12f)
+                        .setFontColor(ColorConstants.WHITE)
+                        .setMargin(0f)
+                        .setPadding(10f)
+                        .setTextAlignment(TextAlignment.RIGHT)
+                        .setFixedPosition(325f, 695f, 200f)
 
-                document.add(invoiceDetails)
+                    // Add header to document
+                    document.add(header)
+                    document.add(companyDetails)
+                    document.add(icon)
 
-                // Add table
-                val table = Table(UnitValue.createPercentArray(floatArrayOf(4f, 2f, 1f, 2f))).apply {
-                    width = UnitValue.createPercentValue(100f)
-                }
-                table.addHeaderCell(Cell().add(Paragraph("Judul Buku").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
-                table.addHeaderCell(Cell().add(Paragraph("Harga Satuan").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
-                table.addHeaderCell(Cell().add(Paragraph("Quantity").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
-                table.addHeaderCell(Cell().add(Paragraph("Subtotal").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                    // Add invoice details
+                    val invoiceDetails = Paragraph()
+                        .add("Billed To:\n${it.bookTrx.buyerName}\n${it.bookTrx.address}\n\n")
+                        .add("Invoice Number: $invoiceNumberFull\nDate Of Issue: ${it.bookTrx.bookOutDate}\n\n")
+                        .setFontSize(12f)
+                        .setMargin(20f)
 
-                for (book in it.bookTrx.books) {
-                    table.addCell(book.bookTitle)
-                    table.addCell(Cell().add(Paragraph(getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(book.unitPrice))).setTextAlignment(TextAlignment.CENTER)))
-                    table.addCell(Cell().add(Paragraph(book.qty.toString())).setTextAlignment(TextAlignment.CENTER))
-                    table.addCell(Cell().add(Paragraph(getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(book.subtotal))).setTextAlignment(TextAlignment.RIGHT)))
-                }
+                    document.add(invoiceDetails)
 
-                table.addFooterCell(Cell().add(Paragraph(getString(R.string.book_count, it.bookTrx.totalBookKind.toString())).setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
-                table.addFooterCell(Cell().add(Paragraph("-").setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
-                table.addFooterCell(Cell().add(Paragraph(getString(R.string.total_stock_qty, it.bookTrx.totalBookQty.toString())).setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.CENTER)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
-                table.addFooterCell(Cell().add(Paragraph(getString(R.string.rp_price, Formatter.addThousandSeparatorTextView(it.bookTrx.totalPrice) )).setFontColor(ColorConstants.WHITE).setTextAlignment(TextAlignment.RIGHT)).setBackgroundColor(Formatter.hexToRgb("#1B263B")))
+                    // Add table
+                    val table =
+                        Table(UnitValue.createPercentArray(floatArrayOf(4f, 2f, 1f, 2f))).apply {
+                            width = UnitValue.createPercentValue(100f)
+                        }
+                    table.addHeaderCell(
+                        Cell().add(
+                            Paragraph("Judul Buku").setFontColor(
+                                ColorConstants.WHITE
+                            ).setTextAlignment(TextAlignment.CENTER)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
+                    table.addHeaderCell(
+                        Cell().add(
+                            Paragraph("Harga Satuan").setFontColor(
+                                ColorConstants.WHITE
+                            ).setTextAlignment(TextAlignment.CENTER)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
+                    table.addHeaderCell(
+                        Cell().add(
+                            Paragraph("Quantity").setFontColor(ColorConstants.WHITE)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
+                    table.addHeaderCell(
+                        Cell().add(
+                            Paragraph("Subtotal").setFontColor(ColorConstants.WHITE)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
 
-                document.add(table)
+                    for (book in it.bookTrx.books) {
+                        table.addCell(book.bookTitle)
+                        table.addCell(
+                            Cell().add(
+                                Paragraph(
+                                    getString(
+                                        R.string.rp_price,
+                                        Formatter.addThousandSeparatorTextView(book.unitPrice)
+                                    )
+                                ).setTextAlignment(TextAlignment.CENTER)
+                            )
+                        )
+                        table.addCell(
+                            Cell().add(Paragraph(book.qty.toString()))
+                                .setTextAlignment(TextAlignment.CENTER)
+                        )
+                        table.addCell(
+                            Cell().add(
+                                Paragraph(
+                                    getString(
+                                        R.string.rp_price,
+                                        Formatter.addThousandSeparatorTextView(book.subtotal)
+                                    )
+                                ).setTextAlignment(TextAlignment.RIGHT)
+                            )
+                        )
+                    }
 
-                // Add totals
-                val totals = Paragraph()
-                    .add("\nDiscount: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.discountAmount)}\n")
-                    .add("Total: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.finalPrice)}\n")
-                    .setFontSize(12f)
-                    .setTextAlignment(TextAlignment.RIGHT)
+                    table.addFooterCell(
+                        Cell().add(
+                            Paragraph(
+                                getString(
+                                    R.string.book_count,
+                                    it.bookTrx.totalBookKind.toString()
+                                )
+                            ).setFontColor(ColorConstants.WHITE)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
+                    table.addFooterCell(
+                        Cell().add(
+                            Paragraph("-").setFontColor(ColorConstants.WHITE)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
+                    table.addFooterCell(
+                        Cell().add(
+                            Paragraph(
+                                getString(
+                                    R.string.total_stock_qty,
+                                    it.bookTrx.totalBookQty.toString()
+                                )
+                            ).setFontColor(ColorConstants.WHITE)
+                                .setTextAlignment(TextAlignment.CENTER)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
+                    table.addFooterCell(
+                        Cell().add(
+                            Paragraph(
+                                getString(
+                                    R.string.rp_price,
+                                    Formatter.addThousandSeparatorTextView(it.bookTrx.totalPrice)
+                                )
+                            ).setFontColor(ColorConstants.WHITE)
+                                .setTextAlignment(TextAlignment.RIGHT)
+                        ).setBackgroundColor(Formatter.hexToRgb("#1B263B"))
+                    )
 
-                document.add(totals)
+                    document.add(table)
 
-                val wordedNumber = Paragraph()
-                    .add(getString(
-                        R.string.rupiah,
-                        Formatter.convertNumberToWords(it.bookTrx.finalPrice)))
-                    .setFontSize(12f)
-                    .setTextAlignment(TextAlignment.CENTER)
+                    // Add totals
+                    val totals = Paragraph()
+                        .add("\nDiscount: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.discountAmount)}\n")
+                        .add("Total: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.finalPrice)}\n")
+                        .setFontSize(12f)
+                        .setTextAlignment(TextAlignment.RIGHT)
 
-                document.add(wordedNumber)
+                    document.add(totals)
 
-                document.close()
+                    val wordedNumber = Paragraph()
+                        .add(
+                            getString(
+                                R.string.rupiah,
+                                Formatter.convertNumberToWords(it.bookTrx.finalPrice)
+                            )
+                        )
+                        .setFontSize(12f)
+                        .setTextAlignment(TextAlignment.CENTER)
 
-                viewModel.saveInvoicePDF(file) { success ->
-                    if (success == true) {
-                        if (invId != null) {
-                            viewModel.getInvoiceDownloadUrl(invId) {url ->
-                                if (url != null) {
-                                    openURLInBrowser(this, url)
+                    document.add(wordedNumber)
+
+                    document.close()
+
+                    viewModel.saveInvoicePDF(file) { success ->
+                        if (success == true) {
+                            if (invId != null) {
+                                viewModel.getInvoiceDownloadUrl(invId) { url ->
+                                    if (url != null) {
+                                        openURLInBrowser(this, url)
+                                    }
                                 }
                             }
                         }

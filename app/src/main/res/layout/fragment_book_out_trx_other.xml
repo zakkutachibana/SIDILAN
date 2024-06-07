@@ -15,7 +15,7 @@
             android:id="@+id/edl_donee_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nama Pemohon"
+            android:hint="@string/donee_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Tanggal Buku Keluar"
+            android:hint="@string/book_out_date"
             app:layout_constraintTop_toBottomOf="@+id/edl_address"
             app:startIconDrawable="@drawable/ic_date">
 

@@ -56,7 +56,6 @@ class BookOutTrxOtherFragment : Fragment() {
         setupListeners()
         setupRecyclerView()
         setAction()
-
         return binding.root
     }
 
@@ -71,10 +70,7 @@ class BookOutTrxOtherFragment : Fragment() {
                 layout.findViewById<TextView>(R.id.tv_current_book_stock).text = it.toString()
                 layout.findViewById<ImageView>(R.id.iv_book_cover_stock).load(bookPrice.book.coverUrl)
                 edStock.setText(bookPrice.bookQty.toString())
-                val dialog = MaterialAlertDialogBuilder(
-                    requireActivity(),
-                    com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-                )
+                val dialog = MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
                     .setTitle(resources.getString(R.string.title_update_stock))
                     .setView(layout)
                     .setIcon(R.drawable.ic_update)
@@ -119,11 +115,11 @@ class BookOutTrxOtherFragment : Fragment() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    data?.getParcelableExtra(BookInTrxPrintFragment.EXTRA_BOOK, BookQtyPrice::class.java)?.let { book ->
+                    data?.getParcelableExtra(EXTRA_BOOK, BookQtyPrice::class.java)?.let { book ->
                         viewModel.addBook(book)
                     }
                 } else {
-                    data?.getParcelableExtra<BookQtyPrice>(BookInTrxPrintFragment.EXTRA_BOOK)?.let { book ->
+                    data?.getParcelableExtra<BookQtyPrice>(EXTRA_BOOK)?.let { book ->
                         viewModel.addBook(book)
                     }
                 }

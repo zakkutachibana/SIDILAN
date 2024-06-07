@@ -260,6 +260,56 @@ class UserRepository {
         })
     }
 
+    fun updateRole(email: String, newRole: String, callback: (String) -> Unit) {
+        val updatedRole = mapOf(
+            "role" to newRole
+        )
+        val whitelistQuery = whitelistReference.orderByChild("email").equalTo(email)
+        val userQuery = usersReference.orderByChild("email").equalTo(email)
+        whitelistQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (childSnapshot in snapshot.children) {
+                        childSnapshot.ref.updateChildren(updatedRole).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                callback("Success Update")
+                            } else {
+                                callback("Failed to update")
+                            }
+                        }
+                    }
+                } else {
+                    callback("Email not found")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback("Error: ${error.message}")
+            }
+        })
+
+        userQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (childSnapshot in snapshot.children) {
+                        childSnapshot.ref.updateChildren(updatedRole).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                callback("Success Update")
+                            } else {
+                                callback("Failed to update")
+                            }
+                        }
+                    }
+                } else {
+                    callback("Email not found")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback("Error: ${error.message}")
+            }
+        })
+    }
     fun validateWhitelist(email: String, callback: (Boolean) -> Unit) {
         whitelistReference.orderByChild("email").equalTo(email).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

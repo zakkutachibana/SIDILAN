@@ -35,14 +35,19 @@ class StockOpnameHistoryActivity : AppCompatActivity() {
         setupAction()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupView() {
         supportActionBar?.title = "Riwayat Stock Opname"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setupViewModel() {
+        val currentDate = LocalDate.now()
+        val yearFormat = DateTimeFormatter.ofPattern("yyyy", Locale.getDefault())
+        val yearName = currentDate.format(yearFormat)
+        viewModel.getStockOpnames(yearName)
+
         viewModel.stockOpname.observe(this) { stockOpnames ->
             adapter.submitList(stockOpnames)
         }
@@ -59,7 +64,7 @@ class StockOpnameHistoryActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 val newText = s.toString()
-                viewModel.getStockOpname(newText)
+                viewModel.getStockOpnames(newText)
             }
         })
     }

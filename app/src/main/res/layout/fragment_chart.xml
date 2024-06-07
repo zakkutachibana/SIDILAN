@@ -35,6 +35,18 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="4dp"
+            android:text="WhatsApp"
+            android:drawablePadding="8dp"
+            android:textAlignment="center"
+            app:drawableLeftCompat="@drawable/whatsapp_circle"
+            app:drawableTint="@color/whatsapp_color" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="4dp"
             android:text="Shopee"
             android:drawablePadding="8dp"
             app:drawableLeftCompat="@drawable/ic_shopee"
@@ -65,6 +77,7 @@
             android:textAlignment="center"
             app:drawableLeftCompat="@drawable/ic_pp"
             app:drawableTint="@color/peneleh_color" />
+
 
         <TextView
             android:layout_width="wrap_content"

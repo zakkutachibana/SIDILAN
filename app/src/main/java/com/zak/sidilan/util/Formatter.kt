@@ -13,6 +13,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import com.itextpdf.kernel.colors.DeviceRgb
+import java.util.Calendar
 
 object Formatter {
 
@@ -175,6 +176,41 @@ object Formatter {
         }
 
         return "Nominal terlalu besar"
+    }
+
+    private fun getRomanNumeral(month: Int): String {
+        val romanNumerals = arrayOf(
+            "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"
+        )
+        return romanNumerals[month - 1]
+    }
+
+    private fun getYearAndMonth(dateString: String): Pair<Int, Int>? {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return try {
+            val date = dateFormat.parse(dateString)
+            if (date != null) {
+                val calendar = Calendar.getInstance()
+                calendar.time = date
+                val year = calendar.get(Calendar.YEAR)
+                val month = calendar.get(Calendar.MONTH) + 1 // Calendar.MONTH is zero-based
+                Pair(year, month)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun generateInvoiceNumber(invoiceNumber: Int, date: String): String {
+        val yearMonth = getYearAndMonth(date)
+        val formattedInvoiceNumber = String.format("%03d", invoiceNumber)
+        val romanMonth = getRomanNumeral(yearMonth?.second!!)
+        val year = yearMonth.first
+
+        return "$formattedInvoiceNumber/PP/$romanMonth/$year"
     }
 
 }

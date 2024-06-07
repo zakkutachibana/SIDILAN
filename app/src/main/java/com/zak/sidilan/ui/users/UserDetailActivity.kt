@@ -135,9 +135,8 @@ class UserDetailActivity : AppCompatActivity() {
 
     private fun intentWhatsApp(localPhoneNumber: String) {
         val internationalPhoneNumber = Formatter.convertToInternationalFormat(localPhoneNumber)
-        val defaultMessage = "Halo ${userInfo?.displayName}"
-        val uri =
-            Uri.parse("https://api.whatsapp.com/send?phone=$internationalPhoneNumber&text=$defaultMessage")
+        val defaultMessage = "Assalamu'alaikum ${userInfo?.displayName}"
+        val uri = Uri.parse("https://api.whatsapp.com/send?phone=$internationalPhoneNumber&text=$defaultMessage")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
     }

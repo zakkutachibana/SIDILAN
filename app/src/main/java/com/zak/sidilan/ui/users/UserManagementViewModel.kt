@@ -87,6 +87,12 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
         }
     }
 
+    fun updateRole(email: String, newRole: String, callback: (String) -> Unit) {
+        repository.updateRole(email, newRole) { status ->
+            callback(status)
+        }
+    }
+
     fun deleteWhitelist(email: String, callback: (String) -> Unit) {
         repository.deleteWhitelist(email) { status ->
             callback(status)

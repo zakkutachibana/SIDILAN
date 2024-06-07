@@ -69,7 +69,9 @@ class DashboardFragment : Fragment() {
         binding.itemSales1.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_cart_check, null)
         binding.itemSales2.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_rupiah, null)
 
-        (requireActivity() as MainActivity).binding.fab.hide()
+        activity?.let {
+            (activity as MainActivity).binding.fab.hide()
+        }
     }
 
     private fun setViewModel() {
@@ -101,13 +103,12 @@ class DashboardFragment : Fragment() {
 
         Handler(Looper.getMainLooper()).postDelayed({
             setView()
-            binding.timeFilter.visibility = View.VISIBLE
             binding.userCard.root.visibility = View.VISIBLE
             binding.cardSaleSummary.visibility = View.VISIBLE
             binding.cardStockSummary.visibility = View.VISIBLE
             binding.shimmerView.visibility = View.GONE
             binding.shimmerView.stopShimmer()
-        }, 1000)
+        }, 1500)
 
 
     }
@@ -131,7 +132,9 @@ class DashboardFragment : Fragment() {
             startActivity(intent)
         }
         binding.drawerIcon.setOnClickListener {
-            (requireActivity() as MainActivity).binding.drawerLayout.open()
+            activity?.let {
+                (activity as MainActivity).binding.drawerLayout.open()
+            }
         }
     }
 }

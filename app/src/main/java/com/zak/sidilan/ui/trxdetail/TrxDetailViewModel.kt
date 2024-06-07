@@ -40,4 +40,10 @@ class TrxDetailViewModel(private val repository: TrxRepository, private val user
             callback(it)
         }
     }
+
+    fun getInvoiceNumber(callback: (Int?) -> Unit) {
+        repository.getInvoiceNumber {
+            callback(it)
+        }
+    }
 }

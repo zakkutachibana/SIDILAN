@@ -44,27 +44,16 @@ class BookOpnameAdapter(
 
         private fun updateStatusText(bookOpname: BookOpname) {
             when (bookOpname.isAppropriate) {
-                null  -> {
-                    adapterBinding.tvStatusValue.text = "Belum Diperiksa"
-                    adapterBinding.cbStatus.setState(CheckBoxState.UNCHECKED)
-                    adapterBinding.tvStatusValue.setTextColor(ContextCompat.getColor(context, R.color.safe_red))
-                }
-                true -> {
-                    adapterBinding.tvStatusValue.text = "Stok Sesuai"
-                    adapterBinding.cbStatus.setState(CheckBoxState.CHECKED)
-                    adapterBinding.tvStatusValue.setTextColor(ContextCompat.getColor(context, R.color.safe_green))
-                    checkedState(bookOpname)
-                }
-                false -> {
-                    adapterBinding.tvStatusValue.text = "Stok Tidak Sesuai"
-                    adapterBinding.cbStatus.setState(CheckBoxState.INDETERMINATE)
-                    adapterBinding.tvStatusValue.setTextColor(ContextCompat.getColor(context, R.color.safe_yellow))
-                    indeterminateState(bookOpname)
-                }
+                true -> checkedState(bookOpname)
+                false -> indeterminateState(bookOpname)
+                null  -> uncheckedState(bookOpname)
             }
         }
 
         private fun checkedState(bookOpname: BookOpname) {
+            adapterBinding.tvStatusValue.text = "Stok Sesuai"
+            adapterBinding.cbStatus.setState(CheckBoxState.CHECKED)
+            adapterBinding.tvStatusValue.setTextColor(ContextCompat.getColor(context, R.color.safe_green))
             adapterBinding.chipStockQty.text = bookOpname.stockExpected.toString()
             adapterBinding.chipStockFalse.visibility = View.GONE
             adapterBinding.tvArrow.visibility = View.GONE
@@ -73,6 +62,9 @@ class BookOpnameAdapter(
         }
 
         private fun indeterminateState(bookOpname: BookOpname) {
+            adapterBinding.tvStatusValue.text = "Stok Tidak Sesuai"
+            adapterBinding.cbStatus.setState(CheckBoxState.INDETERMINATE)
+            adapterBinding.tvStatusValue.setTextColor(ContextCompat.getColor(context, R.color.safe_yellow))
             adapterBinding.chipStockQty.text = bookOpname.stockActual.toString()
             adapterBinding.chipStockFalse.text = bookOpname.stockExpected.toString()
             adapterBinding.tvStockQty.text = when {
@@ -84,6 +76,17 @@ class BookOpnameAdapter(
             adapterBinding.chipStockFalse.visibility = View.VISIBLE
             adapterBinding.tvArrow.visibility = View.VISIBLE
             adapterBinding.tvReason.visibility = View.VISIBLE
+        }
+
+        private fun uncheckedState(bookOpname: BookOpname) {
+            adapterBinding.tvStatusValue.text = "Belum Diperiksa"
+            adapterBinding.cbStatus.setState(CheckBoxState.UNCHECKED)
+            adapterBinding.tvStatusValue.setTextColor(ContextCompat.getColor(context, R.color.safe_red))
+            adapterBinding.chipStockQty.text = bookOpname.stockExpected.toString()
+            adapterBinding.chipStockFalse.visibility = View.GONE
+            adapterBinding.tvArrow.visibility = View.GONE
+            adapterBinding.tvReason.visibility = View.GONE
+            adapterBinding.tvStockQty.text = "Stok"
         }
     }
 

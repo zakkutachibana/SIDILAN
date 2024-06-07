@@ -41,27 +41,51 @@ class StockOpnameRepository {
         return stockOpnameList
     }
 
+    fun getCurrentStockOpname(yearMonth: String, callback: (StockOpname?) -> Unit): MutableLiveData<StockOpname?> {
+        val currentStockOpname = MutableLiveData<StockOpname?>()
+
+        reference.child(yearMonth).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val stockOpnameExist = snapshot.exists()
+                val stockOpname = if (stockOpnameExist) {
+                    snapshot.getValue(StockOpname::class.java)
+                } else {
+                    null
+                }
+
+                currentStockOpname.value = stockOpname
+                callback(stockOpname)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+        return currentStockOpname
+    }
+
     fun saveStockOpname(
         date: String,
         books: List<BookOpname>,
         createdBy: String,
         period: String,
         overallAppropriate: Boolean,
+        status: String,
         callback: (String) -> Unit
     ) {
 
         val booksMap = books.associateBy { it.isbn.toString() }
         val createdAt = ServerValue.TIMESTAMP
         val logs = Logs(createdBy, createdAt)
-        val stockOpname = StockOpname(period, booksMap, date, overallAppropriate, logs)
+        val stockOpname = StockOpname(period, booksMap, date, overallAppropriate, status, logs)
 
         reference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 reference.child(period).setValue(stockOpname).addOnSuccessListener {
-                    callback("User data added to database successfully")
+                    callback("Added Stock Opname")
                 }
                     .addOnFailureListener { e ->
-                        callback("Error adding user data to database: $e")
+                        callback("Error adding Stock Opname to database: $e")
                     }
             }
             override fun onCancelled(databaseError: DatabaseError) {

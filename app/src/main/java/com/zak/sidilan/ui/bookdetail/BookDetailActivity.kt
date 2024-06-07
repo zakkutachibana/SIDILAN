@@ -33,6 +33,7 @@ class BookDetailActivity : AppCompatActivity() {
         if (isbn != null) {
             viewModel.getBookDetailById(isbn)
         }
+
         setupView()
         setupViewModel()
         setupAction()

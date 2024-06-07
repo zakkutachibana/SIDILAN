@@ -164,6 +164,21 @@ class TrxRepository {
             }
     }
 
+    fun getInvoiceNumber(callback: (Int) -> Unit) {
+        val databaseRef = Firebase.database.reference.child("invoices")
+
+        databaseRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val childrenCount = snapshot.childrenCount.toInt()
+                callback(childrenCount)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+                callback(0)
+            }
+        })
+    }
 
     fun saveInvoicePDF(file: File, callback: (Boolean?) -> Unit) {
         val storageRef = Firebase.storage.reference.child("invoices/${file.name}")
@@ -174,14 +189,11 @@ class TrxRepository {
                 // Get the download URL of the uploaded file
                 storageRef.downloadUrl.addOnSuccessListener { uri ->
                     val downloadUrl = uri.toString()
-
-                    // Create a map to store the download URL
                     val invoiceData = mapOf(
                         "file_name" to file.name,
                         "download_url" to downloadUrl
                     )
                     val childNode = file.name.substringBeforeLast(".")
-                    // Save the download URL in the Realtime Database
                     databaseRef.child(childNode).setValue(invoiceData)
                         .addOnSuccessListener {
                             Log.d("Database", "PDF invoice link saved to Realtime Database.")
@@ -234,16 +246,14 @@ class TrxRepository {
 
     private fun generateInvoiceId(transactionType: String): String {
         val prefix = when (transactionType) {
-            "book_in_printing" -> "INVP"
-            "book_in_donation" -> "INVI"
-            "book_out_selling" -> "INVS"
-            "book_out_donation" -> "INVO"
+            "book_in_printing" -> "TRXP"
+            "book_in_donation" -> "TRXI"
+            "book_out_selling" -> "TRXS"
+            "book_out_donation" -> "TRXO"
             else -> "ERR!" // Default prefix
         }
 
         val sequentialNumber = generateRandomKey(8)
-
-        // Construct the invoice ID by combining prefix, timestamp, and sequential number
         return "$prefix-${sequentialNumber}"
     }
 

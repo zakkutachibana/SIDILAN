@@ -41,9 +41,9 @@ class StockOpnameDetailActivity : AppCompatActivity() {
             this.stockOpname = stockOpname
         }
 
-        stockOpname?.let {
-            bookOpnameList = it.books.values.filterNotNull()
-            adapter.submitList(bookOpnameList)
+        stockOpname?.let { stockOpnameDetail ->
+            bookOpnameList = stockOpnameDetail.books.values.filterNotNull()
+            adapter.submitList(bookOpnameList.sortedBy{ it.isAppropriate != false }.sortedBy { it.isAppropriate != null })
         }
 
         setupView()

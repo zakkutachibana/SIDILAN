@@ -118,7 +118,9 @@ class BooksFragment : Fragment() {
             binding.shimmerView.stopShimmer()
             binding.shimmerView.visibility = View.GONE
             binding.rvBooks.visibility = View.VISIBLE
-            (requireActivity() as MainActivity).binding.fab.show() }, 500)
+            activity?.let {
+                (activity as MainActivity).binding.fab.show()
+            } }, 500)
     }
 }
 

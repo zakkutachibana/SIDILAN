@@ -58,15 +58,15 @@ class ChartFragment : Fragment() {
                 .map { it.bookTrx as? BookOutSellingTrx }
                 .filter { it?.sellingPlatform == "Lainnya" }
                 .sumOf { it?.totalBookQty ?: 0 }
-            Log.d("Shopee QTY", shopeeQty.toString())
-            Log.d("Tokopedia QTY", tokopediaQty.toString())
-            Log.d("Peneleh QTY", penelehQty.toString())
-            Log.d("Lainnya QTY", otherQty.toString())
-            setupChart(shopeeQty, tokopediaQty, penelehQty, otherQty)
+            val whatsappQty = trxSellList
+                .map { it.bookTrx as? BookOutSellingTrx }
+                .filter { it?.sellingPlatform == "WhatsApp" }
+                .sumOf { it?.totalBookQty ?: 0 }
+            setupChart(shopeeQty, tokopediaQty, penelehQty, whatsappQty, otherQty)
         }
     }
 
-    private fun setupChart(shopeeQty: Long, tokopediaQty: Long, penelehQty: Long, otherQty: Long) {
+    private fun setupChart(shopeeQty: Long, tokopediaQty: Long, penelehQty: Long, whatsappQty: Long, otherQty: Long) {
         pieChart = binding.pieChart
         pieChart.setUsePercentValues(true)
         pieChart.description.isEnabled = false
@@ -87,6 +87,7 @@ class ChartFragment : Fragment() {
         entries.add(PieEntry(shopeeQty.toFloat()))
         entries.add(PieEntry(tokopediaQty.toFloat()))
         entries.add(PieEntry(penelehQty.toFloat()))
+        entries.add(PieEntry(whatsappQty.toFloat()))
         entries.add(PieEntry(otherQty.toFloat()))
 
         val dataSet = PieDataSet(entries, "Platform")
@@ -101,6 +102,7 @@ class ChartFragment : Fragment() {
         colors.add(resources.getColor(R.color.shopee_color))
         colors.add(resources.getColor(R.color.tokopedia_color))
         colors.add(resources.getColor(R.color.peneleh_color))
+        colors.add(resources.getColor(R.color.whatsapp_color))
         colors.add(resources.getColor(R.color.other_color))
 
         dataSet.colors = colors

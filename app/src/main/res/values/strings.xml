@@ -68,6 +68,7 @@
     <string name="two_lines">%1$s \n%2$s</string>
     <string name="two_lines_variant">%1$s \n%2$s (Tidak Memiliki Akses)</string>
     <string name="book_count">%1$s judul</string>
+    <string name="checked_count">%1$s/%2$s judul</string>
     <string name="self_name">%1$s\n(Anda)</string>
     <string name="total_stock_qty">%1$s buku</string>
     <string name="total_book_sold_qty">Terjual %1$s buku</string>
@@ -83,12 +84,26 @@
     <string name="update_whitelist_action">Ubah informasi pengguna yang akan diperbarui.</string>
     <string name="add_whitelist">Tambah Whitelist</string>
     <string name="update_whitelist">Ubah Whitelist</string>
-    <string name="rupiah">%1$s rupiah</string>
+    <string name="rupiah">Terbilang %1$s rupiah</string>
     <string name="discrepancy">%1$s ⮕ %2$s</string>
     <string name="about_description">Penerbit Peneleh adalah usaha berbasis donasi/wakaf produktif yang mana modal kerja berasal dari para dermawan yang peduli akan arah pendidikan untuk mencapai Indonesia yang mandiri (zelfbestuur). Hasil penjualan buku-buku terbitan Penerbit Peneleh akan digunakan untuk kegiatan kepenelehan yang dilaksanakan oleh Yayasan Peneleh Jang Oetama. Selain itu, digunakan untuk pembangunan dan operasionalisasi Masjid Kampus dan Pusat Pembelajaran Gratis URuP sebuah organisasi yang bergerak pada bidang pendidikan pemuda secara cuma-cuma untuk mencetak para penggerak hijrah.</string>
     <string name="about_vision_description">Menjadi Penerbit terkemuka dalam menerbitkan karya-karya yang memicu generasi bangsa berwawasan global untuk menjunjung tinggi  kebangsaan dan religiositas.</string>
     <string name="about_mision_description">1. Menyelenggarakan penerbitan buku dan aktivitas lain yang bernilai kebangsaan dan religiositas\n2. Memacu tumbuhnya semangat generasi muda dalam literasi\n3. Menyelenggarakan sustainability penerbitan</string>
     <string name="printing_shop_name">Nama Percetakan<font color='#FF0000'>*</font></string>
     <string name="date_print_book">Tanggal Cetak Buku<font color='#FF0000'>*</font></string>
+    <string name="isbn">ISBN<font color='#FF0000'>*</font></string>
+    <string name="book_title">Judul Buku<font color='#FF0000'>*</font></string>
+    <string name="author">Penulis<font color='#FF0000'>*</font></string>
+    <string name="genre">Genre<font color='#FF0000'>*</font></string>
+    <string name="published_date">Tanggal Terbit Buku<font color='#FF0000'>*</font></string>
+    <string name="print_price">Harga Cetak<font color='#FF0000'>*</font></string>
+    <string name="sell_price">Harga Jual<font color='#FF0000'>*</font></string>
+    <string name="buyer_name">Nama Pembeli<font color='#FF0000'>*</font></string>
+    <string name="selling_platform">Platform Penjualan<font color='#FF0000'>*</font></string>
+    <string name="sell_date">Tanggal Penjualan Buku<font color='#FF0000'>*</font></string>
+    <string name="donee_name">Nama Pemohon<font color='#FF0000'>*</font></string>
+    <string name="book_out_date">Tanggal Buku Keluar<font color='#FF0000'>*</font></string>
+    <string name="donor_name">Nama Pemasok<font color='#FF0000'>*</font></string>
+    <string name="book_in_date">Tanggal Buku Masuk<font color='#FF0000'>*</font></string>
 
 </resources>

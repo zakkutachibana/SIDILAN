@@ -2,6 +2,8 @@ package com.zak.sidilan.ui.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +40,7 @@ class ProfileFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         auth = Firebase.auth
         hawkManager = HawkManager(requireActivity())
 
@@ -49,7 +52,6 @@ class ProfileFragment : Fragment() {
 
         setupView()
         setupAction()
-        super.onViewCreated(view, savedInstanceState)
     }
 
     private fun setupView() {
@@ -58,7 +60,6 @@ class ProfileFragment : Fragment() {
         binding.tvEmail.text = currentUser?.email
         binding.tvRole.text = currentUser?.role
         binding.ivProfilePicture.load(currentUser?.photoUrl)
-        (requireActivity() as MainActivity).binding.fab.hide()
     }
 
 
@@ -76,8 +77,15 @@ class ProfileFragment : Fragment() {
                 .show()
         }
         binding.drawerIcon.setOnClickListener {
-            (requireActivity() as MainActivity).binding.drawerLayout.open()
+            activity?.let {
+                (activity as MainActivity).binding.drawerLayout.open()
+            }
         }
+        Handler(Looper.getMainLooper()).postDelayed({
+            activity?.let {
+                (activity as MainActivity).binding.fab.hide()
+            }}, 300)
+
     }
 
     private fun signOut() {

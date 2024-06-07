@@ -3,9 +3,10 @@ package com.zak.sidilan.ui.stockopname
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
+import com.zak.sidilan.data.entities.Book
 import com.zak.sidilan.data.entities.BookDetail
 import com.zak.sidilan.data.entities.BookOpname
+import com.zak.sidilan.data.entities.Stock
 import com.zak.sidilan.data.entities.StockOpname
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.repositories.BookRepository
@@ -16,25 +17,28 @@ import org.koin.dsl.module
 val stockOpnameViewModelModule = module {
     factory { StockOpnameViewModel(get(), get(), get()) }
 }
-class StockOpnameViewModel(val bookRepository: BookRepository, val stockOpnameRepository: StockOpnameRepository, val userRepository: UserRepository) : ViewModel() {
+
+class StockOpnameViewModel(
+    private val bookRepository: BookRepository,
+    private val stockOpnameRepository: StockOpnameRepository,
+    private val userRepository: UserRepository
+) : ViewModel() {
+
     private val _bookOpnameList = MutableLiveData<List<BookOpname>>()
     val bookOpnameList: LiveData<List<BookOpname>> get() = _bookOpnameList
+
     private val _stockOpnames = MutableLiveData<ArrayList<StockOpname>>()
     val stockOpname: MutableLiveData<ArrayList<StockOpname>> get() = _stockOpnames
+
     private val _user = MutableLiveData<User?>()
     val user: MutableLiveData<User?> get() = _user
 
-    fun getBooks() {
-        bookRepository.getAllBooks().observeForever { bookList ->
-            _bookOpnameList.value = transformAndSortToBookOpname(bookList)
-        }
-    }
-
-    fun getStockOpname(year: String) {
+    fun getStockOpnames(year: String) {
         stockOpnameRepository.getAllStockOpname(year).observeForever { stockOpnameArrayList ->
             _stockOpnames.value = stockOpnameArrayList
         }
     }
+
     private fun transformAndSortToBookOpname(bookDetails: ArrayList<BookDetail>): List<BookOpname> {
         val bookOpnameList = ArrayList<BookOpname>()
         for (bookDetail in bookDetails) {
@@ -50,7 +54,8 @@ class StockOpnameViewModel(val bookRepository: BookRepository, val stockOpnameRe
             )
             bookOpnameList.add(bookOpname)
         }
-        return bookOpnameList.sortedBy{ it.isAppropriate != false }.sortedBy{ it.isAppropriate != null }
+        return bookOpnameList.sortedBy { it.isAppropriate != false }
+            .sortedBy { it.isAppropriate != null }
     }
 
     fun updateBookOpname(updatedBook: BookOpname) {
@@ -58,26 +63,105 @@ class StockOpnameViewModel(val bookRepository: BookRepository, val stockOpnameRe
         val index = currentBooks.indexOfFirst { it.isbn == updatedBook.isbn }
         if (index != -1) {
             currentBooks[index] = updatedBook
-            _bookOpnameList.value = currentBooks.sortedBy{ it.isAppropriate != false }.sortedBy{ it.isAppropriate != null }
+            _bookOpnameList.value = currentBooks.sortedBy { it.isAppropriate != false }
+                .sortedBy { it.isAppropriate != null }
         }
     }
+
     fun saveStockOpname(
         date: String,
         books: List<BookOpname>,
         createdBy: String,
         period: String,
         overallAppropriate: Boolean,
+        status: String,
         callback: (String) -> Unit
     ) {
-        stockOpnameRepository.saveStockOpname(date, books, period, createdBy, overallAppropriate) {
+        stockOpnameRepository.saveStockOpname(
+            date,
+            books,
+            period,
+            createdBy,
+            overallAppropriate,
+            status
+        ) {
             callback(it)
         }
     }
 
-    fun getUserById(userId: String){
+    fun getUserById(userId: String) {
         userRepository.getUserById(userId).observeForever { user ->
             _user.value = user
         }
     }
 
+    fun checkCurrentStockOpname(yearMonth: String) {
+        stockOpnameRepository.getCurrentStockOpname(yearMonth) { currentStockOpname ->
+            if (currentStockOpname != null) {
+                syncBooks(currentStockOpname.books.values.filterNotNull())
+            } else {
+                getBooks()
+            }
+        }
+    }
+
+    fun checkDraftStockOpname(yearMonth: String, callback: (StockOpname?) -> Unit) {
+        stockOpnameRepository.getCurrentStockOpname(yearMonth) { currentStockOpname ->
+            if (currentStockOpname != null) {
+                callback(currentStockOpname)
+            } else {
+                callback(null)
+            }
+        }
+    }
+
+    fun getBooks() {
+        bookRepository.getAllBooks().observeForever { bookList ->
+            _bookOpnameList.value = transformAndSortToBookOpname(bookList)
+        }
+    }
+
+    private fun syncBooks(currentStockOpname: List<BookOpname>) {
+        bookRepository.getAllBooks().observeForever { bookList ->
+            val currentBooks = transformAndSortToBookOpname(bookList).toMutableList()
+            val draftBooks = currentStockOpname.toMutableList()
+            // Identify items to remove
+            val itemsToRemove = draftBooks.filter { draftBook ->
+                currentBooks.none { it.isbn == draftBook.isbn }
+            }
+
+            // Identify items to add
+            val itemsToAdd = currentBooks.filter { currentBook ->
+                draftBooks.none { it.isbn == currentBook.isbn }
+            }
+
+            // Update draftBooks based on currentBooks
+            val updatedDraftBooks = draftBooks.map { draftBook ->
+                val currentBook = currentBooks.find { it.isbn == draftBook.isbn }
+                currentBook?.let { updatedBook ->
+                    // If there's a corresponding currentBook, update draftBook
+                    if (updatedBook.stockExpected != draftBook.stockExpected) {
+                        draftBook.copy(
+                            stockActual = updatedBook.stockActual,
+                            isAppropriate = updatedBook.isAppropriate,
+                            discrepancy = updatedBook.discrepancy,
+                            reason = updatedBook.reason,
+                            stockExpected = updatedBook.stockExpected
+                        )
+                    } else {
+                        draftBook
+                    }
+                } ?: draftBook // If no corresponding currentBook found, keep draftBook unchanged
+            }
+
+            // Remove items
+            draftBooks.removeAll(itemsToRemove)
+
+            // Add items
+            draftBooks.addAll(itemsToAdd)
+
+            // Update draftBooks with updated values
+            _bookOpnameList.value = updatedDraftBooks.sortedBy { it.isAppropriate != false }.sortedBy { it.isAppropriate != null }
+        }
+    }
 }

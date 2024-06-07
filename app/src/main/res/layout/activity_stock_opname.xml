@@ -66,11 +66,12 @@
             <include
                 android:id="@+id/layout_overview"
                 layout="@layout/layout_stock_opname_overview"
-                android:visibility="gone"/>
+                />
 
             <include
                 android:id="@+id/layout_start_checking"
-                layout="@layout/layout_start_checking" />
+                layout="@layout/layout_start_checking"
+                android:visibility="gone"/>
 
         </com.google.android.material.card.MaterialCardView>
 

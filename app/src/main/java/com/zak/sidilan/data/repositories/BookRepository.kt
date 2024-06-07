@@ -69,7 +69,6 @@ class BookRepository {
                 // Image uploaded successfully, get the download URL
                 val coverUrl = uri.toString()
                 book.coverUrl = coverUrl
-
                 // Save the book details to the Realtime Database
                 saveBookDetailsToDatabase(book, createdBy, callback)
             }.addOnFailureListener { exception ->
@@ -78,7 +77,6 @@ class BookRepository {
             }
         } else {
             val storageReference = FirebaseStorage.getInstance().getReference("book_covers/placeholder.jpg") // Replace "placeholder.jpg" with the actual filename
-
             storageReference.downloadUrl.addOnSuccessListener { uri ->
                 val placeholderUrl = uri.toString()
                 book.coverUrl = placeholderUrl
@@ -213,9 +211,7 @@ class BookRepository {
         bookReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val stock = snapshot.child("stock").getValue(Stock::class.java)
-
                 callback(stock?.stockQty)
-
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -242,11 +238,9 @@ class BookRepository {
                 // Handle error
             }
         })
-
     }
 
     // STOCK STUFF
-
     fun updateBookStock(isbn: String, transactionType: String, quantity: Long) {
         val stockRef = reference.child(isbn).child("stock")
 

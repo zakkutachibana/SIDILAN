@@ -18,5 +18,4 @@ class CustomBubbleMarker(context: Context) : MarkerView(
         }
         super.refreshContent(e, highlight)
     }
-
 }

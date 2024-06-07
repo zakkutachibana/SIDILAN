@@ -3,12 +3,15 @@ package com.zak.sidilan.ui.stockopname
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.widget.EditText
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -17,20 +20,33 @@ import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookOpname
 import com.zak.sidilan.databinding.ActivityCheckingBinding
-import com.zak.sidilan.ui.trx.bookin.BookInTrxPrintFragment
-import com.zak.sidilan.util.CheckBoxState
+import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class CheckingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCheckingBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<FrameLayout>
     private lateinit var adapter: CheckingBookAdapter
+    private lateinit var hawkManager : HawkManager
     private val viewModel: StockOpnameViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCheckingBinding.inflate(layoutInflater)
+        hawkManager = HawkManager(this)
         setContentView(binding.root)
+
+        val currentMonth = intent.getStringExtra("currentMonth")
+        if (currentMonth != null) {
+            viewModel.checkCurrentStockOpname(currentMonth)
+            Log.d("currentMonth", "is $currentMonth (TRUE)")
+        } else {
+            viewModel.getBooks()
+            Log.d("currentMonth", "is empty (FALSE)")
+        }
 
         setupView()
         setupRecyclerView()
@@ -115,7 +131,6 @@ class CheckingActivity : AppCompatActivity() {
         }
     }
     private fun setupViewModel() {
-        viewModel.getBooks()
         viewModel.bookOpnameList.observe(this) { books ->
             val bookSize = books.size
             val bookChecked = books.count { it.isAppropriate != null }
@@ -124,18 +139,7 @@ class CheckingActivity : AppCompatActivity() {
             binding.bottomSheetLayout.tvChecked.text = bookChecked.toString()
             binding.bottomSheetLayout.tvItem2Value.text = discrepancy.toString()
             adapter.submitList(books)
-            when (bookSize == bookChecked) {
-                true -> {
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                    binding.bottomSheetLayout.btnDone.isEnabled = true
-                }
-                else -> {
-                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    binding.bottomSheetLayout.btnDone.isEnabled = false
-                }
-            }
         }
-
     }
 
     private fun setupAction() {
@@ -149,8 +153,6 @@ class CheckingActivity : AppCompatActivity() {
             }
         }
     }
-
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
