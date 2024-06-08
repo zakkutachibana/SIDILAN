@@ -30,6 +30,9 @@ class StockOpnameViewModel(
     private val _stockOpnames = MutableLiveData<ArrayList<StockOpname>>()
     val stockOpname: MutableLiveData<ArrayList<StockOpname>> get() = _stockOpnames
 
+    private val _currentStockOpname = MutableLiveData<StockOpname>()
+    val currentStockOpname: MutableLiveData<StockOpname> get() = _currentStockOpname
+
     private val _user = MutableLiveData<User?>()
     val user: MutableLiveData<User?> get() = _user
 
@@ -105,13 +108,9 @@ class StockOpnameViewModel(
         }
     }
 
-    fun checkDraftStockOpname(yearMonth: String, callback: (StockOpname?) -> Unit) {
+    fun checkDraftStockOpname(yearMonth: String) {
         stockOpnameRepository.getCurrentStockOpname(yearMonth) { currentStockOpname ->
-            if (currentStockOpname != null) {
-                callback(currentStockOpname)
-            } else {
-                callback(null)
-            }
+            _currentStockOpname.value = currentStockOpname
         }
     }
 
@@ -121,19 +120,24 @@ class StockOpnameViewModel(
         }
     }
 
+    fun updateDiscrepancy(isbn: String, discrpancy: Int) {
+        bookRepository.updateDiscrepancy(isbn, discrpancy)
+    }
+
     private fun syncBooks(currentStockOpname: List<BookOpname>) {
         bookRepository.getAllBooks().observeForever { bookList ->
             val currentBooks = transformAndSortToBookOpname(bookList).toMutableList()
             val draftBooks = currentStockOpname.toMutableList()
-            // Identify items to remove
+
             val itemsToRemove = draftBooks.filter { draftBook ->
                 currentBooks.none { it.isbn == draftBook.isbn }
             }
+            draftBooks.removeAll(itemsToRemove)
 
-            // Identify items to add
             val itemsToAdd = currentBooks.filter { currentBook ->
                 draftBooks.none { it.isbn == currentBook.isbn }
             }
+            draftBooks.addAll(itemsToAdd)
 
             // Update draftBooks based on currentBooks
             val updatedDraftBooks = draftBooks.map { draftBook ->
@@ -153,13 +157,6 @@ class StockOpnameViewModel(
                     }
                 } ?: draftBook // If no corresponding currentBook found, keep draftBook unchanged
             }
-
-            // Remove items
-            draftBooks.removeAll(itemsToRemove)
-
-            // Add items
-            draftBooks.addAll(itemsToAdd)
-
             // Update draftBooks with updated values
             _bookOpnameList.value = updatedDraftBooks.sortedBy { it.isAppropriate != false }.sortedBy { it.isAppropriate != null }
         }

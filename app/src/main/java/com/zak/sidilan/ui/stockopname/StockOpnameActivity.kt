@@ -19,6 +19,7 @@ import com.zak.sidilan.data.entities.StockOpname
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityStockOpnameBinding
 import com.zak.sidilan.ui.trx.bookin.BookInTrxPrintFragment
+import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.time.LocalDate
@@ -54,12 +55,6 @@ class StockOpnameActivity : AppCompatActivity() {
         binding.edOpnamePeriod.setText(monthName)
         binding.edOpnameDate.setText(fullDate)
 
-        val currentUser = hawkManager.retrieveData<User>("user")
-
-        binding.userCard.tvUserName.text = currentUser?.displayName
-        binding.userCard.tvUserAction.text = "Diperiksa Oleh"
-        binding.userCard.ivProfilePicture.load(currentUser?.photoUrl)
-
         supportActionBar?.title = "Stock Opname"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -70,28 +65,45 @@ class StockOpnameActivity : AppCompatActivity() {
         val currentDate = LocalDate.now()
         val monthYearFormat = DateTimeFormatter.ofPattern("yyyy/MM", Locale.getDefault())
         val monthYearName = currentDate.format(monthYearFormat)
-        viewModel.checkDraftStockOpname(monthYearName) { currentStockOpname ->
+        viewModel.checkDraftStockOpname(monthYearName)
+        viewModel.currentStockOpname.observeForever { currentStockOpname ->
             if (currentStockOpname != null) {
+                bookOpnameList = currentStockOpname.books.values.filterNotNull()
+                setExtraView(bookOpnameList)
+                binding.userCard.tvUserAction.text = "Diperiksa Oleh"
+                viewModel.getUserById(currentStockOpname.logs?.createdBy.toString())
+                viewModel.user.observe(this) { user ->
+                    binding.userCard.tvUserName.text = getString(R.string.by_at, user?.displayName, user?.role, Formatter.convertEpochToLocal(currentStockOpname.logs?.createdAt))
+                    binding.userCard.ivProfilePicture.load(user?.photoUrl)
+                }
                 when (currentStockOpname.status) {
                     "Done" -> {
+                        binding.btnDone.isEnabled = false
+                        binding.layoutOverview.btnCheck.visibility = View.GONE
+                        binding.btnDone.text = "Stock Opname Periode Ini Selesai"
                         binding.layoutOverview.statusLabelText.text = "Selesai"
                         binding.layoutOverview.statusLabel.backgroundTintList = ContextCompat.getColorStateList(this, R.color.safe_green)
-                        setExtraView(currentStockOpname.books.values.filterNotNull())
                     }
                     "Draft" -> {
                         binding.layoutOverview.statusLabelText.text = "Draf"
+                        binding.layoutOverview.btnCheck.text = "Lanjut Periksa"
+                        binding.btnDone.text = "Catat Draf"
                         binding.layoutOverview.statusLabel.backgroundTintList = ContextCompat.getColorStateList(this, R.color.safe_yellow)
-                        setExtraView(currentStockOpname.books.values.filterNotNull())
                     }
                     else -> {
+                        binding.btnDone.text = "Catat Draf"
                         binding.layoutOverview.statusLabelText.text = "Belum Diperiksa"
                         binding.layoutOverview.statusLabel.backgroundTintList = ContextCompat.getColorStateList(this, R.color.safe_red)
                     }
                 }
-
             } else {
                 binding.layoutOverview.statusLabelText.text = "Belum Dimulai"
                 binding.layoutOverview.statusLabel.backgroundTintList = ContextCompat.getColorStateList(this, R.color.safe_red)
+
+                val currentUser = hawkManager.retrieveData<User>("user")
+                binding.userCard.tvUserName.text = currentUser?.displayName
+                binding.userCard.tvUserAction.text = "Diperiksa Oleh"
+                binding.userCard.ivProfilePicture.load(currentUser?.photoUrl)
             }
         }
     }
@@ -142,8 +154,7 @@ class StockOpnameActivity : AppCompatActivity() {
         val currentDate = LocalDate.now()
         val monthYearFormat = DateTimeFormatter.ofPattern("yyyy/MM", Locale.getDefault())
         val monthYearName = currentDate.format(monthYearFormat)
-
-        binding.cardCheckStock.setOnClickListener {
+        binding.layoutOverview.btnCheck.setOnClickListener {
             val intent = Intent(this, CheckingActivity::class.java)
             intent.putExtra("currentMonth", monthYearName.toString())
             getResult.launch(intent)
@@ -159,9 +170,25 @@ class StockOpnameActivity : AppCompatActivity() {
                 books.all { it.isAppropriate != null } -> "Done"
                 else -> ""
             }
-
-            viewModel.saveStockOpname(date, books, monthYearName, createdBy, overallAppropriate, status) {
-                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            when (status) {
+                "Done" -> {
+                    viewModel.saveStockOpname(date, books, monthYearName, createdBy, overallAppropriate, status) {
+                        Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                    }
+                    for (bookItem in books) {
+                        if (bookItem.isAppropriate == false) {
+                            viewModel.updateDiscrepancy(
+                                bookItem.isbn.toString(),
+                                bookItem.discrepancy ?: 0
+                            )
+                        }
+                    }
+                }
+                else -> {
+                    viewModel.saveStockOpname(date, books, monthYearName, createdBy, overallAppropriate, status) {
+                        Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

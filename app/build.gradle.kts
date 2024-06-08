@@ -5,7 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
-
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -75,7 +75,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.android.gms:play-services-auth:20.6.0")
     implementation("com.google.firebase:firebase-storage:21.0.0")
-
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
     //CameraX
     val camerax_version = "1.2.2"
     implementation("androidx.camera:camera-core:${camerax_version}")
@@ -136,7 +138,5 @@ dependencies {
 
     //Motion Toast
     implementation("com.github.Spikeysanju:MotionToast:1.4")
-
-
 }
 

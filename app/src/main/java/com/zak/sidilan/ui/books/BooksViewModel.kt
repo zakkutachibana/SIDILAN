@@ -33,6 +33,7 @@ class BooksViewModel(private val repository: BookRepository) : ViewModel() {
             _bookList.value = bookList
         }
     }
+    
     fun filterBooks(query: String) {
         repository.getAllBooks().observeForever { allBooks ->
             val filteredBooks = if (query.isNotEmpty()) {

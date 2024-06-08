@@ -42,10 +42,8 @@ class CheckingActivity : AppCompatActivity() {
         val currentMonth = intent.getStringExtra("currentMonth")
         if (currentMonth != null) {
             viewModel.checkCurrentStockOpname(currentMonth)
-            Log.d("currentMonth", "is $currentMonth (TRUE)")
         } else {
             viewModel.getBooks()
-            Log.d("currentMonth", "is empty (FALSE)")
         }
 
         setupView()

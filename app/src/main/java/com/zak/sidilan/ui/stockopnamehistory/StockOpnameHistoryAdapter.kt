@@ -41,17 +41,26 @@ class StockOpnameHistoryAdapter(
         fun bind(stockOpname: StockOpname) {
             adapterBinding.tvCheckDate.text = Formatter.convertDateFirebaseToDisplay(stockOpname.date)
             adapterBinding.tvPeriod.text = Formatter.convertDateMonthToDisplay(stockOpname.id)
-            when (stockOpname.overallAppropriate) {
-                true -> {
-                    adapterBinding.ivIcon.load(R.drawable.img_check)
-                    adapterBinding.tvOverallAppropriate.text = "Stok Sesuai"
+            when (stockOpname.status) {
+                "Done" -> {
+                    when (stockOpname.overallAppropriate) {
+                        true -> {
+                            adapterBinding.ivIcon.load(R.drawable.img_check)
+                            adapterBinding.tvOverallAppropriate.text = "Stok Sesuai"
+                        }
+                        false -> {
+                            adapterBinding.ivIcon.load(R.drawable.img_cross)
+                            adapterBinding.tvOverallAppropriate.text = "Stok Tidak Sesuai"
+                        }
+                        else -> {}
+                    }
                 }
-                false -> {
+                else -> {
                     adapterBinding.ivIcon.load(R.drawable.img_warning)
-                    adapterBinding.tvOverallAppropriate.text = "Stok Tidak Sesuai"
+                    adapterBinding.tvOverallAppropriate.text = "Stock Opname Belum Selesai (Draft)"
                 }
-                else -> {}
             }
+
         }
     }
 

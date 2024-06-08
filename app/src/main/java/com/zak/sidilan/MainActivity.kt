@@ -74,10 +74,6 @@ class MainActivity : AppCompatActivity() {
         authViewModel.checkRole(userId) { userRole, exception ->
             updateUIVisibility(userRole)
         }
-        binding.fab.setOnClickListener {
-            val modalBottomSheetAction = ModalBottomSheetAction(1, null, this, null)
-            modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
-        }
 
         binding.navigationView.setCheckedItem(R.id.home)
         binding.navigationView.setNavigationItemSelectedListener { menuItem ->

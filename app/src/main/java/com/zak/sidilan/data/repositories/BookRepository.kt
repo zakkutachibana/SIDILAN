@@ -297,6 +297,30 @@ class BookRepository {
         })
     }
 
+    fun updateDiscrepancy(isbn: String, discrepancy: Int) {
+        val stockRef = reference.child(isbn).child("stock")
+
+        stockRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val stock = dataSnapshot.getValue(Stock::class.java) ?: Stock()
+
+                val updatedStock = stock.stockQty + discrepancy
+
+                val updates = mapOf("stock_qty" to updatedStock)
+
+                // Update the stock quantities in the database
+                stockRef.updateChildren(updates).addOnSuccessListener {
+                    // Stock quantities updated successfully
+                }.addOnFailureListener { e ->
+                    // Handle failure
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle onCancelled
+            }
+        })
+    }
     fun getBookCount(): MutableLiveData<Long?> {
         val bookCount = MutableLiveData<Long?>()
         reference.addValueEventListener(object : ValueEventListener {

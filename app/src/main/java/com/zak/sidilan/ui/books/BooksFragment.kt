@@ -18,6 +18,7 @@ import com.google.android.material.search.SearchView
 import com.zak.sidilan.MainActivity
 import com.zak.sidilan.databinding.FragmentBooksBinding
 import com.zak.sidilan.ui.bookdetail.BookDetailActivity
+import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
 
@@ -76,6 +77,11 @@ class BooksFragment : Fragment() {
         binding.drawerIcon.setOnClickListener {
             (requireActivity() as MainActivity).binding.drawerLayout.open()
         }
+        binding.addBookIcon.setOnClickListener {
+            val modalBottomSheetAction = ModalBottomSheetAction(1, null, requireActivity(), null)
+            modalBottomSheetAction.show(parentFragmentManager, ModalBottomSheetAction.TAG)
+        }
+
         binding.searchView.addTransitionListener { _, _, newState ->
             if (newState == SearchView.TransitionState.HIDING) {
                 viewModel.filterBooks("")
@@ -117,10 +123,7 @@ class BooksFragment : Fragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             binding.shimmerView.stopShimmer()
             binding.shimmerView.visibility = View.GONE
-            binding.rvBooks.visibility = View.VISIBLE
-            activity?.let {
-                (activity as MainActivity).binding.fab.show()
-            } }, 500)
+            binding.rvBooks.visibility = View.VISIBLE }, 500)
     }
 }
 

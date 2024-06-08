@@ -45,4 +45,3 @@ data class BookQtyPrice(
     var bookQty: Long,
     var bookPrice: Long
 ) : Parcelable
-

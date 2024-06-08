@@ -70,9 +70,13 @@ class StockOpnameDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = "Detail Stok Opname"
 
-        binding.tvTotalValue.text = bookOpnameList.sumOf { it.stockActual ?: 0 }.toString()
-        binding.tvBookKindValue.text = bookOpnameList.size.toString()
-        binding.tvValueDiscrepancy.text = bookOpnameList.sumOf { it.discrepancy ?: 0 }.toString()
+        val discrepancy = bookOpnameList.sumOf { it.discrepancy ?: 0 }
+        binding.tvTotalValue.text = getString(R.string.total_stock_qty, bookOpnameList.sumOf { it.stockActual ?: 0 }.toString())
+        binding.tvBookKindValue.text = getString(R.string.book_count, bookOpnameList.size.toString())
+        binding.tvValueDiscrepancy.text = when {
+            (discrepancy > 0) -> getString(R.string.plus_qty, discrepancy.toString())
+            else -> getString(R.string.total_stock_qty, discrepancy.toString())
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

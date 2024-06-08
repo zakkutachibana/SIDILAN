@@ -81,11 +81,6 @@ class ProfileFragment : Fragment() {
                 (activity as MainActivity).binding.drawerLayout.open()
             }
         }
-        Handler(Looper.getMainLooper()).postDelayed({
-            activity?.let {
-                (activity as MainActivity).binding.fab.hide()
-            }}, 300)
-
     }
 
     private fun signOut() {
