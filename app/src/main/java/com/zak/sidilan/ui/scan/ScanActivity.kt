@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -17,6 +16,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -31,6 +31,8 @@ import com.zak.sidilan.ui.addbook.AddBookActivity
 import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -91,9 +93,13 @@ class ScanActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetListen
                     permissionGranted = false
             }
             if (!permissionGranted) {
-                Toast.makeText(baseContext,
-                    "Permission request denied",
-                    Toast.LENGTH_SHORT).show()
+                MotionToast.createColorToast(this,
+                    "Error",
+                    "Izin Kamera tidak Didapatkan!",
+                    MotionToastStyle.ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.SHORT_DURATION,
+                    ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
             } else {
                 startCamera()
             }

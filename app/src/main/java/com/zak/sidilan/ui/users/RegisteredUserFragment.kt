@@ -5,16 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.FragmentRegisteredUserBinding
 import com.zak.sidilan.util.FirstItemMarginDecoration
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 
 class RegisteredUserFragment : Fragment() {
     private var _binding: FragmentRegisteredUserBinding? = null
@@ -54,7 +55,13 @@ class RegisteredUserFragment : Fragment() {
             adapter.submitList(books)
         }
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            MotionToast.createColorToast(requireActivity(),
+                "Info",
+                message,
+                MotionToastStyle.INFO,
+                MotionToast.GRAVITY_BOTTOM,
+                MotionToast.SHORT_DURATION,
+                ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
         }
     }
 

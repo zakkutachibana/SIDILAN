@@ -6,10 +6,10 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
 import com.zak.sidilan.R
 import com.zak.sidilan.databinding.ActivityTrxHistoryBinding
 import com.zak.sidilan.ui.trxdetail.TrxDetailActivity
-import com.zak.sidilan.ui.users.UserDetailActivity
 import com.zak.sidilan.util.FirstItemMarginDecoration
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -26,6 +26,7 @@ class TrxHistoryActivity : AppCompatActivity() {
         setupView()
         setupViewModel()
         setupRecyclerView()
+        setupAction()
     }
 
     private fun setupView() {
@@ -34,6 +35,24 @@ class TrxHistoryActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.title_book_trx_history)
         supportActionBar?.elevation = 0f
 
+    }
+    private fun setupAction() {
+        binding.cgFilters.setOnCheckedStateChangeListener { group, _ ->
+            val selectedTrx = mutableListOf<String>()
+            val chipToTrxTypeMap = mapOf(
+                R.id.chip_book_in_print to "TRXP",
+                R.id.chip_book_out_sell to "TRXS",
+                R.id.chip_book_in_other to "TRXI",
+                R.id.chip_book_out_other to "TRXO"
+            )
+            for (chipId in group.checkedChipIds) {
+                val trxType = chipToTrxTypeMap[chipId]
+                if (trxType != null) {
+                    selectedTrx.add(trxType)
+                }
+            }
+            viewModel.filterTrxByType(selectedTrx)
+        }
     }
     private fun setupRecyclerView() {
         adapter = BookTrxAdapter(this) { trxDetail ->

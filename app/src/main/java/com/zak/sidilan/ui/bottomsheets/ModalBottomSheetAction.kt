@@ -9,8 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.camera.core.ExperimentalGetImage
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
@@ -22,6 +22,8 @@ import com.zak.sidilan.ui.bookdetail.BookDetailViewModel
 import com.zak.sidilan.ui.scan.ScanActivity
 import com.zak.sidilan.ui.users.UserManagementViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 
 
 class ModalBottomSheetAction(
@@ -110,11 +112,23 @@ class ModalBottomSheetAction(
                         if (userInput == bookDetail?.book?.title) {
                             bookDetailViewModel.deleteBookById(bookDetail.book.isbn.toString()) { isSuccess, message ->
                                 if (isSuccess) {
-                                    Toast.makeText(requireContext(), "Book deleted successfully", Toast.LENGTH_SHORT).show()
+                                    MotionToast.createColorToast(requireActivity(),
+                                        "Success",
+                                        "Buku berhasil dihapus",
+                                        MotionToastStyle.DELETE,
+                                        MotionToast.GRAVITY_BOTTOM,
+                                        MotionToast.SHORT_DURATION,
+                                        ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
                                     dialog.dismiss()
                                     attachedActivity.finish()
                                 } else {
-                                    Toast.makeText(requireContext(), "Failed to delete book: $message", Toast.LENGTH_SHORT).show()
+                                    MotionToast.createColorToast(requireActivity(),
+                                        "Success",
+                                        "Buku gagal dihapus: $message",
+                                        MotionToastStyle.DELETE,
+                                        MotionToast.GRAVITY_BOTTOM,
+                                        MotionToast.SHORT_DURATION,
+                                        ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
                                 }
                             }
                         } else {
@@ -148,7 +162,13 @@ class ModalBottomSheetAction(
                             if (editText.text.isNotEmpty()) {
                                 val newRole = editText.text.toString()
                                 userManagementViewModel.updateRole(email.toString(), newRole) {
-                                    Toast.makeText(requireActivity(), it, Toast.LENGTH_SHORT).show()
+                                    MotionToast.createColorToast(requireActivity(),
+                                        "Info",
+                                        it,
+                                        MotionToastStyle.INFO,
+                                        MotionToast.GRAVITY_BOTTOM,
+                                        MotionToast.SHORT_DURATION,
+                                        ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
                                     dialog.dismiss()
                                     attachedActivity.finish()
                                 }
@@ -169,7 +189,13 @@ class ModalBottomSheetAction(
                         }
                         .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
                             userManagementViewModel.deleteWhitelist(email.toString()) {
-                                Toast.makeText(requireActivity(), it, Toast.LENGTH_SHORT).show()
+                                MotionToast.createColorToast(requireActivity(),
+                                    "Delete",
+                                    it,
+                                    MotionToastStyle.DELETE,
+                                    MotionToast.GRAVITY_BOTTOM,
+                                    MotionToast.SHORT_DURATION,
+                                    ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
                                 dialog.dismiss()
                                 dismiss()
                                 attachedActivity.finish()

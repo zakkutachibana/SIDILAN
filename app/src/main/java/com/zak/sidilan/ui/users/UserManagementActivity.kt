@@ -26,9 +26,7 @@ val userListActivityModule = module {
 
 class UserManagementActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserManagementBinding
-
     private lateinit var adapter: UserManagementPagerAdapter
-    private val viewModel: UserManagementViewModel by viewModel()
     private lateinit var hawkManager: HawkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +38,8 @@ class UserManagementActivity : AppCompatActivity() {
         hawkManager = HawkManager(this)
         val role = hawkManager.retrieveData<User>("user")?.role.toString()
 
-
         checkRole(parseUserRole(role))
         setupView()
-        setupAction()
     }
 
     private fun checkRole(role: UserRole?) {
@@ -60,11 +56,6 @@ class UserManagementActivity : AppCompatActivity() {
         binding.tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 if (tab != null) {
-                    if (tab.position == 0) {
-                        binding.fab.hide()
-                    } else {
-                        binding.fab.show()
-                    }
                     binding.viewPager.currentItem = tab.position
                 }
             }
@@ -77,11 +68,6 @@ class UserManagementActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 binding.tabs.selectTab(binding.tabs.getTabAt(position))
-                if (position == 0) {
-                    binding.fab.hide()
-                } else {
-                    binding.fab.show()
-                }
             }
         })
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -90,51 +76,6 @@ class UserManagementActivity : AppCompatActivity() {
         supportActionBar?.elevation = 0f
     }
 
-    private fun setupAction() {
-        binding.fab.setOnClickListener {
-            val layout = LayoutInflater.from(this).inflate(R.layout.layout_add_whitelist, null)
-            val edEmail = layout.findViewById<EditText>(R.id.ed_email)
-            val edlEmail = layout.findViewById<TextInputLayout>(R.id.edl_email)
-            val edPhone = layout.findViewById<EditText>(R.id.ed_phone_number)
-            val edlPhone = layout.findViewById<TextInputLayout>(R.id.edl_phone_number)
-            val edRole = layout.findViewById<EditText>(R.id.ed_role)
-            val edlRole = layout.findViewById<TextInputLayout>(R.id.edl_role)
-            val dialog = MaterialAlertDialogBuilder(
-                this,
-                com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-            )
-                .setTitle(R.string.add_whitelist)
-                .setView(layout)
-                .setIcon(R.drawable.ic_delete)
-                .setMessage(R.string.add_whitelist_action)
-                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
-                    dialog.dismiss()
-                }
-                .setPositiveButton("Ya", null)
-                .show()
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                when {
-                    edEmail.text.isEmpty() -> edlEmail.error = "Email tidak boleh kosong!"
-                    edPhone.text.isEmpty() -> edlPhone.error = "Nomor Telepon tidak boleh kosong!"
-                    edRole.text.isEmpty() -> edlRole.error = "Role tidak boleh kosong!"
-                    else -> {
-                        val email = edEmail.text.toString()
-                        val role = edRole.text.toString()
-                        val phoneNumber = edPhone.text.toString()
-                        viewModel.validateWhitelist(email) { whitelistExist ->
-                            if (!whitelistExist) {
-                                viewModel.addWhitelist(email, role, phoneNumber)
-                                dialog.dismiss()
-                            }
-                            else {
-                                edlEmail.error = "Whitelist sudah ada"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

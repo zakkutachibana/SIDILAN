@@ -1,11 +1,9 @@
 package com.zak.sidilan
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -24,11 +22,10 @@ import com.zak.sidilan.ui.about.AboutActivity
 import com.zak.sidilan.ui.auth.AuthActivity
 import com.zak.sidilan.ui.auth.AuthViewModel
 import com.zak.sidilan.ui.executivemenus.ExecutiveMenusActivity
-import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
-import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
-import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
 import com.zak.sidilan.ui.stockopname.StockOpnameActivity
 import com.zak.sidilan.ui.stockopnamehistory.StockOpnameHistoryActivity
+import com.zak.sidilan.ui.trx.bookin.BookInTrxActivity
+import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
 import com.zak.sidilan.ui.trxhistory.TrxHistoryActivity
 import com.zak.sidilan.ui.users.UserManagementActivity
 import com.zak.sidilan.util.HawkManager

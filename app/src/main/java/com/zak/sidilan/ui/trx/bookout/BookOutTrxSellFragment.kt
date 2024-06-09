@@ -16,8 +16,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
@@ -38,6 +38,8 @@ import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 import java.util.Calendar
 
 val bookOutTrxSellFragmentModule = module {
@@ -228,7 +230,13 @@ class BookOutTrxSellFragment : Fragment() {
 
     private fun setupViewModel() {
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            MotionToast.createColorToast(requireActivity(),
+                "Info",
+                message,
+                MotionToastStyle.INFO,
+                MotionToast.GRAVITY_BOTTOM,
+                MotionToast.SHORT_DURATION,
+                ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
         }
         viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
             binding.btnAddTrx.isEnabled = !isEmpty

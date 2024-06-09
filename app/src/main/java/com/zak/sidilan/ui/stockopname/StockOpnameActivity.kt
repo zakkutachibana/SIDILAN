@@ -3,25 +3,24 @@ package com.zak.sidilan.ui.stockopname
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import coil.load
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookOpname
-import com.zak.sidilan.data.entities.BookQtyPrice
-import com.zak.sidilan.data.entities.StockOpname
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityStockOpnameBinding
-import com.zak.sidilan.ui.trx.bookin.BookInTrxPrintFragment
 import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -173,7 +172,13 @@ class StockOpnameActivity : AppCompatActivity() {
             when (status) {
                 "Done" -> {
                     viewModel.saveStockOpname(date, books, monthYearName, createdBy, overallAppropriate, status) {
-                        Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                        MotionToast.createColorToast(this,
+                            "Info",
+                            it,
+                            MotionToastStyle.INFO,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.SHORT_DURATION,
+                            ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
                     }
                     for (bookItem in books) {
                         if (bookItem.isAppropriate == false) {
@@ -186,7 +191,13 @@ class StockOpnameActivity : AppCompatActivity() {
                 }
                 else -> {
                     viewModel.saveStockOpname(date, books, monthYearName, createdBy, overallAppropriate, status) {
-                        Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+                        MotionToast.createColorToast(this,
+                            "Info",
+                            it,
+                            MotionToastStyle.INFO,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.SHORT_DURATION,
+                            ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
                     }
                 }
             }

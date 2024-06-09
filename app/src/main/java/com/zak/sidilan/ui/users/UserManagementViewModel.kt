@@ -105,6 +105,12 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
         }
     }
 
+    fun validateWhitelistOnce(email: String, callback: (Boolean) -> Unit) {
+        repository.validateWhitelistOnce(email) {
+            callback(it)
+        }
+    }
+
     fun validateWhitelistRegistered(email: String, callback: (Boolean) -> Unit) {
         repository.validateWhitelistRegistered(email) {
             callback(it)

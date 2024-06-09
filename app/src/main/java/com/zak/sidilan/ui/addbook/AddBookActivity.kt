@@ -14,10 +14,10 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import coil.load
 import com.google.android.material.textfield.TextInputLayout
@@ -32,6 +32,8 @@ import com.zak.sidilan.util.HawkManager
 import org.koin.dsl.module
 import java.util.Calendar
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -84,7 +86,13 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
 
     private fun setViewModel() {
         viewModel.toastMessage.observe(this) { message ->
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            MotionToast.createColorToast(this,
+                "Error",
+                message,
+                MotionToastStyle.ERROR,
+                MotionToast.GRAVITY_BOTTOM,
+                MotionToast.SHORT_DURATION,
+                ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
         }
     }
 
@@ -209,10 +217,8 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
 
         binding.btnAddBook.setOnClickListener {
             if (isValid()) {
-                binding.loading.root.visibility = View.VISIBLE
+                setLoading(true)
                 binding.edlIsbn.clearFocus()
-                supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                supportActionBar?.setDisplayShowHomeEnabled(false)
                 binding.btnAddBook.isEnabled = false
 
                 val isbn = binding.edIsbn.text.toString().toLong()
@@ -245,15 +251,26 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
                             binding.edlIsbn.error = "Buku dengan ISBN: $isbn sudah ada!"
                             binding.edlIsbn.requestFocus()
                             binding.btnAddBook.isEnabled = true
-                            binding.loading.root.visibility = View.GONE
-                            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                            supportActionBar?.setDisplayShowHomeEnabled(true)
+                            setLoading(false)
                         }
                     }
                 }
             }
         }
     }
+
+    private fun setLoading(status: Boolean) {
+        if (status) {
+            binding.loading.root.visibility = View.VISIBLE
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            supportActionBar?.setDisplayShowHomeEnabled(false)
+        } else {
+            binding.loading.root.visibility = View.GONE
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+        }
+    }
+
     private fun setImage() {
         currentImageUri?.let {
             Log.d("Image URI", "showImage: $it")
@@ -302,8 +319,6 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         val imageUrlFromApi = volumeInfo?.imageLinks?.thumbnail.toString()
         val trimmedImageUrl = imageUrlFromApi.substringBefore("&img=1") + "&img=1"
         binding.ivBookCoverAdd.load(trimmedImageUrl)
-        Toast.makeText(this, trimmedImageUrl, Toast.LENGTH_SHORT).show()
-        println("ini linknya: $trimmedImageUrl")
     }
 
     override fun onDismissed() { }
@@ -312,13 +327,23 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         viewModel.saveBookToFirebase(book, createdBy) { success, message ->
             binding.btnAddBook.isEnabled = true
             if (success) {
-                Toast.makeText(this, "Book added successfully", Toast.LENGTH_SHORT).show()
+                MotionToast.createColorToast(this,
+                    "Success",
+                    "Buku berhasil ditambahkan",
+                    MotionToastStyle.SUCCESS,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.SHORT_DURATION,
+                    ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
                 finish()
             } else {
-                Toast.makeText(this, "Failed to add book: $message", Toast.LENGTH_SHORT).show()
-                binding.loading.root.visibility = View.GONE
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                supportActionBar?.setDisplayShowHomeEnabled(true)
+                MotionToast.createColorToast(this,
+                    "Error",
+                    "Gagal menambahkan buku: $message",
+                    MotionToastStyle.ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.SHORT_DURATION,
+                    ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
+                setLoading(false)
             }
         }
     }
@@ -326,14 +351,16 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         viewModel.updateBookFirebase(book, oldCover) { success, message ->
             binding.btnAddBook.isEnabled = true
             if (success) {
-                Toast.makeText(this, "Book updated successfully", Toast.LENGTH_SHORT).show()
+                MotionToast.createColorToast(this,
+                    "Success",
+                    "Buku berhasil diubah",
+                    MotionToastStyle.SUCCESS,
+                    MotionToast.GRAVITY_BOTTOM,
+                    MotionToast.SHORT_DURATION,
+                    ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
                 finish()
             } else {
-                Toast.makeText(this, "Failed to update book: $message", Toast.LENGTH_SHORT).show()
-                Log.d("FAILED", "Gagal: $message")
-                binding.loading.root.visibility = View.GONE
-                supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                supportActionBar?.setDisplayShowHomeEnabled(true)
+                setLoading(false)
             }
         }
     }

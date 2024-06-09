@@ -137,12 +137,12 @@ class BookRepository {
                     if (task.isSuccessful) {
                         callback(true, null)
                     } else {
-                        callback(false, "update children error ${task.exception?.message}")
+                        callback(false, "${task.exception?.message}")
                     }
                 }
             }.addOnFailureListener { exception ->
                 // Handle any errors during image upload
-                callback(false, "update children error ${exception.message}")
+                callback(false, "${exception.message}")
             }
         } else {
             // Handle the scenario when the book doesn't have a cover URL

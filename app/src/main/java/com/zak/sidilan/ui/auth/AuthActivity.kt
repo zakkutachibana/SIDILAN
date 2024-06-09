@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -24,6 +24,8 @@ import com.zak.sidilan.databinding.ActivityAuthBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.zak.sidilan.util.HawkManager
 import org.koin.dsl.module
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 
 val authActivityModule = module {
     factory { AuthActivity() }
@@ -56,7 +58,14 @@ class AuthActivity : AppCompatActivity() {
     private fun setupView() {
         supportActionBar?.hide()
         viewModel.toastMessage.observe(this) {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            MotionToast.createColorToast(this,
+                "Info",
+                it,
+                MotionToastStyle.INFO,
+                MotionToast.GRAVITY_BOTTOM,
+                MotionToast.SHORT_DURATION,
+                ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
+
         }
     }
 
@@ -106,25 +115,19 @@ class AuthActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithCredential:success")
                     val user = auth.currentUser
                     user?.reload()?.addOnCompleteListener { reloadTask ->
                         if (reloadTask.isSuccessful) {
                             val refreshedUser = auth.currentUser
                             val userEmail = refreshedUser?.email.toString()
-                            Toast.makeText(this, "Logged Email: $userEmail", Toast.LENGTH_SHORT).show()
-                            // Call the function to check whitelisting
                             checkWhitelisting(userEmail)
                         } else {
                             // Reload failed, handle the error
-                            Log.w(TAG, "reload failed", reloadTask.exception)
                             updateUI(null)
                         }
                     }
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
                     updateUI(null)
                 }
             }
@@ -133,8 +136,13 @@ class AuthActivity : AppCompatActivity() {
     private fun checkWhitelisting(email: String) {
         viewModel.isEmailWhitelisted(email) { isWhitelisted, additionalInfo ->
             if (isWhitelisted) {
-                Toast.makeText(this, "Whitelisted", Toast.LENGTH_SHORT).show()
-                // Whitelisted, proceed with saving user
+                MotionToast.createColorToast(this,
+                    "Success",
+                    "Anda masuk dalam Whitelist",
+                    MotionToastStyle.SUCCESS,
+                    MotionToast.GRAVITY_BOTTOM,
+                    1000L,
+                    ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
                 val currentUser = auth.currentUser
                 val user = User(currentUser?.uid.toString(), currentUser?.displayName, additionalInfo?.role, currentUser?.email,
                     currentUser?.photoUrl.toString().replace("s96-c", "s300-c"), additionalInfo?.phoneNumber, "joinedAt")
@@ -150,7 +158,14 @@ class AuthActivity : AppCompatActivity() {
                 updateUI(currentUser)
             } else {
                 // Not whitelisted
-                Toast.makeText(this, "Not Whitelisted", Toast.LENGTH_SHORT).show()
+                MotionToast.createColorToast(this,
+                    "Error",
+                    "Anda tidak masuk dalam Whitelist",
+                    MotionToastStyle.ERROR,
+                    MotionToast.GRAVITY_BOTTOM,
+                    1000L,
+                    ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
+
                 auth.signOut()
                 googleSignInClient.signOut()
                 updateUI(null)

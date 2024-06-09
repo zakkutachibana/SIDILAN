@@ -60,7 +60,6 @@ class StockOpnameHistoryAdapter(
                     adapterBinding.tvOverallAppropriate.text = "Stock Opname Belum Selesai (Draft)"
                 }
             }
-
         }
     }
 

@@ -107,7 +107,6 @@ class UserRepository {
             }
         })
 
-
         return status
     }
 
@@ -272,14 +271,14 @@ class UserRepository {
                     for (childSnapshot in snapshot.children) {
                         childSnapshot.ref.updateChildren(updatedRole).addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                callback("Success Update")
+                                callback("Berhasil ubah role")
                             } else {
-                                callback("Failed to update")
+                                callback("Gagal ubah role")
                             }
                         }
                     }
                 } else {
-                    callback("Email not found")
+                    callback("Email tidak ditemukan")
                 }
             }
 
@@ -294,14 +293,14 @@ class UserRepository {
                     for (childSnapshot in snapshot.children) {
                         childSnapshot.ref.updateChildren(updatedRole).addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                callback("Success Update")
+                                callback("Berhasil ubah role")
                             } else {
-                                callback("Failed to update")
+                                callback("Gagal ubah role")
                             }
                         }
                     }
                 } else {
-                    callback("Email not found")
+                    callback("Email tidak ditemukan")
                 }
             }
 
@@ -322,6 +321,17 @@ class UserRepository {
         })
     }
 
+    fun validateWhitelistOnce(email: String, callback: (Boolean) -> Unit) {
+        whitelistReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val whitelistExist = dataSnapshot.exists()
+                callback(whitelistExist)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                callback(false)
+            }
+        })
+    }
     fun validateWhitelistRegistered(email: String, callback: (Boolean) -> Unit) {
         usersReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

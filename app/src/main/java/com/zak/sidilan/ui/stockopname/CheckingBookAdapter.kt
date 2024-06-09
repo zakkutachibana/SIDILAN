@@ -1,24 +1,17 @@
 package com.zak.sidilan.ui.stockopname
 
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.google.android.material.checkbox.MaterialCheckBox
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
 import com.zak.sidilan.data.entities.BookOpname
-import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.databinding.LayoutStockOpnameBinding
 import com.zak.sidilan.util.CheckBoxState
 

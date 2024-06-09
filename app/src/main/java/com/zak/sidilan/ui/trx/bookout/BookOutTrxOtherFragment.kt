@@ -8,22 +8,21 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 import com.zak.sidilan.R
-import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookOutDonationTrx
 import com.zak.sidilan.data.entities.BookQtyPrice
 import com.zak.sidilan.data.entities.BookSubtotal
@@ -31,11 +30,12 @@ import com.zak.sidilan.data.entities.Logs
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.FragmentBookOutTrxOtherBinding
 import com.zak.sidilan.ui.trx.BookTrxViewModel
-import com.zak.sidilan.ui.trx.bookin.BookInTrxPrintFragment
 import com.zak.sidilan.ui.trx.choosebook.ChooseBookActivity
 import com.zak.sidilan.ui.trx.choosebook.SelectedBooksAdapter
 import com.zak.sidilan.util.HawkManager
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 import java.util.Calendar
 
 class BookOutTrxOtherFragment : Fragment() {
@@ -136,8 +136,13 @@ class BookOutTrxOtherFragment : Fragment() {
 
     private fun setupViewModel() {
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
+            MotionToast.createColorToast(requireActivity(),
+                "Info",
+                message,
+                MotionToastStyle.INFO,
+                MotionToast.GRAVITY_BOTTOM,
+                MotionToast.SHORT_DURATION,
+                ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))        }
         viewModel.isBookListEmpty.observe(viewLifecycleOwner) { isEmpty ->
             binding.btnAddTrx.isEnabled = !isEmpty
         }

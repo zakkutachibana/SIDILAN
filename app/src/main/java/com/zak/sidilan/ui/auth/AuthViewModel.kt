@@ -18,7 +18,7 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
         get() = _toastMessage
 
     fun saveUserToFirebase(userId: String, displayName: String, email: String, photoUrl: String, role: String, phoneNumber: String) {
-        repository.saveUserToFirebase(userId, displayName, email, photoUrl, role, phoneNumber).observeForever {message ->
+        repository.saveUserToFirebase(userId, displayName, email, photoUrl, role, phoneNumber).observeForever { message ->
             _toastMessage.postValue(message)
         }
     }

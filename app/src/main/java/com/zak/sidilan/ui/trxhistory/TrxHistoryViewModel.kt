@@ -30,4 +30,15 @@ class TrxHistoryViewModel(private val repository: TrxRepository) : ViewModel() {
             _trxSellingList.value = trxSellList
         }
     }
+
+    fun filterTrxByType(selectedTrx: List<String>) {
+        repository.getAllTrx().observeForever { trxList ->
+            val filteredTrx = if (selectedTrx.isNotEmpty()) {
+                trxList.filter { transaction -> selectedTrx.any { transaction.bookTrx?.id?.startsWith(it) ?: false } }
+            } else {
+                trxList
+            }
+            _trxList.postValue(ArrayList(filteredTrx))
+        }
+    }
 }

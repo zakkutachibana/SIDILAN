@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import coil.load
@@ -48,7 +47,6 @@ class UserDetailActivity : AppCompatActivity() {
     private fun setupAction() {
         binding.btnEmail.setOnClickListener {
             intentEmail(userInfo?.email.toString())
-            Toast.makeText(this, "email= ${userInfo?.email}", Toast.LENGTH_SHORT).show()
         }
         binding.btnWhatsapp.setOnClickListener {
             intentWhatsApp(userInfo?.phoneNumber.toString())

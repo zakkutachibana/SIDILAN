@@ -294,6 +294,7 @@ class TrxDetailActivity : AppCompatActivity() {
 
     private fun setupAction() {
         binding.btnInvoice.setOnClickListener {
+            setLoading(true)
             viewModel.trxDetail.observe(this) { trxDetail ->
                 val invId = trxDetail?.bookTrx?.id
                 if (invId != null) {
@@ -314,6 +315,7 @@ class TrxDetailActivity : AppCompatActivity() {
         }
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
+            setLoading(false)
         } else {
             Log.e("Intent", "No activity found to handle the intent")
         }
@@ -367,7 +369,6 @@ class TrxDetailActivity : AppCompatActivity() {
                     // Add invoice details
                     val invoiceDetails = Paragraph()
                         .add("Billed To:\n${it.bookTrx.buyerName}\n${it.bookTrx.address}\n\n")
-                        .add("Invoice Number: $invoiceNumberFull\nDate Of Issue: ${it.bookTrx.bookOutDate}\n\n")
                         .setFontSize(12f)
                         .setMargin(20f)
 
@@ -523,6 +524,17 @@ class TrxDetailActivity : AppCompatActivity() {
         binding.rvTrxHistory.itemAnimator = DefaultItemAnimator()
     }
 
+    private fun setLoading(status: Boolean) {
+        if (status) {
+            binding.loading.root.visibility = View.VISIBLE
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            supportActionBar?.setDisplayShowHomeEnabled(false)
+        } else {
+            binding.loading.root.visibility = View.GONE
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+        }
+    }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
