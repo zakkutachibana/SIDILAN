@@ -12,6 +12,7 @@ val bookDetailViewModelModule = module {
     factory { BookDetailViewModel(get(), get()) }
 }
 class BookDetailViewModel(private val bookRepository: BookRepository, private val userRepository: UserRepository) : ViewModel() {
+
     private val _bookDetail = MutableLiveData<BookDetail?>()
     val bookDetail: MutableLiveData<BookDetail?> get() = _bookDetail
 

@@ -1,11 +1,17 @@
 package com.zak.sidilan.data.repositories
 
+import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
+import com.zak.sidilan.data.entities.Book
+import com.zak.sidilan.data.entities.BookDetail
+import com.zak.sidilan.data.entities.Logs
+import com.zak.sidilan.data.entities.Stock
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.entities.Whitelist
 import com.zak.sidilan.util.HelperFunction.parseUserRole
@@ -61,6 +67,23 @@ class UserRepository {
                 callback(null, databaseError.toException())
             }
         })
+    }
+
+    fun getCurrentUser(userId: String) : LiveData<User?> {
+        val userLiveData = MutableLiveData<User?>()
+
+        val userRef = usersReference.child(userId)
+        userRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val user = dataSnapshot.getValue(User::class.java)
+                userLiveData.value = user
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Error occurred
+            }
+        })
+        return userLiveData
     }
 
     fun saveUserToFirebase(

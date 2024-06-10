@@ -29,6 +29,7 @@ import com.zak.sidilan.ui.trx.bookout.BookOutTrxActivity
 import com.zak.sidilan.ui.trxhistory.TrxHistoryActivity
 import com.zak.sidilan.ui.users.UserManagementActivity
 import com.zak.sidilan.util.HawkManager
+import com.zak.sidilan.util.HelperFunction
 import com.zak.sidilan.util.UserRole
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -64,14 +65,18 @@ class MainActivity : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
         setAction()
+        setViewModel()
     }
 
-    private fun setAction() {
+    private fun setViewModel() {
         val userId = hawkManager.retrieveData<User>("user")?.id.toString()
-        authViewModel.checkRole(userId) { userRole, exception ->
+        authViewModel.getCurrentUser(userId)
+        authViewModel.currentUser.observe(this) {user ->
+            val userRole = HelperFunction.parseUserRole(user.role)
             updateUIVisibility(userRole)
         }
-
+    }
+    private fun setAction() {
         binding.navigationView.setCheckedItem(R.id.home)
         binding.navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -123,20 +128,24 @@ class MainActivity : AppCompatActivity() {
     private fun updateUIVisibility(userRole: UserRole?) {
         when (userRole) {
             null -> { signOut() }
+            UserRole.ADMIN -> {
+                binding.navigationView.menu.findItem(R.id.access_items).isVisible = true
+                binding.navigationView.menu.findItem(R.id.book_in_item).isVisible = true
+                binding.navigationView.menu.findItem(R.id.book_out_item).isVisible = true
+                binding.navigationView.menu.findItem(R.id.stock_opname_item).isVisible = true
+            }
             UserRole.DIRECTOR -> {
-                binding.navigationView.menu.findItem(R.id.staff_item).isVisible = false
-                binding.navigationView.menu.findItem(R.id.manager_item).isVisible = false
+                binding.navigationView.menu.findItem(R.id.access_items).isVisible = true
+                binding.navigationView.menu.findItem(R.id.book_in_item).isVisible = false
+                binding.navigationView.menu.findItem(R.id.book_out_item).isVisible = false
+                binding.navigationView.menu.findItem(R.id.stock_opname_item).isVisible = false
             }
-
-            UserRole.MANAGER -> {
-                binding.navigationView.menu.findItem(R.id.director_item).isVisible = false
+            else -> {
+                binding.navigationView.menu.findItem(R.id.access_items).isVisible = false
+                binding.navigationView.menu.findItem(R.id.book_in_item).isVisible = true
+                binding.navigationView.menu.findItem(R.id.book_out_item).isVisible = true
+                binding.navigationView.menu.findItem(R.id.stock_opname_item).isVisible = true
             }
-
-            UserRole.STAFF -> {
-                binding.navigationView.menu.findItem(R.id.manager_item).isVisible = false
-                binding.navigationView.menu.findItem(R.id.director_item).isVisible = false
-            }
-            else -> {}
         }
     }
 

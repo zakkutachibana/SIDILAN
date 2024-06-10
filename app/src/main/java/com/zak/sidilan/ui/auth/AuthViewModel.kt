@@ -3,6 +3,7 @@ package com.zak.sidilan.ui.auth
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.data.entities.Whitelist
 import com.zak.sidilan.data.repositories.UserRepository
 import com.zak.sidilan.util.UserRole
@@ -17,6 +18,10 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
     val toastMessage: LiveData<String>
         get() = _toastMessage
 
+    private val _currentUser = MutableLiveData<User>()
+    val currentUser: LiveData<User>
+        get() = _currentUser
+
     fun saveUserToFirebase(userId: String, displayName: String, email: String, photoUrl: String, role: String, phoneNumber: String) {
         repository.saveUserToFirebase(userId, displayName, email, photoUrl, role, phoneNumber).observeForever { message ->
             _toastMessage.postValue(message)
@@ -26,6 +31,12 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
     fun isEmailWhitelisted(email: String, callback: (Boolean, Whitelist?) -> Unit) {
         repository.isEmailWhitelisted(email) { whitelisted, additionalInfo ->
             callback(whitelisted, additionalInfo)
+        }
+    }
+
+    fun getCurrentUser(userId: String) {
+        repository.getCurrentUser(userId).observeForever { user ->
+            _currentUser.value = user
         }
     }
 

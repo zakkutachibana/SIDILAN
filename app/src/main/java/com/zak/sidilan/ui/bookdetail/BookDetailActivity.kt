@@ -5,14 +5,22 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import coil.load
 import com.zak.sidilan.R
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityBookDetailBinding
+import com.zak.sidilan.ui.auth.AuthViewModel
 import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
 import com.zak.sidilan.ui.users.UserDetailActivity
+import com.zak.sidilan.util.HawkManager
+import com.zak.sidilan.util.HelperFunction
+import com.zak.sidilan.util.UserRole
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.dsl.module
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 
 
 val bookDetailActivityModule = module {
@@ -22,12 +30,14 @@ val bookDetailActivityModule = module {
 class BookDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBookDetailBinding
     private val viewModel: BookDetailViewModel by viewModel()
-
+    private val authViewModel: AuthViewModel by viewModel()
+    private lateinit var hawkManager: HawkManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityBookDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        hawkManager = HawkManager(this)
 
         val isbn = intent.getStringExtra("isbn")
         if (isbn != null) {
@@ -46,6 +56,7 @@ class BookDetailActivity : AppCompatActivity() {
         binding.userCard.tvUserAction.text = getString(R.string.created_by)
     }
     private fun setupViewModel() {
+
         viewModel.bookDetail.observe(this) { bookDetail ->
             if (bookDetail != null) {
                 binding.ivBookCover.load(bookDetail.book?.coverUrl) {
@@ -83,14 +94,35 @@ class BookDetailActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
-        binding.btnEditDelete.setOnClickListener { it ->
-            if (it != null) {
-                viewModel.bookDetail.observe(this) {
-                    val modalBottomSheetAction = ModalBottomSheetAction(2, it, this, null)
-                    modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
+        val userId = hawkManager.retrieveData<User>("user")?.id.toString()
+        authViewModel.getCurrentUser(userId)
+        authViewModel.currentUser.observe(this) { user ->
+            val userRole = HelperFunction.parseUserRole(user.role)
+            when (userRole) {
+                UserRole.STAFF -> {
+                    binding.btnEditDelete.setOnClickListener { it ->
+                        MotionToast.createColorToast(this,
+                            "Warning",
+                            "Anda tidak memiliki akses!",
+                            MotionToastStyle.WARNING,
+                            MotionToast.GRAVITY_BOTTOM,
+                            1000L,
+                            ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
+                    }
+                }
+                else -> {
+                    binding.btnEditDelete.setOnClickListener { it ->
+                        if (it != null) {
+                            viewModel.bookDetail.observe(this) {
+                                val modalBottomSheetAction = ModalBottomSheetAction(2, it, this, null)
+                                modalBottomSheetAction.show(supportFragmentManager, ModalBottomSheetAction.TAG)
+                            }
+                        }
+                    }
                 }
             }
         }
+
         binding.userCard.cardUser.setOnClickListener {
             viewModel.user.observe(this) { user ->
                 val intent = Intent(this, UserDetailActivity::class.java)
