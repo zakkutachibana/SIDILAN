@@ -15,12 +15,10 @@ val authViewModelModule = module {
 class AuthViewModel(private val repository: UserRepository) : ViewModel() {
 
     private val _toastMessage = MutableLiveData<String>()
-    val toastMessage: LiveData<String>
-        get() = _toastMessage
+    val toastMessage: LiveData<String> get() = _toastMessage
 
     private val _currentUser = MutableLiveData<User>()
-    val currentUser: LiveData<User>
-        get() = _currentUser
+    val currentUser: LiveData<User> get() = _currentUser
 
     fun saveUserToFirebase(userId: String, displayName: String, email: String, photoUrl: String, role: String, phoneNumber: String) {
         repository.saveUserToFirebase(userId, displayName, email, photoUrl, role, phoneNumber).observeForever { message ->
@@ -40,9 +38,9 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    fun checkRole(userId: String, callback: (UserRole?, Exception?) -> Unit) {
-        repository.getUserRole(userId) { userRole, exception ->
-            callback(userRole, exception)
+    fun validateWhitelist(email: String, callback: (Boolean) -> Unit) {
+        repository.validateWhitelist(email) { whitelisted ->
+            callback(whitelisted)
         }
     }
 

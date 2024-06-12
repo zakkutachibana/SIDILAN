@@ -41,7 +41,7 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        auth = Firebase.auth
+        auth = FirebaseAuth.getInstance()
         hawkManager = HawkManager(requireActivity())
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -84,11 +84,12 @@ class ProfileFragment : Fragment() {
     }
 
     private fun signOut() {
-        auth.signOut()
-        googleSignInClient.signOut()
         hawkManager.deleteData("user")
+        googleSignInClient.signOut()
+        auth.signOut()
         val intent = Intent(context, AuthActivity::class.java)
         startActivity(intent)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         requireActivity().finish()
     }
 

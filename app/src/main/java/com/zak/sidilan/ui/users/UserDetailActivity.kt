@@ -1,5 +1,6 @@
 package com.zak.sidilan.ui.users
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -26,7 +27,6 @@ val userDetailActivityModule = module {
 class UserDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityUserDetailBinding
     private val viewModel: UserManagementViewModel by viewModel()
-    private var userInfo: User? = null
     private lateinit var hawkManager: HawkManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +37,8 @@ class UserDetailActivity : AppCompatActivity() {
         val userId = intent.getStringExtra("userId")
         if (userId != null) {
             viewModel.getUserById(userId)
+        } else {
+            finish()
         }
 
         setupView()
@@ -45,11 +47,13 @@ class UserDetailActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
-        binding.btnEmail.setOnClickListener {
-            intentEmail(userInfo?.email.toString())
-        }
-        binding.btnWhatsapp.setOnClickListener {
-            intentWhatsApp(userInfo?.phoneNumber.toString())
+        viewModel.user.observe(this) { userInfo ->
+            binding.btnEmail.setOnClickListener {
+                intentEmail(userInfo?.email.toString())
+            }
+            binding.btnWhatsapp.setOnClickListener {
+                intentWhatsApp(userInfo)
+            }
         }
     }
 
@@ -58,20 +62,23 @@ class UserDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.title = "Detail Pengguna"
 
-        binding.itemRole.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_role, null)
+        binding.itemRole.btnIcon.icon =
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_role, null)
         binding.itemRole.tvItemTitle.text = "Role"
-        binding.itemEmail.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_email, null)
+        binding.itemEmail.btnIcon.icon =
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_email, null)
         binding.itemEmail.tvItemTitle.text = "Email"
-        binding.itemPhoneNumber.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_phone, null)
+        binding.itemPhoneNumber.btnIcon.icon =
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_phone, null)
         binding.itemPhoneNumber.tvItemTitle.text = "Nomor Telepon"
-        binding.itemJoinTime.btnIcon.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_account_time, null)
+        binding.itemJoinTime.btnIcon.icon =
+            ResourcesCompat.getDrawable(resources, R.drawable.ic_account_time, null)
         binding.itemJoinTime.tvItemTitle.text = "Bergabung pada"
     }
 
     private fun setupViewModel() {
         viewModel.user.observe(this) { user ->
             val currentUser = hawkManager.retrieveData<User>("user")
-            userInfo = user
             binding.ivProfilePicture.load(user?.photoUrl)
             binding.itemRole.tvItemValue.text = user?.role
             binding.itemEmail.tvItemValue.text = user?.email
@@ -88,38 +95,49 @@ class UserDetailActivity : AppCompatActivity() {
                 if (isWhitelisted) {
                     binding.cardUserDetail.alpha = 1F
                     binding.btnActionUser.text = "Ubah/Hapus Akses"
-                    binding.btnActionUser.setOnClickListener {
+                } else {
+                    binding.cardUserDetail.alpha = 0.5F
+                    binding.btnActionUser.text = "Kembalikan Akses User"
+                }
+            }
+        }
+
+        binding.btnActionUser.setOnClickListener {
+            viewModel.user.observe(this) { user ->
+                viewModel.validateWhitelistOnce(user?.email.toString()) { isWhitelisted ->
+                    if (isWhitelisted) {
                         val modalBottomSheetAction =
-                            ModalBottomSheetAction(3, null, this, userInfo?.email)
+                            ModalBottomSheetAction(3, null, this, user?.email)
                         modalBottomSheetAction.show(
                             supportFragmentManager,
                             ModalBottomSheetAction.TAG
                         )
-                    }
-                } else {
-                    binding.cardUserDetail.alpha = 0.5F
-                    binding.btnActionUser.text = "Kembalikan Akses User"
-                    binding.btnActionUser.setOnClickListener {
-                        MaterialAlertDialogBuilder(this)
+                    } else {
+                        val restoreUserDialog = MaterialAlertDialogBuilder(this)
                             .setTitle("Kembalikan Akses")
                             .setMessage("Akses dari pengguna ini akan dikembalikan. Konfirmasi kembalikan akses?")
                             .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                                 dialog.dismiss()
                             }
-                            .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+                            .setPositiveButton(resources.getString(R.string.yes), null)
+
+                            .show()
+                        restoreUserDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                            .setOnClickListener {
                                 viewModel.addWhitelist(
                                     user?.email.toString(),
                                     user?.role.toString(),
                                     user?.phoneNumber.toString()
                                 )
-                                dialog.dismiss()
+                                restoreUserDialog.dismiss()
                                 finish()
                             }
-                            .show()
+
                     }
                 }
             }
         }
+
     }
 
     private fun intentEmail(email: String) {
@@ -131,10 +149,12 @@ class UserDetailActivity : AppCompatActivity() {
         startActivity(Intent.createChooser(emailIntent, "Send Email using:"))
     }
 
-    private fun intentWhatsApp(localPhoneNumber: String) {
-        val internationalPhoneNumber = Formatter.convertToInternationalFormat(localPhoneNumber)
+    private fun intentWhatsApp(userInfo: User?) {
+        val internationalPhoneNumber =
+            Formatter.convertToInternationalFormat(userInfo?.phoneNumber ?: "")
         val defaultMessage = "Assalamu'alaikum ${userInfo?.displayName}"
-        val uri = Uri.parse("https://api.whatsapp.com/send?phone=$internationalPhoneNumber&text=$defaultMessage")
+        val uri =
+            Uri.parse("https://api.whatsapp.com/send?phone=$internationalPhoneNumber&text=$defaultMessage")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
     }

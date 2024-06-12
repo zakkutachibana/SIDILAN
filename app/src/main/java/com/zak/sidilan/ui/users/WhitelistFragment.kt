@@ -34,7 +34,7 @@ class WhitelistFragment : Fragment() {
         _binding = FragmentWhitelistBinding.inflate(inflater, container, false)
         setupViewModel()
         setupRecyclerView()
-        setupAction ()
+        setupAction()
         return binding.root
     }
 

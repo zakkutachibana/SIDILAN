@@ -100,7 +100,7 @@ class BookDetailActivity : AppCompatActivity() {
             val userRole = HelperFunction.parseUserRole(user.role)
             when (userRole) {
                 UserRole.STAFF -> {
-                    binding.btnEditDelete.setOnClickListener { it ->
+                    binding.btnEditDelete.setOnClickListener {
                         MotionToast.createColorToast(this,
                             "Warning",
                             "Anda tidak memiliki akses!",

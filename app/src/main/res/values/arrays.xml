@@ -75,6 +75,12 @@
         <item>Staf</item>
         <item>Manajer</item>
         <item>Direktur</item>
+    </string-array>
+
+    <string-array name="roles_admin">
+        <item>Staf</item>
+        <item>Manajer</item>
+        <item>Direktur</item>
         <item>Admin</item>
     </string-array>
 </resources>

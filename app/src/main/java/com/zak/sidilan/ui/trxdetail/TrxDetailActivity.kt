@@ -1,8 +1,6 @@
 package com.zak.sidilan.ui.trxdetail
 
-import android.R.id.message
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,10 +12,10 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.geom.PageSize
@@ -25,6 +23,7 @@ import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.*
+import com.itextpdf.layout.property.HorizontalAlignment
 import com.itextpdf.layout.property.TextAlignment
 import com.itextpdf.layout.property.UnitValue
 import com.zak.sidilan.R
@@ -32,9 +31,17 @@ import com.zak.sidilan.data.entities.BookInDonationTrx
 import com.zak.sidilan.data.entities.BookInPrintingTrx
 import com.zak.sidilan.data.entities.BookOutDonationTrx
 import com.zak.sidilan.data.entities.BookOutSellingTrx
+import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityTrxDetailBinding
+import com.zak.sidilan.ui.auth.AuthViewModel
+import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
 import com.zak.sidilan.util.Formatter
+import com.zak.sidilan.util.HawkManager
+import com.zak.sidilan.util.HelperFunction
+import com.zak.sidilan.util.UserRole
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import www.sanju.motiontoast.MotionToast
+import www.sanju.motiontoast.MotionToastStyle
 import java.io.ByteArrayOutputStream
 import java.io.File
 
@@ -43,11 +50,14 @@ class TrxDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrxDetailBinding
     private val viewModel: TrxDetailViewModel by viewModel()
     private lateinit var adapter: BookTrxHistoryAdapter
+    private val authViewModel: AuthViewModel by viewModel()
+    private lateinit var hawkManager: HawkManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTrxDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        hawkManager = HawkManager(this)
 
         val trxId = intent.getStringExtra("trxId")
         if (trxId != null) {
@@ -293,20 +303,47 @@ class TrxDetailActivity : AppCompatActivity() {
     }
 
     private fun setupAction() {
-        binding.btnInvoice.setOnClickListener {
-            setLoading(true)
-            viewModel.trxDetail.observe(this) { trxDetail ->
-                val invId = trxDetail?.bookTrx?.id
-                if (invId != null) {
-                    viewModel.getInvoiceDownloadUrl(invId) {
-                        if (it != null) {
-                            openURLInBrowser(this, it)
-                        } else {
-                            generatePdfInvoice(this, invId)
+        val userId = hawkManager.retrieveData<User>("user")?.id.toString()
+        authViewModel.getCurrentUser(userId)
+        authViewModel.currentUser.observe(this) { user ->
+            val userRole = HelperFunction.parseUserRole(user.role)
+            when (userRole) {
+                UserRole.STAFF -> {
+                    binding.btnInvoice.setOnClickListener {
+                        MotionToast.createColorToast(
+                            this,
+                            "Warning",
+                            "Anda tidak memiliki akses!",
+                            MotionToastStyle.WARNING,
+                            MotionToast.GRAVITY_BOTTOM,
+                            1000L,
+                            ResourcesCompat.getFont(
+                                this,
+                                www.sanju.motiontoast.R.font.helvetica_regular
+                            )
+                        )
+                    }
+                }
+
+                else -> {
+                    binding.btnInvoice.setOnClickListener {
+                        setLoading(true)
+                        viewModel.trxDetail.observe(this) { trxDetail ->
+                            val invId = trxDetail?.bookTrx?.id
+                            if (invId != null) {
+                                viewModel.getInvoiceDownloadUrl(invId) {
+                                    if (it != null) {
+                                        openURLInBrowser(this, it)
+                                    } else {
+                                        generatePdfInvoice(this, invId)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+
         }
     }
     private fun openURLInBrowser(context: Context, url: String) {
@@ -330,7 +367,8 @@ class TrxDetailActivity : AppCompatActivity() {
                     val pdfWriter = PdfWriter(file.absolutePath)
                     val pdfDocument = PdfDocument(pdfWriter)
                     val document = Document(pdfDocument, PageSize.A4)
-                    val iconBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.icon_only_white)
+
+                    val iconBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.img_icon_only_white)
                     val stream = ByteArrayOutputStream()
                     iconBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                     val iconData = stream.toByteArray()
@@ -479,7 +517,7 @@ class TrxDetailActivity : AppCompatActivity() {
                     // Add totals
                     val totals = Paragraph()
                         .add("\nDiscount: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.discountAmount)}\n")
-                        .add("Total: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.finalPrice)}\n")
+                        .add("Total: Rp. ${Formatter.addThousandSeparatorTextView(it.bookTrx.finalPrice)}\n\n\n")
                         .setFontSize(12f)
                         .setTextAlignment(TextAlignment.RIGHT)
 
@@ -492,10 +530,46 @@ class TrxDetailActivity : AppCompatActivity() {
                                 Formatter.convertNumberToWords(it.bookTrx.finalPrice)
                             )
                         )
+                        .setItalic()
                         .setFontSize(12f)
                         .setTextAlignment(TextAlignment.CENTER)
 
                     document.add(wordedNumber)
+
+// Add date and signature details
+                    val dateAndSignature = Paragraph()
+                        .add("\n\nKota Malang, ${Formatter.convertDateFirebaseToDisplay(it.bookTrx.bookOutDate)}\n\n")
+                        .add("Bagian Keuangan Penerbit Peneleh\n")
+                        .setFontSize(12f)
+                        .setTextAlignment(TextAlignment.RIGHT)
+
+                    document.add(dateAndSignature)
+
+// Load the signature image from drawable
+                    val signatureBitmap: Bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.img_manager_signature)
+                    val signatureStream = ByteArrayOutputStream()
+                    signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, signatureStream)
+                    val signatureData = signatureStream.toByteArray()
+                    val signatureImageData = ImageDataFactory.create(signatureData)
+                    val signature = Image(signatureImageData).apply {
+                        scaleToFit(150f, 100f) // Adjust the size as needed
+                        setTextAlignment(TextAlignment.RIGHT)
+                        setHorizontalAlignment(HorizontalAlignment.RIGHT)
+                    }
+
+// Add the signature image below the date and signature details
+                    document.add(signature)
+
+// Add the name below the signature
+                    val name = Paragraph("Febrina Nur Ramadhani")
+                        .setUnderline()
+                        .setFontSize(12f)
+                        .setTextAlignment(TextAlignment.RIGHT)
+
+
+
+
+                    document.add(name)
 
                     document.close()
 

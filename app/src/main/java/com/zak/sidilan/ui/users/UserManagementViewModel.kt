@@ -1,5 +1,6 @@
 package com.zak.sidilan.ui.users
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -76,9 +77,7 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
     }
 
     fun addWhitelist(email: String, role: String, phoneNumber: String) {
-        repository.addWhitelist(email, role, phoneNumber).observeForever { status ->
-            _toastMessage.value = status
-        }
+        repository.addWhitelist(email, role, phoneNumber)
     }
 
     fun updateWhitelist(email: String, role: String, phoneNumber: String, callback: (String) -> Unit) {
@@ -90,6 +89,7 @@ class UserManagementViewModel(private val repository: UserRepository): ViewModel
     fun updateRole(email: String, newRole: String, callback: (String) -> Unit) {
         repository.updateRole(email, newRole) { status ->
             callback(status)
+            Log.d("UpdateRole", status)
         }
     }
 

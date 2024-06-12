@@ -166,8 +166,9 @@ class AuthActivity : AppCompatActivity() {
                     1000L,
                     ResourcesCompat.getFont(this, www.sanju.motiontoast.R.font.helvetica_regular))
 
-                auth.signOut()
+                hawkManager.deleteData("user")
                 googleSignInClient.signOut()
+                auth.signOut()
                 updateUI(null)
             }
         }

@@ -112,23 +112,33 @@ class ModalBottomSheetAction(
                         if (userInput == bookDetail?.book?.title) {
                             bookDetailViewModel.deleteBookById(bookDetail.book.isbn.toString()) { isSuccess, message ->
                                 if (isSuccess) {
-                                    MotionToast.createColorToast(requireActivity(),
+                                    MotionToast.createColorToast(
+                                        requireActivity(),
                                         "Success",
                                         "Buku berhasil dihapus",
                                         MotionToastStyle.DELETE,
                                         MotionToast.GRAVITY_BOTTOM,
                                         MotionToast.SHORT_DURATION,
-                                        ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
+                                        ResourcesCompat.getFont(
+                                            requireContext(),
+                                            www.sanju.motiontoast.R.font.helvetica_regular
+                                        )
+                                    )
                                     dialog.dismiss()
                                     attachedActivity.finish()
                                 } else {
-                                    MotionToast.createColorToast(requireActivity(),
+                                    MotionToast.createColorToast(
+                                        requireActivity(),
                                         "Success",
                                         "Buku gagal dihapus: $message",
                                         MotionToastStyle.DELETE,
                                         MotionToast.GRAVITY_BOTTOM,
                                         MotionToast.SHORT_DURATION,
-                                        ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
+                                        ResourcesCompat.getFont(
+                                            requireContext(),
+                                            www.sanju.motiontoast.R.font.helvetica_regular
+                                        )
+                                    )
                                 }
                             }
                         } else {
@@ -146,61 +156,79 @@ class ModalBottomSheetAction(
                 binding.ivItem2.setImageResource(R.drawable.ic_delete)
 
                 binding.item1.setOnClickListener {
-                    val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_role, null)
+                    val layout =
+                        LayoutInflater.from(context).inflate(R.layout.layout_update_role, null)
                     val editText = layout.findViewById<EditText>(R.id.ed_role)
                     val editTextLayout = layout.findViewById<TextInputLayout>(R.id.edl_role)
-                    MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
-                        .setTitle("Hapus Akses")
+                    val changeRoleDialog = MaterialAlertDialogBuilder(
+                        requireActivity(),
+                        com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+                    )
+                        .setTitle("Ubah Role")
                         .setView(layout)
                         .setIcon(R.drawable.ic_edit_user)
-                        .setMessage("Akses dari pengguna ini akan dihapus. Konfirmasi hapus?")
+                        .setMessage("Pilih role baru untuk akun ini.")
                         .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                             dialog.dismiss()
                             dismiss()
                         }
-                        .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
-                            if (editText.text.isNotEmpty()) {
-                                val newRole = editText.text.toString()
-                                userManagementViewModel.updateRole(email.toString(), newRole) {
-                                    MotionToast.createColorToast(requireActivity(),
-                                        "Info",
-                                        it,
-                                        MotionToastStyle.INFO,
-                                        MotionToast.GRAVITY_BOTTOM,
-                                        MotionToast.SHORT_DURATION,
-                                        ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
-                                    dialog.dismiss()
-                                    attachedActivity.finish()
-                                }
-                            } else {
-                                editTextLayout.error = "Masukkan Role"
-                            }
-
-                        }
+                        .setPositiveButton(resources.getString(R.string.yes), null)
                         .show()
+                    changeRoleDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                        if (editText.text.isNotEmpty()) {
+                            val newRole = editText.text.toString()
+                            userManagementViewModel.updateRole(email.toString(), newRole) {
+                                MotionToast.createColorToast(
+                                    requireActivity(),
+                                    "Info",
+                                    it,
+                                    MotionToastStyle.INFO,
+                                    MotionToast.GRAVITY_BOTTOM,
+                                    MotionToast.SHORT_DURATION,
+                                    ResourcesCompat.getFont(
+                                        requireContext(),
+                                        www.sanju.motiontoast.R.font.helvetica_regular
+                                    )
+                                )
+                                changeRoleDialog.dismiss()
+                                attachedActivity.finish()
+                            }
+                        } else {
+                            editTextLayout.error = "Masukkan Role"
+                        }
+
+                    }
                 }
                 binding.item2.setOnClickListener {
-                    MaterialAlertDialogBuilder(requireActivity())
+                    val deleteDialog = MaterialAlertDialogBuilder(requireActivity())
                         .setTitle("Hapus Akses")
                         .setMessage("Akses dari pengguna ini akan dihapus. Konfirmasi hapus?")
                         .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                             dialog.dismiss()
                             dismiss()
                         }
-                        .setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
-                            userManagementViewModel.deleteWhitelist(email.toString()) {
-                                MotionToast.createColorToast(requireActivity(),
-                                    "Delete",
-                                    it,
-                                    MotionToastStyle.DELETE,
-                                    MotionToast.GRAVITY_BOTTOM,
-                                    MotionToast.SHORT_DURATION,
-                                    ResourcesCompat.getFont(requireContext(), www.sanju.motiontoast.R.font.helvetica_regular))
-                                dialog.dismiss()
-                                dismiss()
-                                attachedActivity.finish()
-                            }
-                        }.show()
+                        .setPositiveButton(resources.getString(R.string.yes), null)
+                        .show()
+                    deleteDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+
+                        userManagementViewModel.deleteWhitelist(email.toString()) {
+                            MotionToast.createColorToast(
+                                requireActivity(),
+                                "Delete",
+                                it,
+                                MotionToastStyle.DELETE,
+                                MotionToast.GRAVITY_BOTTOM,
+                                MotionToast.SHORT_DURATION,
+                                ResourcesCompat.getFont(
+                                    requireContext(),
+                                    www.sanju.motiontoast.R.font.helvetica_regular
+                                )
+                            )
+                            deleteDialog.dismiss()
+                            dismiss()
+                            attachedActivity.finish()
+                        }
+                    }
                 }
             }
         }

@@ -58,20 +58,21 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
 
-        auth = Firebase.auth
+        auth = FirebaseAuth.getInstance()
+
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
+        val userId = hawkManager.retrieveData<User>("user")?.id.toString()
+        authViewModel.getCurrentUser(userId)
         setAction()
         setViewModel()
     }
 
     private fun setViewModel() {
-        val userId = hawkManager.retrieveData<User>("user")?.id.toString()
-        authViewModel.getCurrentUser(userId)
-        authViewModel.currentUser.observe(this) {user ->
+        authViewModel.currentUser.observe(this) { user ->
             val userRole = HelperFunction.parseUserRole(user.role)
             updateUIVisibility(userRole)
         }
@@ -113,6 +114,7 @@ class MainActivity : AppCompatActivity() {
                     val intent = Intent(this, UserManagementActivity::class.java)
                     startActivity(intent)
                 }
+
                 R.id.about -> {
                     val intent = Intent(this, AboutActivity::class.java)
                     startActivity(intent)
@@ -149,9 +151,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun isEmailWhitelisted(email: String, callback: (Boolean, Whitelist?) -> Unit) {
-        authViewModel.isEmailWhitelisted(email) { isWhitelisted, additionalInfo ->
-            callback(isWhitelisted, additionalInfo)
+    private fun isEmailWhitelisted(email: String, callback: (Boolean) -> Unit) {
+        authViewModel.validateWhitelist(email) { isWhitelisted ->
+            callback(isWhitelisted)
         }
     }
 
@@ -172,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             signOut()
             return
         } else {
-            isEmailWhitelisted(firebaseUser.email.toString()) { isWhitelisted, _ ->
+            isEmailWhitelisted(firebaseUser.email.toString()) { isWhitelisted ->
                 if (!isWhitelisted) {
                     signOut()
                 }

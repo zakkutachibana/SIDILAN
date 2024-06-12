@@ -46,9 +46,8 @@ class UserManagementActivity : AppCompatActivity() {
         when (role) {
             UserRole.ADMIN -> { }
             UserRole.DIRECTOR -> { }
-            else -> { finish() }
+            else -> {  }
         }
-
     }
 
     private fun setupView() {
@@ -59,7 +58,6 @@ class UserManagementActivity : AppCompatActivity() {
                     binding.viewPager.currentItem = tab.position
                 }
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
 

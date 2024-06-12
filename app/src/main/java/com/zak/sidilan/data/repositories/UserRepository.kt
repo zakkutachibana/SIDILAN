@@ -192,21 +192,18 @@ class UserRepository {
 
     fun isEmailWhitelisted(email: String, callback: (Boolean, Whitelist?) -> Unit) {
         whitelistReference.orderByChild("email").equalTo(email)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         val entry = dataSnapshot.children.first().getValue(Whitelist::class.java)
                         callback(true, entry)
-
                     } else {
                         callback(false, null)
                     }
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     //something
                 }
-
             })
     }
 
