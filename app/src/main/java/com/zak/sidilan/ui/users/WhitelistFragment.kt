@@ -64,7 +64,7 @@ class WhitelistFragment : Fragment() {
                     )
                         .setTitle(R.string.update_whitelist)
                         .setView(layout)
-                        .setIcon(R.drawable.ic_delete)
+                        .setIcon(R.drawable.ic_edit_whitelist)
                         .setMessage(R.string.add_whitelist_action)
                         .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                             dialog.dismiss()
@@ -139,7 +139,7 @@ class WhitelistFragment : Fragment() {
             )
                 .setTitle(R.string.add_whitelist)
                 .setView(layout)
-                .setIcon(R.drawable.ic_delete)
+                .setIcon(R.drawable.ic_add_whitelist)
                 .setMessage(R.string.add_whitelist_action)
                 .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
                     dialog.dismiss()

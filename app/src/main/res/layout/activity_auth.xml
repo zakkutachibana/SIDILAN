@@ -71,7 +71,7 @@
         android:layout_height="wrap_content"
         android:text="Tidak bisa login?"
         style="@style/TextAppearance.Material3.TitleSmall"
-        android:textColor="?attr/m3PrimaryColor"
+        android:textColor="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

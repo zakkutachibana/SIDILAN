@@ -142,7 +142,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edl_total_price" />
 
-
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline"
             android:layout_width="wrap_content"
@@ -168,13 +167,37 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_add_item" />
 
+        <RadioGroup
+            android:id="@+id/rg_payment_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/divider2">
+
+            <RadioButton
+                android:id="@+id/rb_pay_now"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:enabled="false"
+                android:text="Bayar Sekarang" />
+
+            <RadioButton
+                android:id="@+id/rb_pay_later"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:enabled="false"
+                android:text="Bayar Nanti" />
+
+        </RadioGroup>
 
         <RadioGroup
             android:id="@+id/rg_custom_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/divider2">
+            app:layout_constraintTop_toBottomOf="@id/rg_payment_status">
 
             <RadioButton
                 android:id="@+id/rb_regular"
@@ -200,8 +223,6 @@
                 android:enabled="false"
                 android:text="Diskon (%)" />
         </RadioGroup>
-
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edl_discount"

@@ -113,7 +113,7 @@ class ModalBottomSheetAction(
                             bookDetailViewModel.deleteBookById(bookDetail.book.isbn.toString()) { isSuccess, message ->
                                 if (isSuccess) {
                                     MotionToast.createColorToast(
-                                        requireActivity(),
+                                        attachedActivity,
                                         "Success",
                                         "Buku berhasil dihapus",
                                         MotionToastStyle.DELETE,
@@ -129,7 +129,7 @@ class ModalBottomSheetAction(
                                 } else {
                                     MotionToast.createColorToast(
                                         requireActivity(),
-                                        "Success",
+                                        "Error",
                                         "Buku gagal dihapus: $message",
                                         MotionToastStyle.DELETE,
                                         MotionToast.GRAVITY_BOTTOM,

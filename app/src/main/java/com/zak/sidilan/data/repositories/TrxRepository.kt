@@ -244,6 +244,18 @@ class TrxRepository {
         }
     }
 
+    fun setPaymentDone(trxId: String, callback: (String?) -> Unit) {
+        reference.child(trxId).child("transaction").child("is_paid").setValue(true).addOnCompleteListener { dbTask ->
+            if (dbTask.isSuccessful) {
+                callback("Pembayaran Dicatat")
+            } else {
+                callback(dbTask.exception?.message)
+            }
+        }
+    }
+
+
+
     private fun generateInvoiceId(transactionType: String): String {
         val prefix = when (transactionType) {
             "book_in_printing" -> "TRXP"

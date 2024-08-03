@@ -97,7 +97,7 @@ class BookDetailActivity : AppCompatActivity() {
         val userId = hawkManager.retrieveData<User>("user")?.id.toString()
         authViewModel.getCurrentUser(userId)
         authViewModel.currentUser.observe(this) { user ->
-            val userRole = HelperFunction.parseUserRole(user.role)
+            val userRole = HelperFunction.parseUserRole(user?.role)
             when (userRole) {
                 UserRole.STAFF -> {
                     binding.btnEditDelete.setOnClickListener {

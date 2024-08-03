@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.data.entities.BookTrxDetail
 import com.zak.sidilan.data.repositories.TrxRepository
+import com.zak.sidilan.util.Formatter.toDate
 import org.koin.dsl.module
 
 val trxHistoryViewModelModule = module {
@@ -24,7 +25,7 @@ class TrxHistoryViewModel(private val repository: TrxRepository) : ViewModel() {
         }
     }
 
-    fun calculateTotalBookQty() {
+    fun getAllSalesTrx() {
         repository.getAllTrx().observeForever { transactions ->
             val trxSellList = transactions.filter { it.bookTrx is BookOutSellingTrx }
             _trxSellingList.value = trxSellList
@@ -39,6 +40,29 @@ class TrxHistoryViewModel(private val repository: TrxRepository) : ViewModel() {
                 trxList
             }
             _trxList.postValue(ArrayList(filteredTrx))
+        }
+    }
+
+    fun getFilteredSalesByDate(startDateStr: String, endDateStr: String) {
+        val startDate = startDateStr.toDate()
+        val endDate = endDateStr.toDate()
+
+        if (startDate != null && endDate != null) {
+            repository.getAllTrx().observeForever { transactions ->
+                val filteredTrx = transactions.filter { transaction ->
+                    if (transaction.bookTrx is BookOutSellingTrx) {
+                        val bookOutDate = transaction.bookTrx.bookOutDate.toDate()
+                        bookOutDate != null && !bookOutDate.before(startDate) && !bookOutDate.after(endDate)
+                    } else {
+                        false
+                    }
+                }
+                _trxSellingList.postValue(ArrayList(filteredTrx))
+
+            }
+        } else {
+            // Handle the case where the date conversion failed
+            println("Invalid date format")
         }
     }
 }

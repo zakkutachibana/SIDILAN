@@ -17,8 +17,8 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
     private val _toastMessage = MutableLiveData<String>()
     val toastMessage: LiveData<String> get() = _toastMessage
 
-    private val _currentUser = MutableLiveData<User>()
-    val currentUser: LiveData<User> get() = _currentUser
+    private val _currentUser = MutableLiveData<User?>()
+    val currentUser: LiveData<User?> get() = _currentUser
 
     fun saveUserToFirebase(userId: String, displayName: String, email: String, photoUrl: String, role: String, phoneNumber: String) {
         repository.saveUserToFirebase(userId, displayName, email, photoUrl, role, phoneNumber).observeForever { message ->
@@ -33,13 +33,21 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     fun getCurrentUser(userId: String) {
+        _currentUser.value = null
         repository.getCurrentUser(userId).observeForever { user ->
             _currentUser.value = user
         }
     }
 
+    fun getCurrentUserOnce(userId: String) {
+        _currentUser.value = null
+        repository.getCurrentUserOnce(userId).observeForever { user ->
+            _currentUser.value = user
+        }
+    }
+
     fun validateWhitelist(email: String, callback: (Boolean) -> Unit) {
-        repository.validateWhitelist(email) { whitelisted ->
+        repository.validateWhitelistOnce(email) { whitelisted ->
             callback(whitelisted)
         }
     }

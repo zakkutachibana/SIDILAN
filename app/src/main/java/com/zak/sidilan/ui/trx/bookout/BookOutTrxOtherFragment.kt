@@ -81,9 +81,7 @@ class BookOutTrxOtherFragment : Fragment() {
                     .show()
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                     viewModel.getCurrentStock(bookPrice.book.isbn.toString()) { currentStock ->
-
-                        if (edStock.text?.isNotEmpty() == true && edStock.text.toString().toLong() <= currentStock!! && edStock.text.toString().toLong() != 0L
-                        ) {
+                        if (edStock.text?.isNotEmpty() == true && edStock.text.toString().toLong() <= currentStock!! && edStock.text.toString().toLong() != 0L) {
                             val newQty = edStock.text.toString().toLong()
                             val newCost = newQty * bookPrice.book.printPrice
                             val newBookQtyCost = BookQtyPrice(bookPrice.book, newQty, newCost)

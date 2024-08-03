@@ -7,7 +7,7 @@ object HelperFunction {
             "Direktur" -> UserRole.DIRECTOR
             "Manajer" -> UserRole.MANAGER
             "Staf" -> UserRole.STAFF
-            else -> null
+            else -> UserRole.STAFF
         }
     }
 }

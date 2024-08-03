@@ -90,6 +90,8 @@ data class BookOutSellingTrx(
     val totalBookKind : Long,
     @JvmField @PropertyName("total_price")
     val totalPrice: Long,
+    @JvmField @PropertyName("is_paid")
+    val isPaid: Boolean,
     @JvmField @PropertyName("discount_type")
     val discountType: String,
     @JvmField @PropertyName("discount_percent")
@@ -100,7 +102,7 @@ data class BookOutSellingTrx(
     val finalPrice: Long,
     val notes: String?
 ) : BookTrx() {
-    constructor() : this("", "","", "", "", "", listOf(), 0L, 0L, 0L, "", 0L, 0L, 0L, "")
+    constructor() : this("", "","", "", "", "", listOf(), 0L, 0L, 0L, false, "",0L, 0L, 0L, "")
 }
 
 data class BookOutDonationTrx(

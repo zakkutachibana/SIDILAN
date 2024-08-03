@@ -65,18 +65,20 @@ class MainActivity : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
-        val userId = hawkManager.retrieveData<User>("user")?.id.toString()
-        authViewModel.getCurrentUser(userId)
+
         setAction()
         setViewModel()
     }
 
     private fun setViewModel() {
+        val userId = hawkManager.retrieveData<User>("user")?.id.toString()
+        authViewModel.getCurrentUserOnce(userId)
         authViewModel.currentUser.observe(this) { user ->
-            val userRole = HelperFunction.parseUserRole(user.role)
+            val userRole = HelperFunction.parseUserRole(user?.role)
             updateUIVisibility(userRole)
         }
     }
+
     private fun setAction() {
         binding.navigationView.setCheckedItem(R.id.home)
         binding.navigationView.setNavigationItemSelectedListener { menuItem ->

@@ -46,4 +46,10 @@ class TrxDetailViewModel(private val repository: TrxRepository, private val user
             callback(it)
         }
     }
+
+    fun setPaymentDone(trxId: String, callback: (String?) -> Unit) {
+        repository.setPaymentDone(trxId) {
+            callback(it)
+        }
+    }
 }

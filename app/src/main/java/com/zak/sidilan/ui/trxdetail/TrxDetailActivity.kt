@@ -1,5 +1,6 @@
 package com.zak.sidilan.ui.trxdetail
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -16,6 +17,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.colors.ColorConstants
 import com.itextpdf.kernel.geom.PageSize
@@ -34,7 +36,6 @@ import com.zak.sidilan.data.entities.BookOutSellingTrx
 import com.zak.sidilan.data.entities.User
 import com.zak.sidilan.databinding.ActivityTrxDetailBinding
 import com.zak.sidilan.ui.auth.AuthViewModel
-import com.zak.sidilan.ui.bottomsheets.ModalBottomSheetAction
 import com.zak.sidilan.util.Formatter
 import com.zak.sidilan.util.HawkManager
 import com.zak.sidilan.util.HelperFunction
@@ -197,6 +198,7 @@ class TrxDetailActivity : AppCompatActivity() {
 
                 is BookOutSellingTrx -> {
                     binding.btnInvoice.visibility = View.VISIBLE
+                    binding.ivPaid.visibility = View.VISIBLE
                     setupRecyclerView(1)
                     adapter.submitList(bookTrx.books)
                     binding.header.tvBookPrice.text = "Harga Jual"
@@ -224,6 +226,19 @@ class TrxDetailActivity : AppCompatActivity() {
                         R.string.rupiah,
                         Formatter.convertNumberToWords(bookTrx.finalPrice)
                     )
+
+                    when (bookTrx.isPaid) {
+                        true -> {
+                            binding.ivPaid.visibility = View.VISIBLE
+                            binding.btnPaying.visibility = View.GONE
+                            binding.actionDivider.visibility = View.GONE
+                        }
+                        false -> {
+                            binding.ivPaid.visibility = View.GONE
+                            binding.btnPaying.visibility = View.VISIBLE
+                            binding.actionDivider.visibility = View.VISIBLE
+                        }
+                    }
 
                     when (bookTrx.discountType) {
                         "percent" -> {
@@ -306,7 +321,7 @@ class TrxDetailActivity : AppCompatActivity() {
         val userId = hawkManager.retrieveData<User>("user")?.id.toString()
         authViewModel.getCurrentUser(userId)
         authViewModel.currentUser.observe(this) { user ->
-            val userRole = HelperFunction.parseUserRole(user.role)
+            val userRole = HelperFunction.parseUserRole(user?.role)
             when (userRole) {
                 UserRole.STAFF -> {
                     binding.btnInvoice.setOnClickListener {
@@ -343,6 +358,38 @@ class TrxDetailActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+
+        binding.btnPaying.setOnClickListener {
+            MaterialAlertDialogBuilder(
+                this,
+                com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
+            )
+                .setTitle("Pembayaran")
+                .setIcon(R.drawable.ic_paying)
+                .setMessage("Transaksi ini akan dibayarkan sekarang. Status pembayaran akan menjadi LUNAS. Lanjutkan?")
+                .setNegativeButton(resources.getString(R.string.cancel)) { dialog, which ->
+                    dialog.dismiss()
+                }
+                .setPositiveButton("Ya") { dialog, which ->
+                    viewModel.trxDetail.observe(this) { trx ->
+                        viewModel.setPaymentDone(trx?.bookTrx?.id.toString()) { message ->
+                            MotionToast.createColorToast(
+                                this,
+                                "Status",
+                                message.toString(),
+                                MotionToastStyle.INFO,
+                                MotionToast.GRAVITY_BOTTOM,
+                                1000L,
+                                ResourcesCompat.getFont(
+                                    this,
+                                    www.sanju.motiontoast.R.font.helvetica_regular
+                                )
+                            )
+                        }
+                    }
+                }
+                .show()
 
         }
     }

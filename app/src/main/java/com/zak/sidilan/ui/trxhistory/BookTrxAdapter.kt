@@ -71,11 +71,21 @@ class BookTrxAdapter(
                     adapterBinding.tvTitleTrx.text = context.getString(R.string.title_book_out_selling, bookTrxDetail.bookTrx.sellingPlatform)
                     adapterBinding.tvTrxDate.text = Formatter.convertDateFirebaseToDisplay(bookTrxDetail.bookTrx.bookOutDate)
                     adapterBinding.tvSource.text = bookTrxDetail.bookTrx.buyerName
-                    adapterBinding.tvTrxMoney.text = context.getString(R.string.rp_price_plus, Formatter.addThousandSeparatorTextView(bookTrxDetail.bookTrx.finalPrice))
-                    adapterBinding.tvTrxMoney.setTextColor(ContextCompat.getColor(context, R.color.safe_green))
                     adapterBinding.tvTotalQty.text = context.getString(R.string.minus_qty, bookTrxDetail.bookTrx.totalBookQty.toString())
                     adapterBinding.tvTotalQty.setTextColor(ContextCompat.getColor(context, R.color.safe_red))
                     adapterBinding.tvBookKind.text = context.getString(R.string.book_count, bookTrxDetail.bookTrx.totalBookKind.toString())
+                    when (bookTrxDetail.bookTrx.isPaid) {
+                        true -> {
+                            adapterBinding.tvTrxMoney.text = context.getString(R.string.rp_price_plus, Formatter.addThousandSeparatorTextView(bookTrxDetail.bookTrx.finalPrice))
+                            adapterBinding.tvTrxMoney.setTextColor(ContextCompat.getColor(context, R.color.safe_green))
+                        }
+                        false -> {
+                            adapterBinding.cardTrx.setCardBackgroundColor(ContextCompat.getColor(context, R.color.cardErrorBackground))
+                            adapterBinding.tvTrxMoney.text = "Belum Dibayar"
+                            adapterBinding.tvTrxMoney.setTextColor(ContextCompat.getColor(context, R.color.safe_red))
+                        }
+                    }
+
                 }
                 is BookOutDonationTrx -> {
                     adapterBinding.ivIcon.load(R.drawable.img_donating)
@@ -92,6 +102,7 @@ class BookTrxAdapter(
             }
 
         }
+
     }
 
     class UserDiffCallback : DiffUtil.ItemCallback<BookTrxDetail>() {

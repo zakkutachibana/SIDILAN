@@ -32,7 +32,4 @@ class ScanViewModel(private val repository: BookRepository) : ViewModel() {
             }
         }
     }
-    fun getBookByISBN(isbn: String) {
-
-    }
 }

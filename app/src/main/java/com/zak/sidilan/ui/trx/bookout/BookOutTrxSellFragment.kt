@@ -72,21 +72,15 @@ class BookOutTrxSellFragment : Fragment() {
     private fun setupRecyclerView() {
         adapter = SelectedBooksAdapter(3, requireContext(), viewModel) { bookPrice ->
             viewModel.getCurrentStock(bookPrice.book.isbn.toString()) { it ->
-                val layout =
-                    LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
+                val layout = LayoutInflater.from(context).inflate(R.layout.layout_update_stock, null)
                 val edStock = layout.findViewById<EditText>(R.id.ed_stock)
                 val edlStock = layout.findViewById<TextInputLayout>(R.id.edl_stock)
                 layout.findViewById<TextView>(R.id.tv_title_book_stock).text = bookPrice.book.title
-                layout.findViewById<TextView>(R.id.tv_author_book_stock).text =
-                    bookPrice.book.authors.joinToString(", ")
+                layout.findViewById<TextView>(R.id.tv_author_book_stock).text = bookPrice.book.authors.joinToString(", ")
                 layout.findViewById<TextView>(R.id.tv_current_book_stock).text = it.toString()
-                layout.findViewById<ImageView>(R.id.iv_book_cover_stock)
-                    .load(bookPrice.book.coverUrl)
+                layout.findViewById<ImageView>(R.id.iv_book_cover_stock).load(bookPrice.book.coverUrl)
                 edStock.setText(bookPrice.bookQty.toString())
-                val dialog = MaterialAlertDialogBuilder(
-                    requireActivity(),
-                    com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered
-                )
+                val dialog = MaterialAlertDialogBuilder(requireActivity(), com.google.android.material.R.style.ThemeOverlay_Material3_MaterialAlertDialog_Centered)
                     .setTitle(resources.getString(R.string.title_update_stock))
                     .setView(layout)
                     .setIcon(R.drawable.ic_update)
@@ -97,9 +91,7 @@ class BookOutTrxSellFragment : Fragment() {
                     .show()
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                     viewModel.getCurrentStock(bookPrice.book.isbn.toString()) { currentStock ->
-                        if (edStock.text?.isNotEmpty() == true && edStock.text.toString()
-                                .toLong() <= currentStock!! && edStock.text.toString().toLong() != 0L
-                        ) {
+                        if (edStock.text?.isNotEmpty() == true && edStock.text.toString().toLong() <= currentStock!! && edStock.text.toString().toLong() != 0L) {
                             val newQty = edStock.text.toString().toLong()
                             val newCost = newQty * bookPrice.book.printPrice
                             val newBookQtyCost = BookQtyPrice(bookPrice.book, newQty, newCost)
@@ -243,6 +235,8 @@ class BookOutTrxSellFragment : Fragment() {
             binding.rbFlat.isEnabled = !isEmpty
             binding.rbPercent.isEnabled = !isEmpty
             binding.rbRegular.isEnabled = !isEmpty
+            binding.rbPayNow.isEnabled = !isEmpty
+            binding.rbPayLater.isEnabled = !isEmpty
         }
     }
 
@@ -268,6 +262,11 @@ class BookOutTrxSellFragment : Fragment() {
                 val discountAmount = Formatter.getRawValue(binding.edDiscountAmount).toLong()
                 val discountPercent = Formatter.getRawValue(binding.edDiscount).toLong()
                 val note = binding.edNote.text.toString()
+                val isPaid = when {
+                    binding.rbPayNow.isChecked -> true
+                    binding.rbPayLater.isChecked -> false
+                    else -> true
+                }
                 val discountType = when {
                     binding.rbPercent.isChecked -> "percent"
                     binding.rbFlat.isChecked -> "flat"
@@ -302,6 +301,7 @@ class BookOutTrxSellFragment : Fragment() {
                         totalBookKind = bookItems.size.toLong(),
                         totalPrice = totalPrice, // Use the total price entered by the user
                         finalPrice = finalPrice,
+                        isPaid = isPaid,
                         discountType = discountType,
                         discountAmount = discountAmount,
                         discountPercent = discountPercent,
@@ -325,7 +325,6 @@ class BookOutTrxSellFragment : Fragment() {
                 }
             }
         }
-
     }
 
     private fun calculateTotalCost(bookList: List<BookQtyPrice>) {

@@ -14,6 +14,7 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
 import com.itextpdf.kernel.colors.DeviceRgb
 import java.util.Calendar
+import java.util.Date
 
 object Formatter {
 
@@ -120,6 +121,14 @@ object Formatter {
             val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy (HH:mm)", Locale("id", "ID"))
             zonedDateTime.format(formatter)
         } else ""
+    }
+
+    fun String.toDate(format: String = "dd/MM/yyyy"): Date? {
+        return try {
+            SimpleDateFormat(format, Locale.getDefault()).parse(this)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun convertToInternationalFormat(phoneNumber: String): String {

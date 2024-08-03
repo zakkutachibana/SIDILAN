@@ -105,34 +105,25 @@ class BookRepository {
             }
         }
     }
+
     fun updateBookFirebase(book: Book, oldCover: String, callback: (Boolean, String?) -> Unit) {
         if (book.coverUrl != null) {
-            // Upload the new image to Firebase Storage
             val imageRef = storage.reference.child("book_covers/${UUID.randomUUID()}")
             val uploadTask = imageRef.putFile(Uri.parse(book.coverUrl.toString()))
-
             uploadTask.continueWithTask { task ->
                 if (!task.isSuccessful) {
                     task.exception?.let { throw it }
                 }
                 imageRef.downloadUrl
             }.addOnSuccessListener { uri ->
-                // Image uploaded successfully, get the download URL
                 val newCoverUrl = uri.toString()
-
-                // Delete the previous image from Firebase Storage (if it exists)
                 if (book.coverUrl != null) {
                     val previousImageRef = storage.getReferenceFromUrl(oldCover)
                     previousImageRef.delete()
                 }
-
-                // Update the book cover URL
                 book.coverUrl = newCoverUrl
-
-                // Save the updated book details to the Realtime Database
                 val bookMap = mutableMapOf<String, Any>()
                 bookMap["book"] = book
-
                 reference.child(book.isbn.toString()).updateChildren(bookMap).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         callback(true, null)
@@ -141,7 +132,6 @@ class BookRepository {
                     }
                 }
             }.addOnFailureListener { exception ->
-                // Handle any errors during image upload
                 callback(false, "${exception.message}")
             }
         } else {
@@ -208,7 +198,7 @@ class BookRepository {
     }
     fun getBookCurrentStock(isbn: String, callback : (Long?) -> Unit){
         val bookReference = reference.child(isbn)
-        bookReference.addValueEventListener(object : ValueEventListener {
+        bookReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val stock = snapshot.child("stock").getValue(Stock::class.java)
                 callback(stock?.stockQty)
@@ -220,7 +210,7 @@ class BookRepository {
         })
     }
     fun deleteBookById(isbn: String, callback: (Boolean, String?) -> Unit) {
-        reference.child(isbn).addValueEventListener(object : ValueEventListener {
+        reference.child(isbn).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val coverUrl = snapshot.child("book").child("cover_url").getValue(String::class.java)
                 val previousImageRef = coverUrl?.let { storage.getReferenceFromUrl(it) }

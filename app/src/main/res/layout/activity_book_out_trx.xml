@@ -15,10 +15,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tabMode="fixed"
         android:backgroundTint="?attr/m3SurfaceColor"
-        app:tabRippleColor="?attr/m3RippleColor"
-        app:tabIndicatorColor="?attr/m3PrimaryColor"
-        app:tabTextColor="@color/selection_state"
-        app:tabIconTint="@color/selection_state"
         >
 
         <com.google.android.material.tabs.TabItem

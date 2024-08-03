@@ -37,6 +37,7 @@ android {
     }
 
     buildTypes {
+
         release {
             isMinifyEnabled = true
             proguardFiles(
@@ -56,6 +57,16 @@ android {
     buildFeatures {
         viewBinding = true
         buildConfig = true
+    }
+    flavorDimensions += listOf("env")
+    productFlavors {
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".dev"
+        }
+        create("prod") {
+            dimension = "env"
+        }
     }
 }
 

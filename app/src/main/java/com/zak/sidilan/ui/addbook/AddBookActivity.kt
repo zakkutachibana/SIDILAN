@@ -142,7 +142,6 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         }
     }
 
-
     private fun setView() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -293,7 +292,6 @@ class AddBookActivity : AppCompatActivity(), ModalBottomSheetView.BottomSheetLis
         }
     }
 
-    // Function to get image URI from Bitmap
     private fun getImageUriFromBitmap(bitmap: Bitmap): Uri? {
         return try {
             val cachePath = File.createTempFile("image", null, applicationContext.cacheDir)
